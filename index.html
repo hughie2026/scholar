@@ -5,45 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hughie's Online Lab</title>
   <link rel="stylesheet" href="assets/css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Top Header -->
-  <header class="top-header">
+  <!-- Utility Bar -->
+  <div class="utility-bar">
+    <div class="container utility-inner">
+      <span>HUGHIE'S ONLINE LAB</span>
+      <div class="utility-links">
+        <a href="#">Directory</a>
+        <a href="#">Calendar</a>
+        <a href="#">News</a>
+        <a href="#">Make a Gift</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="main-header">
     <div class="container header-inner">
-      <a href="index.html" class="logo">
-        <span class="logo-mark">H</span>
-        <span class="logo-text">Hughie's <em>Online Lab</em></span>
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
       </a>
-      <nav class="top-nav">
+      <nav class="primary-nav">
         <a href="#modules">Tools</a>
-        <a href="#about">About</a>
         <a href="#research">Research</a>
+        <a href="#about">About</a>
         <a href="#contact">Contact</a>
-        <a href="#" class="btn-signin">Sign In</a>
       </nav>
     </div>
   </header>
 
   <!-- Hero -->
   <section class="hero">
-    <div class="container">
-      <div class="hero-tag">RESEARCH PLATFORM · v1.0</div>
-      <h1>Discover. Analyze. Improve.</h1>
-      <p class="hero-sub">
-        Hughie's Online Lab 是一個面向公眾與研究者的開放式工具平台，
-        匯集了營養、健康、行為與認知科學領域的可交互工具。
-        無需安裝，瀏覽器即可運行，數據完全保存在本地。
-      </p>
-      <div class="hero-search">
-        <input type="text" placeholder="Search tools, topics, or keywords..." aria-label="Search">
-        <button>Search</button>
+    <div class="hero-bg"></div>
+    <div class="container hero-inner">
+      <div class="hero-content">
+        <div class="hero-eyebrow">Be Curious. Be Rigorous. Be Open.</div>
+        <h1>Tools that turn<br><span class="hero-highlight">questions</span> into insight.</h1>
+        <p class="hero-lead">
+          Hughie's Online Lab 是一個面向公眾與研究者的開放式互動平台。
+          這裡匯集了營養、健康、認知與行為科學的可交互工具，
+          每一項都源自公開的研究方法，每一次計算都在你自己的瀏覽器中完成。
+        </p>
+        <div class="hero-actions">
+          <a href="#modules" class="btn-gold">Explore Our Tools</a>
+          <a href="#about" class="btn-ghost">About the Lab →</a>
+        </div>
       </div>
-      <div class="hero-stats">
-        <div><strong>12+</strong><span>Interactive Tools</span></div>
-        <div><strong>3,400+</strong><span>Sessions Completed</span></div>
-        <div><strong>98%</strong><span>Local Privacy</span></div>
+    </div>
+  </section>
+
+  <!-- Quick Facts Strip -->
+  <section class="facts-strip">
+    <div class="container facts-inner">
+      <div class="fact">
+        <div class="fact-num">12<span>+</span></div>
+        <div class="fact-label">Interactive Tools</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">3,400<span>+</span></div>
+        <div class="fact-label">Sessions Completed</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">100<span>%</span></div>
+        <div class="fact-label">Local & Private</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">5</div>
+        <div class="fact-label">Research Domains</div>
       </div>
     </div>
   </section>
@@ -52,110 +87,192 @@
   <section id="modules" class="section">
     <div class="container">
       <div class="section-head">
-        <h2>Explore Our Tools</h2>
-        <p>從以下功能模塊中選擇一個開始探索。每個工具均基於公開研究方法構建。</p>
+        <div class="eyebrow">RESEARCH TOOLS</div>
+        <h2>Explore the laboratory.</h2>
+        <p class="section-sub">每一個模塊都是一個獨立的研究工具。選擇下方任意一個進入，無需註冊，立即可用。</p>
       </div>
 
       <div class="module-grid">
 
         <a href="nutrition-assessment.html" class="module-card available">
-          <div class="card-tag">AVAILABLE</div>
-          <div class="card-icon" style="background:#fef0e6;color:#e87722;">🥗</div>
-          <h3>Adult Nutrition Self-Assessment</h3>
-          <p>基於 BMI、膳食結構與生活習慣，對成年人個體營養狀況進行多維評估，並給出個性化建議。</p>
-          <span class="card-link">Launch Tool →</span>
+          <div class="card-img card-img-1">
+            <span class="card-status">AVAILABLE</span>
+          </div>
+          <div class="card-body">
+            <div class="card-cat">HEALTH · NUTRITION</div>
+            <h3>Adult Nutrition Self-Assessment</h3>
+            <p>基於 BMI、膳食結構與生活習慣，對成年人個體營養狀況進行多維評估，並給出個性化建議。</p>
+            <span class="card-cta">Launch Tool →</span>
+          </div>
         </a>
 
         <div class="module-card disabled">
-          <div class="card-tag tag-soon">COMING SOON</div>
-          <div class="card-icon" style="background:#e7f1fb;color:#1a73e8;">🧠</div>
-          <h3>Cognitive Reaction Test</h3>
-          <p>測量視覺反應時間、注意力與工作記憶，輸出標準化分數與同齡參考。</p>
-          <span class="card-link">In Development</span>
+          <div class="card-img card-img-2">
+            <span class="card-status soon">COMING SOON</span>
+          </div>
+          <div class="card-body">
+            <div class="card-cat">COGNITIVE SCIENCE</div>
+            <h3>Cognitive Reaction Test</h3>
+            <p>測量視覺反應時間、注意力與工作記憶，輸出標準化分數與同齡參考。</p>
+            <span class="card-cta muted">In Development</span>
+          </div>
         </div>
 
         <div class="module-card disabled">
-          <div class="card-tag tag-soon">COMING SOON</div>
-          <div class="card-icon" style="background:#eaf6ee;color:#1e8e3e;">😴</div>
-          <h3>Sleep Quality Index</h3>
-          <p>結合 PSQI 簡化問卷與作息習慣，評估近一個月內睡眠質量並提供改善方向。</p>
-          <span class="card-link">In Development</span>
+          <div class="card-img card-img-3">
+            <span class="card-status soon">COMING SOON</span>
+          </div>
+          <div class="card-body">
+            <div class="card-cat">HEALTH · SLEEP</div>
+            <h3>Sleep Quality Index</h3>
+            <p>結合 PSQI 簡化問卷與作息習慣，評估近一個月內睡眠質量並提供改善方向。</p>
+            <span class="card-cta muted">In Development</span>
+          </div>
         </div>
 
         <div class="module-card disabled">
-          <div class="card-tag tag-soon">COMING SOON</div>
-          <div class="card-icon" style="background:#fdecec;color:#d93025;">❤️</div>
-          <h3>Cardiovascular Risk Estimator</h3>
-          <p>輸入血壓、血脂等指標，估算 10 年心血管事件風險。</p>
-          <span class="card-link">In Development</span>
+          <div class="card-img card-img-4">
+            <span class="card-status soon">COMING SOON</span>
+          </div>
+          <div class="card-body">
+            <div class="card-cat">CARDIOVASCULAR</div>
+            <h3>10-Year CVD Risk Estimator</h3>
+            <p>輸入血壓、血脂、吸菸與年齡等指標，估算未來 10 年心血管事件發生風險。</p>
+            <span class="card-cta muted">In Development</span>
+          </div>
         </div>
 
         <div class="module-card disabled">
-          <div class="card-tag tag-soon">COMING SOON</div>
-          <div class="card-icon" style="background:#f3e8fd;color:#8430ce;">📊</div>
-          <h3>Personality & Behavior Profile</h3>
-          <p>大五人格 (Big Five) 簡化測評，給出個性傾向與行為偏好概覽。</p>
-          <span class="card-link">In Development</span>
+          <div class="card-img card-img-5">
+            <span class="card-status soon">COMING SOON</span>
+          </div>
+          <div class="card-body">
+            <div class="card-cat">PSYCHOLOGY</div>
+            <h3>Big Five Personality Profile</h3>
+            <p>大五人格簡化測評，給出個性傾向與行為偏好概覽，附帶研究文獻引用。</p>
+            <span class="card-cta muted">In Development</span>
+          </div>
         </div>
 
         <div class="module-card disabled">
-          <div class="card-tag tag-soon">COMING SOON</div>
-          <div class="card-icon" style="background:#fff8de;color:#b78103;">🔬</div>
-          <h3>Data Visualization Sandbox</h3>
-          <p>上傳 CSV 即可生成探索性圖表，支持分組、過濾與相關分析。</p>
-          <span class="card-link">In Development</span>
+          <div class="card-img card-img-6">
+            <span class="card-status soon">COMING SOON</span>
+          </div>
+          <div class="card-body">
+            <div class="card-cat">DATA SCIENCE</div>
+            <h3>Data Visualization Sandbox</h3>
+            <p>上傳 CSV 即可生成探索性圖表，支持分組、過濾與相關分析。</p>
+            <span class="card-cta muted">In Development</span>
+          </div>
         </div>
 
       </div>
     </div>
   </section>
 
+  <!-- Mission Banner -->
+  <section class="mission-banner">
+    <div class="container mission-inner">
+      <div class="mission-quote">"</div>
+      <p class="mission-text">
+        We build small tools to ask big questions —
+        about how we eat, sleep, move, and think.
+      </p>
+      <div class="mission-by">— HUGHIE, FOUNDER</div>
+    </div>
+  </section>
+
   <!-- About -->
-  <section id="about" class="section section-alt">
-    <div class="container two-col">
-      <div>
-        <h2>About the Lab</h2>
-        <p>
-          Hughie's Online Lab 由 Hughie 創立，旨在以開放、可復現的方式，
-          將公共健康研究中常用的評估與分析工具帶到普通用戶面前。
-          所有工具僅做信息參考，不構成任何醫療診斷。
-        </p>
-        <p>
-          我們相信良好的工具能放大認知。本平台所有頁面均開源在 GitHub，
-          歡迎研究者與開發者提交 issue 或 PR。
-        </p>
-        <a href="#" class="btn-primary">View on GitHub</a>
+  <section id="about" class="section section-light">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-left">
+          <div class="eyebrow">ABOUT THE LAB</div>
+          <h2>Open research, brought to your browser.</h2>
+          <p>
+            Hughie's Online Lab 由 Hughie 創立，旨在以開放、可復現的方式，
+            將公共健康與行為科學中的常用評估工具帶到普通用戶面前。
+          </p>
+          <p>
+            我們相信好的工具能放大認知。所有頁面均開源在 GitHub，
+            算法引用自公開發表的學術文獻，數據完全保存在你的瀏覽器，
+            從不上傳到任何服務器。
+          </p>
+          <a href="#" class="btn-gold">View on GitHub</a>
+        </div>
+
+        <div class="about-right">
+          <div class="value-card">
+            <div class="value-num">01</div>
+            <h4>Open Source</h4>
+            <p>全部源代碼公開於 GitHub，遵循 MIT 開源協議。</p>
+          </div>
+          <div class="value-card">
+            <div class="value-num">02</div>
+            <h4>Privacy First</h4>
+            <p>所有計算在你的瀏覽器中完成，不收集、不上傳任何個人數據。</p>
+          </div>
+          <div class="value-card">
+            <div class="value-num">03</div>
+            <h4>Evidence Based</h4>
+            <p>工具背後的算法、量表與閾值均引用自公開發表的學術文獻。</p>
+          </div>
+        </div>
       </div>
-      <div class="info-cards">
-        <div class="info-card">
-          <h4>Open Source</h4>
-          <p>全部源代碼在 GitHub 公開，遵循 MIT 協議。</p>
-        </div>
-        <div class="info-card">
-          <h4>Privacy First</h4>
-          <p>所有計算在你的瀏覽器中完成，不上傳任何個人數據。</p>
-        </div>
-        <div class="info-card">
-          <h4>Evidence Based</h4>
-          <p>工具的算法與量表均引用自公開發表的學術文獻。</p>
-        </div>
+    </div>
+  </section>
+
+  <!-- News / CTA -->
+  <section id="research" class="section section-dark">
+    <div class="container">
+      <div class="section-head light">
+        <div class="eyebrow gold">LATEST UPDATES</div>
+        <h2>What's new in the lab.</h2>
+      </div>
+
+      <div class="news-grid">
+        <article class="news-item">
+          <div class="news-date">Nov 2025</div>
+          <h4>Nutrition Self-Assessment goes live</h4>
+          <p>第一個公開模塊正式上線，覆蓋 BMI、膳食、生活方式與健康狀態五個維度。</p>
+          <a href="nutrition-assessment.html">Read more →</a>
+        </article>
+        <article class="news-item">
+          <div class="news-date">Oct 2025</div>
+          <h4>Methodology page in progress</h4>
+          <p>所有工具的算法說明與參考文獻正在整理中，預計年底前公開。</p>
+          <a href="#">Read more →</a>
+        </article>
+        <article class="news-item">
+          <div class="news-date">Sep 2025</div>
+          <h4>Hughie's Online Lab launched</h4>
+          <p>站點正式上線。歡迎研究者與開發者通過 GitHub 提交 issue 或 PR。</p>
+          <a href="#">Read more →</a>
+        </article>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
   <footer class="footer">
-    <div class="container footer-inner">
-      <div>
-        <div class="footer-logo">Hughie's Online Lab</div>
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
         <p>An open research toolkit for everyone.</p>
       </div>
+
       <div class="footer-cols">
         <div>
           <h5>Platform</h5>
           <a href="#modules">Tools</a>
           <a href="#about">About</a>
-          <a href="#">Documentation</a>
+          <a href="#research">Research</a>
         </div>
         <div>
           <h5>Resources</h5>
@@ -164,14 +281,18 @@
           <a href="#">Disclaimer</a>
         </div>
         <div>
-          <h5>Contact</h5>
+          <h5>Connect</h5>
           <a href="#">GitHub</a>
           <a href="#">Email</a>
+          <a href="#">Twitter</a>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      © 2025 Hughie's Online Lab. All tools are for informational purposes only.
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical advice.</span>
+      </div>
     </div>
   </footer>
 
