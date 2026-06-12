@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>個人營養狀況自我評估</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Helvetica Neue", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+  header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 30px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.8em; margin-bottom: 8px; }
+  header p { opacity: 0.9; font-size: 0.95em; }
+  .content { padding: 30px; }
+  .section {
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #eee;
+  }
+  .section:last-child { border-bottom: none; }
+  .section h2 {
+    color: #667eea;
+    font-size: 1.2em;
+    margin-bottom: 16px;
+    padding-left: 12px;
+    border-left: 4px solid #667eea;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  .form-group { margin-bottom: 14px; }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.95em;
+    color: #555;
+  }
+  input, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  .question {
+    background: #f9f9fc;
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+  .question p {
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .options label {
+    display: inline-flex;
+    align-items: center;
+    background: #fff;
+    padding: 8px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: normal;
+    margin-bottom: 0;
+    transition: all 0.2s;
+  }
+  .options label:hover { border-color: #667eea; }
+  .options input[type="radio"] {
+    width: auto;
+    margin-right: 6px;
+  }
+  .options input[type="radio"]:checked + span {
+    color: #667eea;
+    font-weight: 600;
+  }
+  button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+  }
+  .result {
+    margin-top: 30px;
+    padding: 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f6f9fc 0%, #e9f0ff 100%);
+    display: none;
+  }
+  .result.show { display: block; animation: fadeIn 0.5s; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .score-box {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .score-num {
+    font-size: 3em;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .score-label {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .bmi-info {
+    background: #fff;
+    padding: 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border-left: 4px solid #667eea;
+  }
+  .advice-list {
+    background: #fff;
+    padding: 16px 16px 16px 36px;
+    border-radius: 8px;
+  }
+  .advice-list li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+  .level-good { color: #2ecc71; }
+  .level-mid { color: #f39c12; }
+  .level-bad { color: #e74c3c; }
+  @media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.4em; }
+    .content { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🥗 個人營養狀況自我評估</h1>
+    <p>填寫以下資料，了解你的營養與飲食健康狀態</p>
+  </header>
+
+  <div class="content">
+    <form id="nutritionForm">
+      <!-- 基本資料 -->
+      <div class="section">
+        <h2>基本資料</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>年齡</label>
+            <input type="number" id="age" min="1" max="120" required>
+          </div>
+          <div class="form-group">
+            <label>性別</label>
+            <select id="gender" required>
+              <option value="">請選擇</option>
+              <option value="male">男</option>
+              <option value="female">女</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>身高 (cm)</label>
+            <input type="number" id="height" min="50" max="250" step="0.1" required>
+          </div>
+          <div class="form-group">
+            <label>體重 (kg)</label>
+            <input type="number" id="weight" min="10" max="300" step="0.1" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- 飲食習慣 -->
+      <div class="section">
+        <h2>飲食習慣</h2>
+
+        <div class="question">
+          <p>1. 每天吃幾餐正餐？</p>
+          <div class="options">
+            <label><input type="radio" name="q1" value="2" required><span>三餐規律</span></label>
+            <label><input type="radio" name="q1" value="1"><span>偶爾少一餐</span></label>
+            <label><input type="radio" name="q1" value="0"><span>經常不規律</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p>2. 每天攝取蔬菜的份量？(一份約一個拳頭大)</p>
+          <div class="options">
+            <label><input type="radio" name="q2" value="2" required><span>3 份以上</span></label>
+            <label><input type="radio" name="q2" value="1"><span>1 至 2 份</span></label>
+            <label><input type="radio" name="q2" value="0"><span>幾乎沒有</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p>3. 每天攝取水果的份量？</p>
+          <div class="options">
+            <label><input type="radio" name="q3" value="2" required><span>2 份以上</span></label>
+            <label><input type="radio" name="q3" value="1"><span>1 份</span></label>
+            <label><input type="radio" name="q3" value="0"><span>很少或沒有</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p>4. 每天攝取蛋白質食物（肉、蛋、豆、奶）？</p>
+          <div class="options">
+            <label><input type="radio" name="q4" value="2" required><span>每餐都有</span></label>
+            <label><input type="radio" name="q4" value="1"><span>每天 1 至 2 次</span></label>
+            <label><input type="radio" name="q4" value="0"><span>偶爾才有</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p>5. 每天喝水量？</p>
+          <div class="options">
+            <label><input type="radio" name="q5" value="2" required><span>1500 ml 以上</span></label>
+            <label><input type="radio" name="q5" value="1"><span>800 至 1500 ml</span></label>
+            <label><input type="radio" name="q5" value="0"><span>不到 800 ml</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p>6. 多久吃一次油炸或速食？</p>
+          <div class="options">
+            <label><input type="radio" name="q6" value="2" required><span>很少（每週少於1次）</span></label>
+            <label><input type="radio" name="q6" value="1"><span>每週 2 至 4 次</span></label>
+            <label><input type="radio" name="q6" value="0"><span>幾乎天天</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p>7. 多久喝一次含糖飲料？</p>
+          <div class="options">
+            <label><input type="radio" name="q7" value="2" required><span>很少</span></label>
+            <label><input type="radio" name="q7" value="1"><span>每週數次</span></label>
+            <label><input type="radio" name="q7" value="0"><span>每天都喝</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p>8. 是否攝取全穀類（糙米、燕麥、全麥麵包）？</p>
+          <div class="options">
+            <label><input type="radio" name="q8" value="2" required><span>經常</span></label>
+            <label><input type="radio" name="q8" value="1"><span>偶爾</span></label>
+            <label><input type="radio" name="q8" value="0"><span>幾乎沒有</span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 生活作息 -->
+      <div class="section">
+        <h2>生活作息</h2>
+
+        <div class="question">
+          <p>9. 平均每天睡眠時數？</p>
+          <div class="options">
+            <label><input type="radio" name="q9" value="2" required><span>7 至 9 小時</span></label>
+            <label><input type="radio" name="q9" value="1"><span>5 至 7 小時</span></label>
+            <label><input type="radio" name="q9" value="0"><span>少於 5 小時</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p>10. 每週運動頻率？</p>
+          <div class="options">
+            <label><input type="radio" name="q10" value="2" required><span>3 次以上</span></label>
+            <label><input type="radio" name="q10" value="1"><span>1 至 2 次</span></label>
+            <label><input type="radio" name="q10" value="0"><span>幾乎沒有</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p>11. 抽菸或飲酒習慣？</p>
+          <div class="options">
+            <label><input type="radio" name="q11" value="2" required><span>都沒有</span></label>
+            <label><input type="radio" name="q11" value="1"><span>偶爾</span></label>
+            <label><input type="radio" name="q11" value="0"><span>經常</span></label>
+          </div>
+        </div>
+
+        <div class="question">
+          <p>12. 最近是否常感到疲倦、注意力不集中？</p>
+          <div class="options">
+            <label><input type="radio" name="q12" value="2" required><span>很少</span></label>
+            <label><input type="radio" name="q12" value="1"><span>有時</span></label>
+            <label><input type="radio" name="q12" value="0"><span>經常</span></label>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit">開始評估</button>
+    </form>
+
+    <div class="result" id="result">
+      <div class="score-box">
+        <div class="score-num" id="scoreNum">0</div>
+        <div class="score-label" id="scoreLabel"></div>
+      </div>
+      <div class="bmi-info" id="bmiInfo"></div>
+      <h3 style="margin-bottom:10px;color:#667eea;">📋 個人化建議</h3>
+      <ul class="advice-list" id="adviceList"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('nutritionForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  // 基本資料
+  const age = parseInt(document.getElementById('age').value);
+  const gender = document.getElementById('gender').value;
+  const height = parseFloat(document.getElementById('height').value);
+  const weight = parseFloat(document.getElementById('weight').value);
+
+  // BMI 計算
+  const bmi = weight / Math.pow(height / 100, 2);
+  let bmiCategory = '', bmiClass = '';
+  if (bmi < 18.5) { bmiCategory = '體重過輕'; bmiClass = 'level-bad'; }
+  else if (bmi < 24) { bmiCategory = '正常範圍'; bmiClass = 'level-good'; }
+  else if (bmi < 27) { bmiCategory = '過重'; bmiClass = 'level-mid'; }
+  else if (bmi < 30) { bmiCategory = '輕度肥胖'; bmiClass = 'level-bad'; }
+  else if (bmi < 35) { bmiCategory = '中度肥胖'; bmiClass = 'level-bad'; }
+  else { bmiCategory = '重度肥胖'; bmiClass = 'level-bad'; }
+
+  // 問卷分數計算
+  let score = 0;
+  const answers = {};
+  for (let i = 1; i <= 12; i++) {
+    const val = document.querySelector(`input[name="q${i}"]:checked`);
+    if (val) {
+      const v = parseInt(val.value);
+      score += v;
+      answers[`q${i}`] = v;
+    }
+  }
+  // 滿分 24，換算為百分制
+  const percent = Math.round((score / 24) * 100);
+
+  // 評等
+  let level = '', levelClass = '';
+  if (percent >= 80) { level = '營養狀況良好 🌟'; levelClass = 'level-good'; }
+  else if (percent >= 60) { level = '營養狀況普通 ⚠️'; levelClass = 'level-mid'; }
+  else { level = '營養狀況需改善 ⚡'; levelClass = 'level-bad'; }
+
+  // 顯示分數
+  document.getElementById('scoreNum').textContent = percent + ' 分';
+  const scoreLabel = document.getElementById('scoreLabel');
+  scoreLabel.textContent = level;
+  scoreLabel.className = 'score-label ' + levelClass;
+
+  // BMI 區塊
+  document.getElementById('bmiInfo').innerHTML = `
+    <strong>BMI 指數：</strong>${bmi.toFixed(1)}　
+    <span class="${bmiClass}"><strong>${bmiCategory}</strong></span><br>
+    <small style="color:#888;">建議範圍：18.5 ~ 23.9</small>
+  `;
+
+  // 個人化建議
+  const advice = [];
+  if (bmi < 18.5) advice.push('體重偏輕，建議增加優質蛋白質與健康脂肪攝取，搭配重量訓練。');
+  if (bmi >= 24) advice.push('體重偏高，建議控制總熱量並增加有氧運動，減少精緻糖與飽和脂肪。');
+  if (answers.q1 < 2) advice.push('用餐時間不規律會影響代謝，建議三餐定時定量。');
+  if (answers.q2 < 2) advice.push('蔬菜攝取不足，建議每天至少 3 份（約 300 克），補充膳食纖維與維生素。');
+  if (answers.q3 < 2) advice.push('水果攝取不足，建議每天 2 份新鮮水果，補充維生素 C 與抗氧化物。');
+  if (answers.q4 < 2) advice.push('蛋白質攝取不足，建議每餐都包含豆、魚、蛋、肉類或乳製品。');
+  if (answers.q5 < 2) advice.push('每日飲水量不足，建議每天至少 1500 至 2000 ml，分次少量飲用。');
+  if (answers.q6 < 2) advice.push('油炸與速食攝取過多，建議改用蒸、煮、烤的烹調方式。');
+  if (answers.q7 < 2) advice.push('含糖飲料容易造成肥胖與血糖問題，建議改喝白開水或無糖茶。');
+  if (answers.q8 < 2) advice.push('全穀類攝取不足，建議將部分白米換成糙米、燕麥或全麥製品。');
+  if (answers.q9 < 2) advice.push('睡眠不足會影響代謝與食慾調控，建議每天睡足 7 小時。');
+  if (answers.q10 < 2) advice.push('運動頻率不足，建議每週至少 150 分鐘中等強度運動。');
+  if (answers.q11 < 2) advice.push('減少菸酒能顯著降低慢性病風險，建議逐步戒除。');
+  if (answers.q12 < 2) advice.push('長期疲倦可能與營養失衡有關，必要時可諮詢醫師或營養師。');
+
+  if (advice.length === 0) {
+    advice.push('整體狀態良好，請繼續保持健康的飲食與生活習慣！');
+  }
+
+  const adviceList = document.getElementById('adviceList');
+  adviceList.innerHTML = advice.map(a => `<li>${a}</li>`).join('');
+
+  // 顯示結果並滾動
+  const resultBox = document.getElementById('result');
+  resultBox.classList.add('show');
+  resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+</script>
+</body>
+</html>
