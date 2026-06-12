@@ -1,190 +1,335 @@
-(function () {
-  const form = document.getElementById('assessmentForm');
-  const steps = form.querySelectorAll('.form-step');
-  const stepLabels = document.querySelectorAll('.progress-steps .step');
-  const progressFill = document.getElementById('progressFill');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const submitBtn = document.getElementById('submitBtn');
-  const resultPanel = document.getElementById('result');
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adult Nutrition Self-Assessment | Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
 
-  let current = 1;
-  const total = steps.length;
+  <div class="utility-bar">
+    <div class="container utility-inner">
+      <span>HUGHIE'S ONLINE LAB</span>
+      <div class="utility-links">
+        <a href="index.html">← Back to Home</a>
+      </div>
+    </div>
+  </div>
 
-  function updateUI() {
-    steps.forEach(s => s.classList.toggle('active', +s.dataset.step === current));
-    stepLabels.forEach(l => l.classList.toggle('active', +l.dataset.step === current));
-    progressFill.style.width = (current / total * 100) + '%';
-    prevBtn.disabled = current === 1;
-    nextBtn.style.display = current === total ? 'none' : 'inline-block';
-    submitBtn.style.display = current === total ? 'inline-block' : 'none';
-  }
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html#modules">Tools</a>
+        <a href="index.html#about">About</a>
+      </nav>
+    </div>
+  </header>
 
-  function validateStep(step) {
-    const node = form.querySelector(`.form-step[data-step="${step}"]`);
-    const required = node.querySelectorAll('[required]');
-    for (const el of required) {
-      if (el.type === 'radio') {
-        const group = node.querySelectorAll(`[name="${el.name}"]`);
-        if (![...group].some(r => r.checked)) {
-          alert('請完成本頁所有必填項。');
-          return false;
-        }
-      } else if (!el.value) {
-        alert('請完成本頁所有必填項。');
-        el.focus();
-        return false;
-      }
-    }
-    return true;
-  }
+  <!-- Tool Hero -->
+  <section class="tool-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="index.html#modules">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Nutrition Self-Assessment</span>
+      </div>
+      <div class="eyebrow gold">HEALTH · NUTRITION</div>
+      <h1>Adult Nutrition Self-Assessment</h1>
+      <p class="tool-lead">
+        本工具基於 BMI、膳食多樣性、飲食頻率與生活習慣，對 18 歲以上成年人的整體營養狀況進行綜合評估。
+        全部計算在本地完成，結果僅供參考，不能替代專業醫療意見。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">⏱ 約 5 分鐘</span>
+        <span class="pill">📊 5 個維度</span>
+        <span class="pill">🔒 本地計算</span>
+        <span class="pill">📖 基於公開文獻</span>
+      </div>
+    </div>
+  </section>
 
-  nextBtn.addEventListener('click', () => {
-    if (!validateStep(current)) return;
-    if (current < total) { current++; updateUI(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  });
-  prevBtn.addEventListener('click', () => {
-    if (current > 1) { current--; updateUI(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  });
-  submitBtn.addEventListener('click', () => {
-    if (!validateStep(current)) return;
-    calculate();
-  });
+  <!-- Form -->
+  <section class="section section-light">
+    <div class="container narrow">
 
-  updateUI();
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps">
+          <span class="step active" data-step="1"><b>01</b> 基本信息</span>
+          <span class="step" data-step="2"><b>02</b> 膳食結構</span>
+          <span class="step" data-step="3"><b>03</b> 飲食習慣</span>
+          <span class="step" data-step="4"><b>04</b> 生活方式</span>
+          <span class="step" data-step="5"><b>05</b> 健康狀態</span>
+        </div>
+      </div>
 
-  // ========== Scoring Logic ==========
-  function calculate() {
-    const data = new FormData(form);
-    const get = k => data.get(k);
-    const getAll = k => data.getAll(k);
+      <form id="assessmentForm" class="assessment-form">
 
-    const age = +get('age');
-    const height = +get('height') / 100;
-    const weight = +get('weight');
-    const bmi = weight / (height * height);
+        <div class="form-step active" data-step="1">
+          <div class="step-num">PART 01</div>
+          <h2>基本信息</h2>
+          <p class="step-desc">用於計算 BMI 與基礎代謝率參考值。</p>
 
-    // --- BMI score (max 25) ---
-    let bmiScore = 0, bmiCat = '';
-    if (bmi < 16) { bmiScore = 5; bmiCat = '嚴重消瘦'; }
-    else if (bmi < 18.5) { bmiScore = 12; bmiCat = '偏瘦'; }
-    else if (bmi < 24) { bmiScore = 25; bmiCat = '正常範圍'; }
-    else if (bmi < 28) { bmiScore = 17; bmiCat = '超重'; }
-    else if (bmi < 32) { bmiScore = 10; bmiCat = '肥胖'; }
-    else { bmiScore = 5; bmiCat = '嚴重肥胖'; }
+          <div class="field">
+            <label>性別</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="gender" value="male" required><span>男</span></label>
+              <label class="radio-btn"><input type="radio" name="gender" value="female"><span>女</span></label>
+            </div>
+          </div>
 
-    // weight change adjustment
-    const wc = get('weightChange');
-    const wcAdj = { stable: 0, mildLoss: -2, moderateLoss: -4, severeLoss: -7, gain: -2 }[wc] || 0;
-    bmiScore = Math.max(0, bmiScore + wcAdj);
+          <div class="field-row">
+            <div class="field">
+              <label>年齡（歲）</label>
+              <input type="number" name="age" min="18" max="120" required>
+            </div>
+            <div class="field">
+              <label>身高（cm）</label>
+              <input type="number" name="height" min="100" max="250" step="0.1" required>
+            </div>
+            <div class="field">
+              <label>體重（kg）</label>
+              <input type="number" name="weight" min="30" max="300" step="0.1" required>
+            </div>
+          </div>
 
-    // --- Dietary diversity (max 25) ---
-    const groups = getAll('foodGroups');
-    const diversityScore = Math.min(25, Math.round(groups.length / 8 * 25));
+          <div class="field">
+            <label>近 6 個月體重變化</label>
+            <select name="weightChange" required>
+              <option value="">請選擇</option>
+              <option value="stable">基本穩定（變化 &lt; 3%）</option>
+              <option value="mildLoss">輕度下降（3% – 5%）</option>
+              <option value="moderateLoss">中度下降（5% – 10%）</option>
+              <option value="severeLoss">明顯下降（&gt; 10%）</option>
+              <option value="gain">明顯增加（&gt; 5%）</option>
+            </select>
+          </div>
+        </div>
 
-    // --- Eating habits (max 20) ---
-    let habitScore = 0;
-    habitScore += { '3': 7, '2': 4, '1': 2, irregular: 1 }[get('mealCount')] || 0;
-    habitScore += { good: 6, fair: 4, poor: 2, veryPoor: 0 }[get('appetite')] || 0;
-    habitScore += { rare: 4, some: 3, often: 1, veryOften: 0 }[get('eatOut')] || 0;
-    habitScore += { rare: 3, some: 2, often: 1, daily: 0 }[get('sugar')] || 0;
+        <div class="form-step" data-step="2">
+          <div class="step-num">PART 02</div>
+          <h2>膳食結構</h2>
+          <p class="step-desc">過去一週內，你平均每天攝入以下哪些類別的食物？</p>
 
-    // --- Lifestyle (max 20) ---
-    let lifestyleScore = 0;
-    lifestyleScore += { high: 6, medium: 4, low: 2, none: 0 }[get('exercise')] || 0;
-    lifestyleScore += { ideal: 6, short: 3, veryShort: 1, long: 3 }[get('sleep')] || 0;
-    lifestyleScore += { never: 4, former: 3, light: 2, heavy: 0 }[get('smoke')] || 0;
-    lifestyleScore += { never: 4, occasional: 3, weekly: 2, daily: 0 }[get('alcohol')] || 0;
+          <div class="checkbox-group">
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="grains"><span>穀類（米、麵、全麥）</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="vegetables"><span>蔬菜（每天 ≥ 300g）</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="fruits"><span>水果（每天 ≥ 200g）</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="protein"><span>優質蛋白（魚、禽、蛋、瘦肉）</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="dairy"><span>奶類及奶製品</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="legumes"><span>豆類及豆製品</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="nuts"><span>堅果（每週 ≥ 50g）</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="water"><span>充足飲水（每天 ≥ 1500ml）</span></label>
+          </div>
+        </div>
 
-    // --- Health symptoms (max 10) ---
-    const symptoms = getAll('symptoms');
-    const hasNone = symptoms.includes('none');
-    let healthScore = 10;
-    if (!hasNone) {
-      const negatives = symptoms.filter(s => s !== 'none').length;
-      healthScore = Math.max(0, 10 - negatives * 2);
-    }
+        <div class="form-step" data-step="3">
+          <div class="step-num">PART 03</div>
+          <h2>飲食習慣</h2>
+          <p class="step-desc">關於進餐規律性與食物選擇的偏好。</p>
 
-    const total = Math.round(bmiScore + diversityScore + habitScore + lifestyleScore + healthScore);
+          <div class="field">
+            <label>每天規律進食的次數</label>
+            <select name="mealCount" required>
+              <option value="">請選擇</option>
+              <option value="3">三餐規律</option>
+              <option value="2">通常兩餐</option>
+              <option value="1">經常只一餐</option>
+              <option value="irregular">時間不固定</option>
+            </select>
+          </div>
 
-    renderResult({
-      total, bmi, bmiCat,
-      bmiScore, diversityScore, habitScore, lifestyleScore, healthScore,
-      groups, age, gender: get('gender'),
-      flags: { wc, appetite: get('appetite'), exercise: get('exercise'),
-               sleep: get('sleep'), smoke: get('smoke'), alcohol: get('alcohol'),
-               sugar: get('sugar'), eatOut: get('eatOut'), symptoms }
-    });
-  }
+          <div class="field">
+            <label>近一個月食慾如何</label>
+            <select name="appetite" required>
+              <option value="">請選擇</option>
+              <option value="good">良好，食量正常</option>
+              <option value="fair">一般，偶爾食慾不振</option>
+              <option value="poor">較差，常吃不下</option>
+              <option value="veryPoor">很差，經常需要強迫進食</option>
+            </select>
+          </div>
 
-  function renderResult(r) {
-    document.getElementById('totalScore').textContent = r.total;
-    document.getElementById('bmiVal').textContent = r.bmi.toFixed(1);
-    document.getElementById('bmiCat').textContent = r.bmiCat;
-    document.getElementById('diversityVal').textContent = r.groups.length + ' / 8';
-    document.getElementById('habitVal').textContent = r.habitScore + ' / 20';
-    document.getElementById('lifestyleVal').textContent = r.lifestyleScore + ' / 20';
-    document.getElementById('scoreFill').style.width = r.total + '%';
+          <div class="field">
+            <label>每週吃外賣 / 在外就餐的頻率</label>
+            <select name="eatOut" required>
+              <option value="">請選擇</option>
+              <option value="rare">很少（≤ 1 次）</option>
+              <option value="some">偶爾（2 – 4 次）</option>
+              <option value="often">經常（5 – 7 次）</option>
+              <option value="veryOften">幾乎每餐</option>
+            </select>
+          </div>
 
-    let label = '', color = '';
-    if (r.total >= 85) { label = '優秀　Excellent'; color = '#1e8e3e'; }
-    else if (r.total >= 70) { label = '良好　Good'; color = '#7cb342'; }
-    else if (r.total >= 55) { label = '一般　Fair'; color = '#e8a317'; }
-    else if (r.total >= 40) { label = '需改善　Needs Improvement'; color = '#e87722'; }
-    else { label = '較差　Poor'; color = '#d93025'; }
-    const labelEl = document.getElementById('scoreLabel');
-    labelEl.textContent = label;
-    labelEl.style.color = color === '#1e8e3e' ? '#9be3a8' : '#ffd9a3';
-    document.getElementById('scoreFill').style.background = color;
+          <div class="field">
+            <label>含糖飲料 / 甜點頻率</label>
+            <select name="sugar" required>
+              <option value="">請選擇</option>
+              <option value="rare">基本不喝</option>
+              <option value="some">每週 1 – 3 次</option>
+              <option value="often">每週 4 – 6 次</option>
+              <option value="daily">幾乎每天</option>
+            </select>
+          </div>
+        </div>
 
-    // Recommendations
-    const recs = [];
-    if (r.bmi < 18.5) recs.push('BMI 偏低，建議在保證營養均衡的前提下適度增加總能量攝入，重點補充優質蛋白和健康脂肪。');
-    else if (r.bmi >= 24 && r.bmi < 28) recs.push('BMI 處於超重範圍，建議減少精製糖與飽和脂肪攝入，配合規律運動逐步減重。');
-    else if (r.bmi >= 28) recs.push('BMI 達到肥胖標準，建議在專業人員指導下制定減重方案，並關注血糖、血脂、血壓等指標。');
-    else recs.push('BMI 處於健康範圍，請繼續保持當前體重管理習慣。');
+        <div class="form-step" data-step="4">
+          <div class="step-num">PART 04</div>
+          <h2>生活方式</h2>
+          <p class="step-desc">運動、睡眠、菸酒等生活習慣會直接影響營養狀態。</p>
 
-    if (r.flags.wc === 'severeLoss' || r.flags.wc === 'moderateLoss')
-      recs.push('近期出現明顯體重下降，建議排查是否有疾病、心理或飲食結構問題，必要時就醫。');
+          <div class="field">
+            <label>每週中等強度運動時長</label>
+            <select name="exercise" required>
+              <option value="">請選擇</option>
+              <option value="high">≥ 150 分鐘</option>
+              <option value="medium">75 – 149 分鐘</option>
+              <option value="low">1 – 74 分鐘</option>
+              <option value="none">基本不運動</option>
+            </select>
+          </div>
 
-    const missing = [];
-    const labelMap = { grains:'穀類', vegetables:'蔬菜', fruits:'水果', protein:'優質蛋白',
-                       dairy:'奶製品', legumes:'豆類', nuts:'堅果', water:'充足飲水' };
-    Object.keys(labelMap).forEach(k => { if (!r.groups.includes(k)) missing.push(labelMap[k]); });
-    if (missing.length >= 4)
-      recs.push('膳食多樣性不足，建議增加以下食物類別：' + missing.join('、') + '。');
-    else if (missing.length >= 1)
-      recs.push('可進一步補充：' + missing.join('、') + '，使每日食物種類達到 12 種以上。');
+          <div class="field">
+            <label>平均每晚睡眠時長</label>
+            <select name="sleep" required>
+              <option value="">請選擇</option>
+              <option value="ideal">7 – 9 小時</option>
+              <option value="short">6 – 7 小時</option>
+              <option value="veryShort">&lt; 6 小時</option>
+              <option value="long">&gt; 9 小時</option>
+            </select>
+          </div>
 
-    if (r.flags.appetite === 'poor' || r.flags.appetite === 'veryPoor')
-      recs.push('食慾不振可能與壓力、睡眠或潛在疾病有關，建議少食多餐並關注情緒狀態。');
-    if (r.flags.eatOut === 'often' || r.flags.eatOut === 'veryOften')
-      recs.push('外食頻率較高，注意控制油鹽糖攝入，主動選擇蒸、煮、燉等低脂烹飪方式。');
-    if (r.flags.sugar === 'often' || r.flags.sugar === 'daily')
-      recs.push('含糖飲料和甜點攝入偏多，建議用水、無糖茶或新鮮水果替代。');
-    if (r.flags.exercise === 'none' || r.flags.exercise === 'low')
-      recs.push('身體活動不足，建議每週至少進行 150 分鐘中等強度有氧運動，並結合 2 次力量訓練。');
-    if (r.flags.sleep === 'veryShort' || r.flags.sleep === 'short')
-      recs.push('睡眠時間偏短可能影響食慾調節激素，建議保持每晚 7 – 9 小時規律睡眠。');
-    if (r.flags.smoke === 'heavy' || r.flags.smoke === 'light')
-      recs.push('吸菸會降低多種微量營養素的吸收，建議盡早戒菸或尋求戒菸支持。');
-    if (r.flags.alcohol === 'daily' || r.flags.alcohol === 'weekly')
-      recs.push('長期飲酒會影響 B 族維生素和礦物質代謝，建議減少飲酒頻率與單次量。');
+          <div class="field">
+            <label>吸菸狀況</label>
+            <select name="smoke" required>
+              <option value="">請選擇</option>
+              <option value="never">從不吸菸</option>
+              <option value="former">已戒菸</option>
+              <option value="light">每日 &lt; 10 支</option>
+              <option value="heavy">每日 ≥ 10 支</option>
+            </select>
+          </div>
 
-    if (r.flags.symptoms.includes('chronic'))
-      recs.push('已有慢性疾病，飲食方案應結合具體病情，建議在醫生或註冊營養師指導下進行調整。');
-    if (r.flags.symptoms.includes('medication'))
-      recs.push('長期用藥可能影響某些營養素吸收，可諮詢醫生評估是否需要補充。');
+          <div class="field">
+            <label>飲酒頻率</label>
+            <select name="alcohol" required>
+              <option value="">請選擇</option>
+              <option value="never">基本不飲</option>
+              <option value="occasional">每月幾次</option>
+              <option value="weekly">每週數次</option>
+              <option value="daily">幾乎每天</option>
+            </select>
+          </div>
+        </div>
 
-    if (recs.length === 0)
-      recs.push('整體狀況良好，請繼續保持當前的飲食與生活習慣，並定期進行健康體檢。');
+        <div class="form-step" data-step="5">
+          <div class="step-num">PART 05</div>
+          <h2>健康狀態</h2>
+          <p class="step-desc">最近 3 個月內是否有以下情況。可多選。</p>
 
-    const ul = document.getElementById('recommendations');
-    ul.innerHTML = recs.map(t => `<li>${t}</li>`).join('');
+          <div class="checkbox-group">
+            <label class="check-card"><input type="checkbox" name="symptoms" value="fatigue"><span>經常感到疲倦或精力不足</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="hairloss"><span>頭髮、指甲變脆或脫髮明顯</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="digestive"><span>消化不良、腹瀉或便秘</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="frequent_illness"><span>容易感冒或恢復緩慢</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="mood"><span>情緒波動、注意力下降</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="chronic"><span>已被診斷為慢性病</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="medication"><span>長期服用影響營養吸收的藥物</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="none"><span>以上均無</span></label>
+          </div>
+        </div>
 
-    form.style.display = 'none';
-    document.querySelector('.progress-wrap').style.display = 'none';
-    resultPanel.style.display = 'block';
-    window.scrollTo({ top: resultPanel.offsetTop - 40, behavior: 'smooth' });
-  }
-})();
+        <div class="form-nav">
+          <button type="button" id="prevBtn" class="btn-ghost-dark" disabled>← 上一步</button>
+          <button type="button" id="nextBtn" class="btn-purple">下一步 →</button>
+          <button type="button" id="submitBtn" class="btn-purple" style="display:none;">查看結果</button>
+        </div>
+      </form>
+
+      <!-- Result -->
+      <div id="result" class="result-panel" style="display:none;">
+        <div class="result-head">
+          <div class="eyebrow gold">YOUR RESULTS</div>
+          <h2>營養評估結果</h2>
+          <p>結果基於你提供的信息綜合計算得出，僅供參考。</p>
+        </div>
+
+        <div class="score-card">
+          <div class="score-left">
+            <div class="score-num"><span id="totalScore">--</span><small>/ 100</small></div>
+            <div class="score-label" id="scoreLabel">--</div>
+          </div>
+          <div class="score-right">
+            <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
+            <div class="score-tier">
+              <span>0</span><span>40</span><span>55</span><span>70</span><span>85</span><span>100</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric">
+            <div class="metric-label">BMI</div>
+            <div class="metric-value" id="bmiVal">--</div>
+            <div class="metric-note" id="bmiCat">--</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">膳食多樣性</div>
+            <div class="metric-value" id="diversityVal">--</div>
+            <div class="metric-note">食物類別覆蓋</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">飲食習慣</div>
+            <div class="metric-value" id="habitVal">--</div>
+            <div class="metric-note">規律性與質量</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">生活方式</div>
+            <div class="metric-value" id="lifestyleVal">--</div>
+            <div class="metric-note">運動、睡眠、菸酒</div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>個性化建議</h3>
+          <ul id="recommendations"></ul>
+        </div>
+
+        <div class="result-section disclaimer">
+          <strong>免責聲明　</strong>
+          本工具不構成醫療建議。如有持續不適或慢性健康問題，請諮詢註冊營養師或醫生。
+        </div>
+
+        <div class="form-nav">
+          <button type="button" class="btn-ghost-dark" onclick="location.reload()">重新評估</button>
+          <button type="button" class="btn-purple" onclick="window.print()">打印 / 保存 PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>For informational purposes only.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/nutrition.js"></script>
+</body>
+</html>
