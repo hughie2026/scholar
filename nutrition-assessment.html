@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adult Nutrition Self-Assessment | Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header class="top-header">
+    <div class="container header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-mark">H</span>
+        <span class="logo-text">Hughie's <em>Online Lab</em></span>
+      </a>
+      <nav class="top-nav">
+        <a href="index.html">← Back to Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Tool Header -->
+  <section class="tool-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a> / <a href="index.html#modules">Tools</a> / <span>Nutrition Self-Assessment</span>
+      </div>
+      <h1>Adult Nutrition Self-Assessment</h1>
+      <p>
+        本工具基於 BMI、膳食多樣性、飲食頻率與生活習慣，對 18 歲以上成年人的整體營養狀況進行綜合評估。
+        全部計算在本地完成，結果僅供參考，不能替代專業醫療意見。
+      </p>
+      <div class="meta-row">
+        <span>📋 約 5 分鐘</span>
+        <span>📊 5 個維度</span>
+        <span>🔒 本地計算</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Form -->
+  <section class="section">
+    <div class="container narrow">
+
+      <!-- Progress -->
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps">
+          <span class="step active" data-step="1">1. 基本信息</span>
+          <span class="step" data-step="2">2. 膳食結構</span>
+          <span class="step" data-step="3">3. 飲食習慣</span>
+          <span class="step" data-step="4">4. 生活方式</span>
+          <span class="step" data-step="5">5. 健康狀態</span>
+        </div>
+      </div>
+
+      <form id="assessmentForm" class="assessment-form">
+
+        <!-- Step 1: Basic Info -->
+        <div class="form-step active" data-step="1">
+          <h2>第 1 部分　基本信息</h2>
+          <p class="step-desc">用於計算 BMI 與基礎代謝率。</p>
+
+          <div class="field">
+            <label>性別</label>
+            <div class="radio-row">
+              <label><input type="radio" name="gender" value="male" required> 男</label>
+              <label><input type="radio" name="gender" value="female"> 女</label>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>年齡（歲）</label>
+              <input type="number" name="age" min="18" max="120" required>
+            </div>
+            <div class="field">
+              <label>身高（cm）</label>
+              <input type="number" name="height" min="100" max="250" step="0.1" required>
+            </div>
+            <div class="field">
+              <label>體重（kg）</label>
+              <input type="number" name="weight" min="30" max="300" step="0.1" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>近 6 個月體重變化</label>
+            <select name="weightChange" required>
+              <option value="">請選擇</option>
+              <option value="stable">基本穩定（變化 &lt; 3%）</option>
+              <option value="mildLoss">輕度下降（3% – 5%）</option>
+              <option value="moderateLoss">中度下降（5% – 10%）</option>
+              <option value="severeLoss">明顯下降（&gt; 10%）</option>
+              <option value="gain">明顯增加（&gt; 5%）</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Step 2: Dietary Structure -->
+        <div class="form-step" data-step="2">
+          <h2>第 2 部分　膳食結構</h2>
+          <p class="step-desc">過去一週內，你平均每天攝入以下哪些類別的食物？</p>
+
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="foodGroups" value="grains"> 穀類（米飯、麵條、全麥麵包等）</label>
+            <label><input type="checkbox" name="foodGroups" value="vegetables"> 蔬菜（綠葉、根莖類等，每天 ≥ 300g）</label>
+            <label><input type="checkbox" name="foodGroups" value="fruits"> 水果（每天 ≥ 200g）</label>
+            <label><input type="checkbox" name="foodGroups" value="protein"> 優質蛋白（魚、禽、蛋、瘦肉）</label>
+            <label><input type="checkbox" name="foodGroups" value="dairy"> 奶類及奶製品</label>
+            <label><input type="checkbox" name="foodGroups" value="legumes"> 豆類及豆製品</label>
+            <label><input type="checkbox" name="foodGroups" value="nuts"> 堅果（每週 ≥ 50g）</label>
+            <label><input type="checkbox" name="foodGroups" value="water"> 充足飲水（每天 ≥ 1500ml）</label>
+          </div>
+        </div>
+
+        <!-- Step 3: Eating Habits -->
+        <div class="form-step" data-step="3">
+          <h2>第 3 部分　飲食習慣</h2>
+
+          <div class="field">
+            <label>每天規律進食的次數</label>
+            <select name="mealCount" required>
+              <option value="">請選擇</option>
+              <option value="3">三餐規律</option>
+              <option value="2">通常兩餐</option>
+              <option value="1">經常只一餐</option>
+              <option value="irregular">時間不固定</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>近一個月食慾如何</label>
+            <select name="appetite" required>
+              <option value="">請選擇</option>
+              <option value="good">良好，食量正常</option>
+              <option value="fair">一般，偶爾食慾不振</option>
+              <option value="poor">較差，常吃不下</option>
+              <option value="veryPoor">很差，經常需要強迫進食</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>每週吃外賣 / 在外就餐的頻率</label>
+            <select name="eatOut" required>
+              <option value="">請選擇</option>
+              <option value="rare">很少（≤ 1 次）</option>
+              <option value="some">偶爾（2 – 4 次）</option>
+              <option value="often">經常（5 – 7 次）</option>
+              <option value="veryOften">幾乎每餐</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>含糖飲料 / 甜點頻率</label>
+            <select name="sugar" required>
+              <option value="">請選擇</option>
+              <option value="rare">基本不喝</option>
+              <option value="some">每週 1 – 3 次</option>
+              <option value="often">每週 4 – 6 次</option>
+              <option value="daily">幾乎每天</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Step 4: Lifestyle -->
+        <div class="form-step" data-step="4">
+          <h2>第 4 部分　生活方式</h2>
+
+          <div class="field">
+            <label>每週中等強度運動時長</label>
+            <select name="exercise" required>
+              <option value="">請選擇</option>
+              <option value="high">≥ 150 分鐘</option>
+              <option value="medium">75 – 149 分鐘</option>
+              <option value="low">1 – 74 分鐘</option>
+              <option value="none">基本不運動</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>平均每晚睡眠時長</label>
+            <select name="sleep" required>
+              <option value="">請選擇</option>
+              <option value="ideal">7 – 9 小時</option>
+              <option value="short">6 – 7 小時</option>
+              <option value="veryShort">&lt; 6 小時</option>
+              <option value="long">&gt; 9 小時</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>吸菸狀況</label>
+            <select name="smoke" required>
+              <option value="">請選擇</option>
+              <option value="never">從不吸菸</option>
+              <option value="former">已戒菸</option>
+              <option value="light">每日 &lt; 10 支</option>
+              <option value="heavy">每日 ≥ 10 支</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>飲酒頻率</label>
+            <select name="alcohol" required>
+              <option value="">請選擇</option>
+              <option value="never">基本不飲</option>
+              <option value="occasional">每月幾次</option>
+              <option value="weekly">每週數次</option>
+              <option value="daily">幾乎每天</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Step 5: Health -->
+        <div class="form-step" data-step="5">
+          <h2>第 5 部分　健康狀態</h2>
+          <p class="step-desc">最近 3 個月內是否有以下情況。可多選。</p>
+
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="symptoms" value="fatigue"> 經常感到疲倦或精力不足</label>
+            <label><input type="checkbox" name="symptoms" value="hairloss"> 頭髮、指甲變脆或脫髮明顯</label>
+            <label><input type="checkbox" name="symptoms" value="digestive"> 消化不良、腹瀉或便秘</label>
+            <label><input type="checkbox" name="symptoms" value="frequent_illness"> 容易感冒或恢復緩慢</label>
+            <label><input type="checkbox" name="symptoms" value="mood"> 情緒波動、注意力下降</label>
+            <label><input type="checkbox" name="symptoms" value="chronic"> 已被診斷為慢性病（高血壓、糖尿病、慢性腎病等）</label>
+            <label><input type="checkbox" name="symptoms" value="medication"> 長期服用影響營養吸收的藥物</label>
+            <label><input type="checkbox" name="symptoms" value="none"> 以上均無</label>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="form-nav">
+          <button type="button" id="prevBtn" class="btn-secondary" disabled>← 上一步</button>
+          <button type="button" id="nextBtn" class="btn-primary">下一步 →</button>
+          <button type="button" id="submitBtn" class="btn-primary" style="display:none;">查看結果</button>
+        </div>
+      </form>
+
+      <!-- Result -->
+      <div id="result" class="result-panel" style="display:none;">
+        <div class="result-head">
+          <h2>你的營養評估結果</h2>
+          <p>結果基於你提供的信息綜合計算得出，僅供參考。</p>
+        </div>
+
+        <div class="score-card">
+          <div class="score-main">
+            <div class="score-num" id="totalScore">--</div>
+            <div class="score-max">/ 100</div>
+          </div>
+          <div class="score-label" id="scoreLabel">--</div>
+          <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric">
+            <div class="metric-label">BMI</div>
+            <div class="metric-value" id="bmiVal">--</div>
+            <div class="metric-note" id="bmiCat">--</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">膳食多樣性</div>
+            <div class="metric-value" id="diversityVal">--</div>
+            <div class="metric-note">食物類別覆蓋</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">飲食習慣</div>
+            <div class="metric-value" id="habitVal">--</div>
+            <div class="metric-note">規律性與質量</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">生活方式</div>
+            <div class="metric-value" id="lifestyleVal">--</div>
+            <div class="metric-note">運動、睡眠等</div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>📝 個性化建議</h3>
+          <ul id="recommendations"></ul>
+        </div>
+
+        <div class="result-section disclaimer">
+          <strong>免責聲明：</strong>
+          本工具不構成醫療建議。如有持續不適或慢性健康問題，請諮詢註冊營養師或醫生。
+        </div>
+
+        <div class="form-nav">
+          <button type="button" class="btn-secondary" onclick="location.reload()">重新評估</button>
+          <button type="button" class="btn-primary" onclick="window.print()">打印 / 保存 PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-bottom">
+      © 2025 Hughie's Online Lab. For informational purposes only.
+    </div>
+  </footer>
+
+  <script src="assets/js/nutrition.js"></script>
+</body>
+</html>
