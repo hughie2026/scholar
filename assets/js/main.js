@@ -1,7 +1,9 @@
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', function (e) {
-    const target = document.querySelector(this.getAttribute('href'));
+    const href = this.getAttribute('href');
+    if (href === '#') return;
+    const target = document.querySelector(href);
     if (target) {
       e.preventDefault();
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -9,23 +11,20 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   });
 });
 
-// Search bar (placeholder behavior)
-const searchInput = document.querySelector('.hero-search input');
-const searchBtn = document.querySelector('.hero-search button');
-if (searchBtn) {
-  searchBtn.addEventListener('click', () => {
-    const q = (searchInput.value || '').trim().toLowerCase();
-    if (!q) {
-      document.getElementById('modules').scrollIntoView({ behavior: 'smooth' });
-      return;
-    }
-    if (q.includes('nutrition') || q.includes('營養') || q.includes('营养')) {
-      window.location.href = 'nutrition-assessment.html';
-    } else {
-      alert('暫未找到相關工具，更多模塊正在開發中。');
+// Subtle reveal on scroll
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+      io.unobserve(entry.target);
     }
   });
-  searchInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') searchBtn.click();
-  });
-}
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.module-card, .value-card, .news-item, .fact').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  io.observe(el);
+});
