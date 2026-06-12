@@ -1,1031 +1,335 @@
-/* ========== Reset & Base ========== */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adult Nutrition Self-Assessment | Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
 
-:root {
-  --uw-purple: #4b2e83;
-  --uw-purple-dark: #32145a;
-  --uw-purple-light: #85659e;
-  --uw-gold: #b7a57a;
-  --uw-gold-dark: #85754d;
-  --uw-gold-light: #d5c393;
+  <div class="utility-bar">
+    <div class="container utility-inner">
+      <span>HUGHIE'S ONLINE LAB</span>
+      <div class="utility-links">
+        <a href="index.html">← Back to Home</a>
+      </div>
+    </div>
+  </div>
 
-  --text: #222;
-  --text-mid: #444;
-  --text-light: #666;
-  --border: #e5e5e5;
-  --border-mid: #d0d0d0;
-  --bg-cream: #f7f5f0;
-  --bg-light: #fafafa;
-  --bg-dark: #1c0a3e;
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html#modules">Tools</a>
+        <a href="index.html#about">About</a>
+      </nav>
+    </div>
+  </header>
 
-  --serif-display: 'Encode Sans', -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
-  --sans-body: 'Open Sans', -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
-}
+  <!-- Tool Hero -->
+  <section class="tool-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="index.html#modules">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Nutrition Self-Assessment</span>
+      </div>
+      <div class="eyebrow gold">HEALTH · NUTRITION</div>
+      <h1>Adult Nutrition Self-Assessment</h1>
+      <p class="tool-lead">
+        本工具基於 BMI、膳食多樣性、飲食頻率與生活習慣，對 18 歲以上成年人的整體營養狀況進行綜合評估。
+        全部計算在本地完成，結果僅供參考，不能替代專業醫療意見。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">⏱ 約 5 分鐘</span>
+        <span class="pill">📊 5 個維度</span>
+        <span class="pill">🔒 本地計算</span>
+        <span class="pill">📖 基於公開文獻</span>
+      </div>
+    </div>
+  </section>
 
-body {
-  font-family: var(--sans-body);
-  color: var(--text);
-  line-height: 1.65;
-  background: #fff;
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-}
+  <!-- Form -->
+  <section class="section section-light">
+    <div class="container narrow">
 
-a { color: var(--uw-purple); text-decoration: none; transition: color 0.15s; }
-a:hover { color: var(--uw-gold-dark); }
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps">
+          <span class="step active" data-step="1"><b>01</b> 基本信息</span>
+          <span class="step" data-step="2"><b>02</b> 膳食結構</span>
+          <span class="step" data-step="3"><b>03</b> 飲食習慣</span>
+          <span class="step" data-step="4"><b>04</b> 生活方式</span>
+          <span class="step" data-step="5"><b>05</b> 健康狀態</span>
+        </div>
+      </div>
 
-h1, h2, h3, h4, h5 {
-  font-family: var(--serif-display);
-  font-weight: 700;
-  color: var(--uw-purple);
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-}
+      <form id="assessmentForm" class="assessment-form">
 
-.container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
-.container.narrow { max-width: 880px; }
+        <div class="form-step active" data-step="1">
+          <div class="step-num">PART 01</div>
+          <h2>基本信息</h2>
+          <p class="step-desc">用於計算 BMI 與基礎代謝率參考值。</p>
 
-.eyebrow {
-  font-family: var(--serif-display);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  color: var(--uw-purple);
-  text-transform: uppercase;
-  margin-bottom: 16px;
-}
-.eyebrow.gold { color: var(--uw-gold-dark); }
+          <div class="field">
+            <label>性別</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="gender" value="male" required><span>男</span></label>
+              <label class="radio-btn"><input type="radio" name="gender" value="female"><span>女</span></label>
+            </div>
+          </div>
 
-/* ========== Utility Bar ========== */
-.utility-bar {
-  background: var(--uw-purple-dark);
-  color: #fff;
-  font-size: 12px;
-  letter-spacing: 1.5px;
-}
-.utility-inner {
-  display: flex; justify-content: space-between; align-items: center;
-  height: 32px;
-  font-weight: 600;
-}
-.utility-bar span { font-family: var(--serif-display); }
-.utility-links { display: flex; gap: 24px; }
-.utility-links a {
-  color: rgba(255,255,255,0.85);
-  font-size: 11px; font-weight: 600;
-  letter-spacing: 1.5px; text-transform: uppercase;
-}
-.utility-links a:hover { color: var(--uw-gold-light); }
+          <div class="field-row">
+            <div class="field">
+              <label>年齡（歲）</label>
+              <input type="number" name="age" min="18" max="120" required>
+            </div>
+            <div class="field">
+              <label>身高（cm）</label>
+              <input type="number" name="height" min="100" max="250" step="0.1" required>
+            </div>
+            <div class="field">
+              <label>體重（kg）</label>
+              <input type="number" name="weight" min="30" max="300" step="0.1" required>
+            </div>
+          </div>
 
-/* ========== Main Header ========== */
-.main-header {
-  background: var(--uw-purple);
-  border-bottom: 4px solid var(--uw-gold);
-  position: sticky; top: 0; z-index: 100;
-}
-.header-inner {
-  display: flex; align-items: center; justify-content: space-between;
-  height: 84px;
-}
-.brand {
-  display: flex; align-items: center; gap: 14px;
-  color: #fff;
-}
-.brand:hover { color: #fff; }
-.brand-w {
-  width: 52px; height: 52px;
-  background: var(--uw-gold);
-  color: var(--uw-purple);
-  font-family: var(--serif-display);
-  font-weight: 800;
-  font-size: 30px;
-  display: flex; align-items: center; justify-content: center;
-  letter-spacing: -1px;
-}
-.brand-text { display: flex; flex-direction: column; line-height: 1.1; }
-.brand-line1 {
-  font-family: var(--serif-display);
-  font-size: 20px; font-weight: 700;
-  color: #fff;
-}
-.brand-line2 {
-  font-family: var(--serif-display);
-  font-size: 13px; font-weight: 400;
-  color: var(--uw-gold-light);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
+          <div class="field">
+            <label>近 6 個月體重變化</label>
+            <select name="weightChange" required>
+              <option value="">請選擇</option>
+              <option value="stable">基本穩定（變化 &lt; 3%）</option>
+              <option value="mildLoss">輕度下降（3% – 5%）</option>
+              <option value="moderateLoss">中度下降（5% – 10%）</option>
+              <option value="severeLoss">明顯下降（&gt; 10%）</option>
+              <option value="gain">明顯增加（&gt; 5%）</option>
+            </select>
+          </div>
+        </div>
 
-.primary-nav { display: flex; gap: 4px; }
-.primary-nav a {
-  color: #fff;
-  font-family: var(--serif-display);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 10px 18px;
-  border-bottom: 3px solid transparent;
-  transition: all 0.15s;
-}
-.primary-nav a:hover {
-  color: var(--uw-gold-light);
-  border-bottom-color: var(--uw-gold);
-}
+        <div class="form-step" data-step="2">
+          <div class="step-num">PART 02</div>
+          <h2>膳食結構</h2>
+          <p class="step-desc">過去一週內，你平均每天攝入以下哪些類別的食物？</p>
 
-/* ========== Hero ========== */
-.hero {
-  position: relative;
-  background: var(--uw-purple);
-  color: #fff;
-  overflow: hidden;
-  padding: 100px 0 110px;
-}
-.hero-bg {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 80% 30%, rgba(183,165,122,0.25) 0%, transparent 45%),
-    radial-gradient(circle at 15% 80%, rgba(133,101,158,0.4) 0%, transparent 50%),
-    linear-gradient(135deg, #4b2e83 0%, #32145a 100%);
-}
-.hero-bg::after {
-  content: '';
-  position: absolute; right: -60px; top: 50%;
-  transform: translateY(-50%);
-  width: 480px; height: 480px;
-  border: 1px solid rgba(183,165,122,0.25);
-  border-radius: 50%;
-}
-.hero-bg::before {
-  content: '';
-  position: absolute; right: 60px; top: 50%;
-  transform: translateY(-50%);
-  width: 320px; height: 320px;
-  border: 1px solid rgba(183,165,122,0.4);
-  border-radius: 50%;
-}
-.hero-inner { position: relative; z-index: 2; }
-.hero-content { max-width: 760px; }
-.hero-eyebrow {
-  font-family: var(--serif-display);
-  font-size: 13px; font-weight: 600;
-  letter-spacing: 3px;
-  color: var(--uw-gold-light);
-  text-transform: uppercase;
-  margin-bottom: 28px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid var(--uw-gold);
-  display: inline-block;
-}
-.hero h1 {
-  color: #fff;
-  font-size: 68px;
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  margin-bottom: 28px;
-}
-.hero-highlight {
-  color: var(--uw-gold-light);
-  font-style: italic;
-  font-weight: 400;
-}
-.hero-lead {
-  font-size: 18px;
-  color: rgba(255,255,255,0.88);
-  max-width: 640px;
-  margin-bottom: 40px;
-  line-height: 1.7;
-}
-.hero-actions { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+          <div class="checkbox-group">
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="grains"><span>穀類（米、麵、全麥）</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="vegetables"><span>蔬菜（每天 ≥ 300g）</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="fruits"><span>水果（每天 ≥ 200g）</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="protein"><span>優質蛋白（魚、禽、蛋、瘦肉）</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="dairy"><span>奶類及奶製品</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="legumes"><span>豆類及豆製品</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="nuts"><span>堅果（每週 ≥ 50g）</span></label>
+            <label class="check-card"><input type="checkbox" name="foodGroups" value="water"><span>充足飲水（每天 ≥ 1500ml）</span></label>
+          </div>
+        </div>
 
-/* Buttons */
-.btn-gold {
-  display: inline-block;
-  background: var(--uw-gold);
-  color: var(--uw-purple-dark);
-  font-family: var(--serif-display);
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  padding: 16px 32px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-gold:hover {
-  background: var(--uw-gold-light);
-  color: var(--uw-purple-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(183,165,122,0.4);
-}
+        <div class="form-step" data-step="3">
+          <div class="step-num">PART 03</div>
+          <h2>飲食習慣</h2>
+          <p class="step-desc">關於進餐規律性與食物選擇的偏好。</p>
 
-.btn-purple {
-  display: inline-block;
-  background: var(--uw-purple);
-  color: #fff;
-  font-family: var(--serif-display);
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  padding: 14px 28px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.btn-purple:hover {
-  background: var(--uw-purple-dark);
-  color: #fff;
-}
+          <div class="field">
+            <label>每天規律進食的次數</label>
+            <select name="mealCount" required>
+              <option value="">請選擇</option>
+              <option value="3">三餐規律</option>
+              <option value="2">通常兩餐</option>
+              <option value="1">經常只一餐</option>
+              <option value="irregular">時間不固定</option>
+            </select>
+          </div>
 
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  color: #fff;
-  font-family: var(--serif-display);
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  padding: 14px 4px;
-  border-bottom: 2px solid var(--uw-gold);
-  transition: all 0.15s;
-}
-.btn-ghost:hover { color: var(--uw-gold-light); }
+          <div class="field">
+            <label>近一個月食慾如何</label>
+            <select name="appetite" required>
+              <option value="">請選擇</option>
+              <option value="good">良好，食量正常</option>
+              <option value="fair">一般，偶爾食慾不振</option>
+              <option value="poor">較差，常吃不下</option>
+              <option value="veryPoor">很差，經常需要強迫進食</option>
+            </select>
+          </div>
 
-.btn-ghost-dark {
-  display: inline-block;
-  background: transparent;
-  color: var(--uw-purple);
-  font-family: var(--serif-display);
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  padding: 13px 26px;
-  border: 2px solid var(--uw-purple);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.btn-ghost-dark:hover:not(:disabled) {
-  background: var(--uw-purple);
-  color: #fff;
-}
-.btn-ghost-dark:disabled { opacity: 0.35; cursor: not-allowed; }
+          <div class="field">
+            <label>每週吃外賣 / 在外就餐的頻率</label>
+            <select name="eatOut" required>
+              <option value="">請選擇</option>
+              <option value="rare">很少（≤ 1 次）</option>
+              <option value="some">偶爾（2 – 4 次）</option>
+              <option value="often">經常（5 – 7 次）</option>
+              <option value="veryOften">幾乎每餐</option>
+            </select>
+          </div>
 
-/* ========== Facts Strip ========== */
-.facts-strip {
-  background: var(--uw-gold);
-  color: var(--uw-purple-dark);
-}
-.facts-inner {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  padding: 40px 0;
-  text-align: center;
-}
-.fact { border-right: 1px solid rgba(50,20,90,0.2); padding: 0 20px; }
-.fact:last-child { border-right: none; }
-.fact-num {
-  font-family: var(--serif-display);
-  font-size: 48px;
-  font-weight: 800;
-  color: var(--uw-purple-dark);
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-.fact-num span { font-size: 28px; }
-.fact-label {
-  font-family: var(--serif-display);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-top: 10px;
-  color: var(--uw-purple-dark);
-}
+          <div class="field">
+            <label>含糖飲料 / 甜點頻率</label>
+            <select name="sugar" required>
+              <option value="">請選擇</option>
+              <option value="rare">基本不喝</option>
+              <option value="some">每週 1 – 3 次</option>
+              <option value="often">每週 4 – 6 次</option>
+              <option value="daily">幾乎每天</option>
+            </select>
+          </div>
+        </div>
 
-/* ========== Sections ========== */
-.section { padding: 100px 0; }
-.section-light { background: var(--bg-cream); }
-.section-dark { background: var(--bg-dark); color: #fff; }
+        <div class="form-step" data-step="4">
+          <div class="step-num">PART 04</div>
+          <h2>生活方式</h2>
+          <p class="step-desc">運動、睡眠、菸酒等生活習慣會直接影響營養狀態。</p>
 
-.section-head { max-width: 760px; margin-bottom: 60px; }
-.section-head.light h2 { color: #fff; }
-.section-head.light .section-sub { color: rgba(255,255,255,0.8); }
-.section-head h2 {
-  font-size: 44px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin-bottom: 20px;
-}
-.section-sub {
-  font-size: 18px;
-  color: var(--text-light);
-  line-height: 1.7;
-}
+          <div class="field">
+            <label>每週中等強度運動時長</label>
+            <select name="exercise" required>
+              <option value="">請選擇</option>
+              <option value="high">≥ 150 分鐘</option>
+              <option value="medium">75 – 149 分鐘</option>
+              <option value="low">1 – 74 分鐘</option>
+              <option value="none">基本不運動</option>
+            </select>
+          </div>
 
-/* ========== Module Cards ========== */
-.module-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-}
-.module-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  color: var(--text);
-  transition: all 0.25s;
-  overflow: hidden;
-  position: relative;
-}
-.module-card.available { cursor: pointer; }
-.module-card.available:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(75,46,131,0.18);
-  border-color: var(--uw-purple);
-}
-.module-card.disabled { opacity: 0.85; }
+          <div class="field">
+            <label>平均每晚睡眠時長</label>
+            <select name="sleep" required>
+              <option value="">請選擇</option>
+              <option value="ideal">7 – 9 小時</option>
+              <option value="short">6 – 7 小時</option>
+              <option value="veryShort">&lt; 6 小時</option>
+              <option value="long">&gt; 9 小時</option>
+            </select>
+          </div>
 
-.card-img {
-  height: 180px;
-  position: relative;
-  overflow: hidden;
-}
-.card-img-1 { background: linear-gradient(135deg, #4b2e83 0%, #85659e 100%); }
-.card-img-2 { background: linear-gradient(135deg, #32145a 0%, #4b2e83 100%); }
-.card-img-3 { background: linear-gradient(135deg, #5d3d96 0%, #32145a 100%); }
-.card-img-4 { background: linear-gradient(135deg, #85754d 0%, #4b2e83 100%); }
-.card-img-5 { background: linear-gradient(135deg, #4b2e83 0%, #b7a57a 100%); }
-.card-img-6 { background: linear-gradient(135deg, #32145a 0%, #85754d 100%); }
-.card-img::before {
-  content: '';
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 70% 30%, rgba(255,255,255,0.15) 0%, transparent 40%),
-    radial-gradient(circle at 30% 80%, rgba(183,165,122,0.25) 0%, transparent 40%);
-}
-.card-img::after {
-  content: '';
-  position: absolute;
-  right: -40px; bottom: -40px;
-  width: 140px; height: 140px;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 50%;
-}
+          <div class="field">
+            <label>吸菸狀況</label>
+            <select name="smoke" required>
+              <option value="">請選擇</option>
+              <option value="never">從不吸菸</option>
+              <option value="former">已戒菸</option>
+              <option value="light">每日 &lt; 10 支</option>
+              <option value="heavy">每日 ≥ 10 支</option>
+            </select>
+          </div>
 
-.card-status {
-  position: absolute; top: 16px; left: 16px;
-  background: var(--uw-gold);
-  color: var(--uw-purple-dark);
-  font-family: var(--serif-display);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  padding: 5px 12px;
-}
-.card-status.soon {
-  background: rgba(255,255,255,0.2);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.4);
-}
+          <div class="field">
+            <label>飲酒頻率</label>
+            <select name="alcohol" required>
+              <option value="">請選擇</option>
+              <option value="never">基本不飲</option>
+              <option value="occasional">每月幾次</option>
+              <option value="weekly">每週數次</option>
+              <option value="daily">幾乎每天</option>
+            </select>
+          </div>
+        </div>
 
-.card-body { padding: 28px; flex: 1; display: flex; flex-direction: column; }
-.card-cat {
-  font-family: var(--serif-display);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--uw-gold-dark);
-  margin-bottom: 12px;
-}
-.module-card h3 {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: var(--uw-purple);
-  letter-spacing: -0.01em;
-}
-.module-card p {
-  color: var(--text-light);
-  font-size: 15px;
-  line-height: 1.65;
-  flex: 1;
-  margin-bottom: 18px;
-}
-.card-cta {
-  font-family: var(--serif-display);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--uw-purple);
-  padding-top: 14px;
-  border-top: 2px solid var(--uw-gold);
-  display: inline-block;
-  align-self: flex-start;
-}
-.card-cta.muted {
-  color: var(--text-light);
-  border-top-color: var(--border-mid);
-}
+        <div class="form-step" data-step="5">
+          <div class="step-num">PART 05</div>
+          <h2>健康狀態</h2>
+          <p class="step-desc">最近 3 個月內是否有以下情況。可多選。</p>
 
-/* ========== Mission Banner ========== */
-.mission-banner {
-  background: var(--uw-purple);
-  color: #fff;
-  padding: 80px 0;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.mission-banner::before, .mission-banner::after {
-  content: '';
-  position: absolute;
-  width: 280px; height: 280px;
-  border: 1px solid rgba(183,165,122,0.3);
-  border-radius: 50%;
-}
-.mission-banner::before { left: -120px; top: -80px; }
-.mission-banner::after { right: -120px; bottom: -80px; }
-.mission-inner { position: relative; z-index: 2; max-width: 880px; margin: 0 auto; }
-.mission-quote {
-  font-family: var(--serif-display);
-  font-size: 100px;
-  line-height: 0.5;
-  color: var(--uw-gold);
-  margin-bottom: 12px;
-}
-.mission-text {
-  font-family: var(--serif-display);
-  font-size: 32px;
-  font-weight: 300;
-  line-height: 1.4;
-  font-style: italic;
-  color: #fff;
-  margin-bottom: 32px;
-}
-.mission-by {
-  font-family: var(--serif-display);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  color: var(--uw-gold-light);
-}
+          <div class="checkbox-group">
+            <label class="check-card"><input type="checkbox" name="symptoms" value="fatigue"><span>經常感到疲倦或精力不足</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="hairloss"><span>頭髮、指甲變脆或脫髮明顯</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="digestive"><span>消化不良、腹瀉或便秘</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="frequent_illness"><span>容易感冒或恢復緩慢</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="mood"><span>情緒波動、注意力下降</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="chronic"><span>已被診斷為慢性病</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="medication"><span>長期服用影響營養吸收的藥物</span></label>
+            <label class="check-card"><input type="checkbox" name="symptoms" value="none"><span>以上均無</span></label>
+          </div>
+        </div>
 
-/* ========== About ========== */
-.about-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: start;
-}
-.about-left h2 { font-size: 40px; margin-bottom: 24px; }
-.about-left p {
-  font-size: 16px;
-  color: var(--text-mid);
-  margin-bottom: 18px;
-  line-height: 1.75;
-}
-.about-left .btn-gold { margin-top: 14px; }
+        <div class="form-nav">
+          <button type="button" id="prevBtn" class="btn-ghost-dark" disabled>← 上一步</button>
+          <button type="button" id="nextBtn" class="btn-purple">下一步 →</button>
+          <button type="button" id="submitBtn" class="btn-purple" style="display:none;">查看結果</button>
+        </div>
+      </form>
 
-.about-right { display: grid; gap: 20px; }
-.value-card {
-  background: #fff;
-  border-left: 4px solid var(--uw-gold);
-  padding: 26px 28px;
-  position: relative;
-  transition: all 0.2s;
-}
-.value-card:hover {
-  border-left-color: var(--uw-purple);
-  box-shadow: 0 8px 24px rgba(75,46,131,0.08);
-}
-.value-num {
-  font-family: var(--serif-display);
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--uw-gold-dark);
-  margin-bottom: 8px;
-}
-.value-card h4 {
-  font-size: 20px;
-  margin-bottom: 8px;
-  color: var(--uw-purple);
-}
-.value-card p {
-  font-size: 14px;
-  color: var(--text-light);
-  line-height: 1.65;
-}
+      <!-- Result -->
+      <div id="result" class="result-panel" style="display:none;">
+        <div class="result-head">
+          <div class="eyebrow gold">YOUR RESULTS</div>
+          <h2>營養評估結果</h2>
+          <p>結果基於你提供的信息綜合計算得出，僅供參考。</p>
+        </div>
 
-/* ========== News ========== */
-.news-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
-}
-.news-item {
-  border-top: 3px solid var(--uw-gold);
-  padding-top: 24px;
-}
-.news-date {
-  font-family: var(--serif-display);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--uw-gold-light);
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.news-item h4 {
-  color: #fff;
-  font-size: 22px;
-  margin-bottom: 12px;
-  line-height: 1.3;
-}
-.news-item p {
-  color: rgba(255,255,255,0.75);
-  font-size: 15px;
-  margin-bottom: 16px;
-  line-height: 1.65;
-}
-.news-item a {
-  font-family: var(--serif-display);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--uw-gold-light);
-}
-.news-item a:hover { color: #fff; }
+        <div class="score-card">
+          <div class="score-left">
+            <div class="score-num"><span id="totalScore">--</span><small>/ 100</small></div>
+            <div class="score-label" id="scoreLabel">--</div>
+          </div>
+          <div class="score-right">
+            <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
+            <div class="score-tier">
+              <span>0</span><span>40</span><span>55</span><span>70</span><span>85</span><span>100</span>
+            </div>
+          </div>
+        </div>
 
-/* ========== Footer ========== */
-.footer {
-  background: var(--uw-purple-dark);
-  color: rgba(255,255,255,0.75);
-}
-.footer-top {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 80px;
-  padding: 70px 32px 50px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-.footer-brand .brand { margin-bottom: 16px; }
-.footer-brand p {
-  font-size: 14px;
-  color: rgba(255,255,255,0.7);
-  max-width: 280px;
-}
-.footer-cols {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
-}
-.footer-cols h5 {
-  color: var(--uw-gold-light);
-  font-family: var(--serif-display);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  margin-bottom: 18px;
-}
-.footer-cols a {
-  display: block;
-  color: rgba(255,255,255,0.75);
-  font-size: 14px;
-  padding: 5px 0;
-}
-.footer-cols a:hover { color: var(--uw-gold-light); }
-.footer-bottom {
-  border-top: 1px solid rgba(255,255,255,0.12);
-  padding: 22px 0;
-  font-size: 12px;
-  letter-spacing: 0.5px;
-}
-.footer-bottom-inner {
-  display: flex; justify-content: space-between;
-  flex-wrap: wrap; gap: 12px;
-}
+        <div class="metric-grid">
+          <div class="metric">
+            <div class="metric-label">BMI</div>
+            <div class="metric-value" id="bmiVal">--</div>
+            <div class="metric-note" id="bmiCat">--</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">膳食多樣性</div>
+            <div class="metric-value" id="diversityVal">--</div>
+            <div class="metric-note">食物類別覆蓋</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">飲食習慣</div>
+            <div class="metric-value" id="habitVal">--</div>
+            <div class="metric-note">規律性與質量</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">生活方式</div>
+            <div class="metric-value" id="lifestyleVal">--</div>
+            <div class="metric-note">運動、睡眠、菸酒</div>
+          </div>
+        </div>
 
-/* ========== Tool Hero ========== */
-.tool-hero {
-  background: var(--uw-purple);
-  color: #fff;
-  padding: 60px 0 70px;
-  position: relative;
-  overflow: hidden;
-}
-.tool-hero::after {
-  content: '';
-  position: absolute;
-  right: -100px; bottom: -100px;
-  width: 360px; height: 360px;
-  border: 1px solid rgba(183,165,122,0.25);
-  border-radius: 50%;
-}
-.tool-hero::before {
-  content: '';
-  position: absolute;
-  right: 40px; bottom: 40px;
-  width: 200px; height: 200px;
-  border: 1px solid rgba(183,165,122,0.4);
-  border-radius: 50%;
-}
-.breadcrumb {
-  font-size: 13px;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 22px;
-  letter-spacing: 0.5px;
-}
-.breadcrumb a { color: var(--uw-gold-light); }
-.breadcrumb a:hover { color: #fff; }
-.bc-sep { margin: 0 10px; opacity: 0.5; }
-.tool-hero h1 {
-  color: #fff;
-  font-size: 52px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin: 8px 0 22px;
-  max-width: 900px;
-}
-.tool-lead {
-  font-size: 17px;
-  color: rgba(255,255,255,0.88);
-  max-width: 780px;
-  line-height: 1.7;
-  margin-bottom: 26px;
-}
-.meta-pills { display: flex; flex-wrap: wrap; gap: 10px; }
-.pill {
-  background: rgba(183,165,122,0.18);
-  border: 1px solid rgba(183,165,122,0.5);
-  color: #fff;
-  padding: 7px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
+        <div class="result-section">
+          <h3>個性化建議</h3>
+          <ul id="recommendations"></ul>
+        </div>
 
-/* ========== Progress ========== */
-.progress-wrap { margin-bottom: 36px; }
-.progress-bar {
-  height: 4px;
-  background: var(--border);
-  margin-bottom: 16px;
-}
-.progress-fill {
-  height: 100%;
-  background: var(--uw-gold);
-  width: 20%;
-  transition: width 0.35s;
-}
-.progress-steps {
-  display: flex; justify-content: space-between;
-  font-size: 12px;
-  color: var(--text-light);
-  flex-wrap: wrap;
-  gap: 6px;
-  font-family: var(--serif-display);
-  letter-spacing: 0.5px;
-}
-.progress-steps .step b {
-  display: block;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: var(--border-mid);
-  margin-bottom: 2px;
-}
-.progress-steps .step.active { color: var(--uw-purple); font-weight: 700; }
-.progress-steps .step.active b { color: var(--uw-gold-dark); }
+        <div class="result-section disclaimer">
+          <strong>免責聲明　</strong>
+          本工具不構成醫療建議。如有持續不適或慢性健康問題，請諮詢註冊營養師或醫生。
+        </div>
 
-/* ========== Form ========== */
-.assessment-form {
-  background: #fff;
-  border: 1px solid var(--border);
-  padding: 48px 52px;
-}
-.form-step { display: none; }
-.form-step.active { display: block; animation: fadeIn 0.3s ease; }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+        <div class="form-nav">
+          <button type="button" class="btn-ghost-dark" onclick="location.reload()">重新評估</button>
+          <button type="button" class="btn-purple" onclick="window.print()">打印 / 保存 PDF</button>
+        </div>
+      </div>
 
-.step-num {
-  font-family: var(--serif-display);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  color: var(--uw-gold-dark);
-  margin-bottom: 10px;
-}
-.form-step h2 {
-  font-size: 32px;
-  font-weight: 800;
-  margin-bottom: 10px;
-  letter-spacing: -0.01em;
-}
-.step-desc {
-  color: var(--text-light);
-  font-size: 15px;
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--border);
-}
+    </div>
+  </section>
 
-.field { margin-bottom: 24px; }
-.field label {
-  display: block;
-  margin-bottom: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  font-family: var(--serif-display);
-  color: var(--uw-purple);
-  letter-spacing: 0.3px;
-}
-.field input[type="number"],
-.field input[type="text"],
-.field select {
-  width: 100%;
-  padding: 13px 16px;
-  border: 1.5px solid var(--border);
-  font-size: 15px;
-  font-family: inherit;
-  background: #fff;
-  transition: all 0.15s;
-  color: var(--text);
-}
-.field input:focus, .field select:focus {
-  outline: none;
-  border-color: var(--uw-purple);
-  box-shadow: 0 0 0 3px rgba(75,46,131,0.1);
-}
-.field-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-}
+  <footer class="footer">
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>For informational purposes only.</span>
+      </div>
+    </div>
+  </footer>
 
-.radio-row { display: flex; gap: 14px; }
-.radio-btn {
-  cursor: pointer;
-  margin-bottom: 0 !important;
-  padding: 12px 28px;
-  border: 1.5px solid var(--border);
-  font-family: var(--serif-display);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text);
-  transition: all 0.15s;
-}
-.radio-btn input { display: none; }
-.radio-btn:hover { border-color: var(--uw-purple); }
-.radio-btn:has(input:checked) {
-  border-color: var(--uw-purple);
-  background: var(--uw-purple);
-  color: #fff;
-}
-
-.checkbox-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.check-card {
-  cursor: pointer;
-  padding: 14px 18px;
-  border: 1.5px solid var(--border);
-  background: #fff;
-  display: flex; align-items: center; gap: 12px;
-  font-size: 14px;
-  font-family: var(--sans-body);
-  font-weight: 400 !important;
-  color: var(--text) !important;
-  margin-bottom: 0 !important;
-  transition: all 0.15s;
-  letter-spacing: normal !important;
-}
-.check-card input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--uw-purple); }
-.check-card:hover { border-color: var(--uw-purple); background: var(--bg-cream); }
-.check-card:has(input:checked) {
-  border-color: var(--uw-purple);
-  background: rgba(75,46,131,0.06);
-}
-
-.form-nav {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 40px;
-  padding-top: 28px;
-  border-top: 1px solid var(--border);
-  gap: 14px;
-}
-.form-nav button { min-width: 140px; }
-
-/* ========== Result ========== */
-.result-panel {
-  background: #fff;
-  border: 1px solid var(--border);
-  padding: 48px 52px;
-  margin-top: 24px;
-}
-.result-head {
-  text-align: center;
-  margin-bottom: 40px;
-  padding-bottom: 28px;
-  border-bottom: 1px solid var(--border);
-}
-.result-head h2 {
-  font-size: 36px;
-  font-weight: 800;
-  margin: 6px 0 8px;
-}
-.result-head p { color: var(--text-light); font-size: 15px; }
-
-.score-card {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 50px;
-  align-items: center;
-  background: var(--uw-purple);
-  color: #fff;
-  padding: 36px 40px;
-  margin-bottom: 32px;
-  position: relative;
-  overflow: hidden;
-}
-.score-card::before {
-  content: '';
-  position: absolute;
-  right: -60px; top: -60px;
-  width: 220px; height: 220px;
-  border: 1px solid rgba(183,165,122,0.3);
-  border-radius: 50%;
-}
-.score-left { position: relative; z-index: 2; }
-.score-num {
-  font-family: var(--serif-display);
-  font-size: 84px;
-  font-weight: 800;
-  color: var(--uw-gold);
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
-.score-num small {
-  font-size: 24px;
-  color: rgba(255,255,255,0.55);
-  font-weight: 400;
-  margin-left: 6px;
-}
-.score-label {
-  font-family: var(--serif-display);
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  margin-top: 8px;
-  color: var(--uw-gold-light);
-}
-.score-right { position: relative; z-index: 2; }
-.score-bar {
-  height: 10px;
-  background: rgba(255,255,255,0.12);
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-.score-fill {
-  height: 100%;
-  background: var(--uw-gold);
-  transition: width 0.7s ease;
-}
-.score-tier {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: rgba(255,255,255,0.55);
-  font-family: var(--serif-display);
-  font-weight: 600;
-  letter-spacing: 1px;
-}
-
-.metric-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 36px;
-}
-.metric {
-  border: 1px solid var(--border);
-  border-top: 4px solid var(--uw-gold);
-  padding: 22px 20px;
-  text-align: center;
-}
-.metric-label {
-  font-family: var(--serif-display);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  color: var(--text-light);
-  text-transform: uppercase;
-  margin-bottom: 10px;
-}
-.metric-value {
-  font-family: var(--serif-display);
-  font-size: 30px;
-  font-weight: 800;
-  color: var(--uw-purple);
-  margin-bottom: 6px;
-  letter-spacing: -0.02em;
-}
-.metric-note {
-  font-size: 12px;
-  color: var(--text-light);
-}
-
-.result-section {
-  margin-bottom: 24px;
-  padding: 28px 32px;
-  background: var(--bg-cream);
-  border-left: 4px solid var(--uw-gold);
-}
-.result-section h3 {
-  font-size: 20px;
-  margin-bottom: 16px;
-  font-weight: 700;
-}
-.result-section ul { padding-left: 22px; }
-.result-section li {
-  margin-bottom: 10px;
-  font-size: 14.5px;
-  line-height: 1.75;
-  color: var(--text-mid);
-}
-.result-section.disclaimer {
-  background: #fff8e7;
-  border-left-color: #d4a017;
-  font-size: 13px;
-  color: #6b5816;
-  line-height: 1.75;
-}
-
-/* ========== Responsive ========== */
-@media (max-width: 980px) {
-  .hero h1 { font-size: 48px; }
-  .module-grid { grid-template-columns: 1fr 1fr; }
-  .news-grid { grid-template-columns: 1fr 1fr; }
-  .about-grid { grid-template-columns: 1fr; gap: 50px; }
-  .footer-top { grid-template-columns: 1fr; gap: 40px; }
-  .section-head h2 { font-size: 36px; }
-}
-
-@media (max-width: 720px) {
-  .container { padding: 0 20px; }
-  .utility-bar span { display: none; }
-  .header-inner { height: 70px; }
-  .brand-w { width: 44px; height: 44px; font-size: 26px; }
-  .brand-line1 { font-size: 17px; }
-  .brand-line2 { font-size: 11px; }
-  .primary-nav { gap: 0; }
-  .primary-nav a { padding: 8px 10px; font-size: 12px; }
-
-  .hero { padding: 60px 0 70px; }
-  .hero h1 { font-size: 36px; }
-  .hero-lead { font-size: 16px; }
-
-  .facts-inner { grid-template-columns: 1fr 1fr; gap: 24px 0; }
-  .fact { border-right: none; }
-  .fact-num { font-size: 38px; }
-
-  .section { padding: 60px 0; }
-  .section-head h2 { font-size: 30px; }
-  .module-grid { grid-template-columns: 1fr; gap: 24px; }
-  .news-grid { grid-template-columns: 1fr; gap: 30px; }
-
-  .mission-text { font-size: 22px; }
-
-  .tool-hero h1 { font-size: 34px; }
-  .assessment-form, .result-panel { padding: 28px 22px; }
-  .form-step h2 { font-size: 24px; }
-  .field-row { grid-template-columns: 1fr; }
-  .checkbox-group { grid-template-columns: 1fr; }
-
-  .score-card { grid-template-columns: 1fr; gap: 24px; padding: 28px; text-align: center; }
-  .score-num { font-size: 60px; }
-  .metric-grid { grid-template-columns: 1fr 1fr; }
-  .form-nav { flex-direction: column-reverse; }
-  .form-nav button { width: 100%; }
-}
-
-@media print {
-  .utility-bar, .main-header, .footer, .form-nav, .progress-wrap { display: none; }
-  .tool-hero { background: #fff; color: var(--uw-purple); }
-  .tool-hero h1, .tool-lead, .breadcrumb { color: var(--uw-purple); }
-  .pill { color: var(--uw-purple); border-color: var(--uw-purple); background: #fff; }
-}
+  <script src="assets/js/nutrition.js"></script>
+</body>
+</html>
