@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Literature Search Strategy Builder · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+
+    /* Breadcrumb */
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{
+      background:#fff;border:1px solid #ece5d3;
+      padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;
+    }
+
+    /* Builder Section */
+    .builder-section{padding:70px 0;background:#fff;}
+    .builder-section .narrow{max-width:880px;margin:0 auto;}
+
+    /* Progress */
+    .progress-wrap{margin-bottom:36px;}
+    .progress-bar{height:3px;background:#ece5d3;overflow:hidden;}
+    .progress-fill{height:100%;background:#c9a961;width:33.33%;transition:width .4s ease;}
+    .progress-steps{display:flex;justify-content:space-between;margin-top:16px;gap:8px;flex-wrap:wrap;}
+    .progress-steps .step{font-size:11px;letter-spacing:1.2px;color:#bbb;font-weight:600;text-transform:uppercase;flex:1;}
+    .progress-steps .step b{display:block;font-size:14px;color:#ccc;margin-bottom:3px;font-weight:700;}
+    .progress-steps .step.active{color:#1a1a1a;}
+    .progress-steps .step.active b{color:#c9a961;}
+    .progress-steps .step.done{color:#555;}
+    .progress-steps .step.done b{color:#c9a961;}
+
+    /* Form Step */
+    .form-step{display:none;background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:42px 38px;}
+    .form-step.active{display:block;}
+    .step-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
+    .form-step h2{font-size:28px;color:#1a1a1a;margin:0 0 10px;line-height:1.3;}
+    .step-desc{font-size:14px;color:#888;margin:0 0 32px;line-height:1.75;}
+
+    /* Fields */
+    .field{margin-bottom:24px;}
+    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .field-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+    @media(max-width:600px){.field-row,.field-row-3{grid-template-columns:1fr;gap:0;}}
+
+    .field input[type="number"],
+    .field input[type="text"],
+    .field select,
+    .field textarea{
+      width:100%;padding:12px 14px;font-size:14px;
+      border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+      font-family:inherit;outline:none;transition:.2s;border-radius:0;
+      box-sizing:border-box;
+    }
+    .field textarea{resize:vertical;min-height:100px;line-height:1.7;font-family:'JetBrains Mono','Open Sans',monospace;font-size:13px;}
+    .field input:focus, .field select:focus, .field textarea:focus{border-color:#c9a961;}
+    .help-text{font-size:12px;color:#999;margin-top:6px;line-height:1.6;}
+
+    /* Chip multi-select */
+    .chip-row{display:flex;flex-wrap:wrap;gap:10px;}
+    .chip{
+      display:inline-block;padding:8px 16px;border:1px solid #ece5d3;
+      background:#fff;color:#555;font-size:13px;cursor:pointer;
+      transition:.2s;user-select:none;
+    }
+    .chip:hover{border-color:#d4c5a0;}
+    .chip.on{border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;}
+
+    /* PICO collapsible */
+    .pico-toggle{
+      display:inline-block;font-size:12px;letter-spacing:1.2px;color:#c9a961;
+      cursor:pointer;font-weight:700;text-transform:uppercase;
+      padding:6px 0;border-bottom:1px solid #c9a961;margin-bottom:18px;
+    }
+    .pico-box{display:none;background:#faf7f0;border:1px solid #ece5d3;padding:24px;margin-bottom:24px;}
+    .pico-box.open{display:block;}
+
+    /* Concept group cards */
+    .concept-card{
+      background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:24px 26px;margin-bottom:18px;position:relative;
+    }
+    .concept-head{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;margin-bottom:18px;flex-wrap:wrap;
+    }
+    .concept-title{
+      font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;
+      text-transform:uppercase;
+    }
+    .concept-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .mini-select{
+      padding:6px 10px;font-size:12px;border:1px solid #ece5d3;background:#fff;
+      color:#555;font-family:inherit;outline:none;cursor:pointer;
+    }
+    .mini-select:focus{border-color:#c9a961;}
+    .btn-mini{
+      font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.2px;
+      font-weight:700;padding:6px 12px;border:1px solid #ece5d3;background:#fff;
+      color:#888;cursor:pointer;transition:.2s;text-transform:uppercase;
+    }
+    .btn-mini:hover{border-color:#c9a961;color:#c9a961;}
+    .btn-mini.danger:hover{border-color:#c0392b;color:#c0392b;}
+
+    .term-count{font-size:11px;letter-spacing:1px;color:#999;margin-top:8px;text-transform:uppercase;}
+    .term-count b{color:#c9a961;font-weight:700;}
+
+    .add-concept-row{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 4px;}
+
+    /* Buttons */
+    .form-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;flex-wrap:wrap;}
+    .btn-purple, .btn-ghost-dark{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;
+      font-weight:700;padding:14px 28px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .btn-ghost-dark:disabled{opacity:.35;cursor:not-allowed;}
+    .btn-ghost-dark:disabled:hover{background:transparent;color:#1a1a1a;}
+
+    /* Result */
+    .result-panel{display:none;}
+    .result-head{text-align:center;padding:0 0 36px;margin-bottom:30px;border-bottom:1px solid #ece5d3;}
+    .result-head h2{font-size:36px;color:#1a1a1a;margin:10px 0 14px;line-height:1.2;}
+    .result-head p{color:#555;font-size:15px;line-height:1.7;max-width:560px;margin:0 auto;}
+
+    .summary-grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;
+      margin-bottom:24px;
+    }
+    .summary-card{background:#faf7f0;border:1px solid #ece5d3;padding:20px 16px;text-align:center;}
+    .summary-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:10px;text-transform:uppercase;}
+    .summary-value{font-family:'Encode Sans',sans-serif;font-size:28px;color:#1a1a1a;font-weight:700;line-height:1;}
+
+    .result-section{
+      background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:28px 32px;margin-bottom:20px;
+    }
+    .result-section h3{font-size:18px;color:#1a1a1a;margin:0 0 18px;font-weight:700;}
+
+    /* Database tabs */
+    .db-tabs{
+      display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid #ece5d3;
+      margin-bottom:20px;
+    }
+    .db-tab{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.4px;
+      font-weight:700;padding:12px 20px;border:none;background:transparent;
+      color:#888;cursor:pointer;transition:.2s;text-transform:uppercase;
+      border-bottom:2px solid transparent;margin-bottom:-1px;
+    }
+    .db-tab:hover{color:#1a1a1a;}
+    .db-tab.active{color:#c9a961;border-bottom-color:#c9a961;}
+
+    .db-pane{display:none;}
+    .db-pane.active{display:block;}
+
+    .db-meta{
+      font-size:13px;color:#888;line-height:1.7;margin-bottom:14px;
+      padding-bottom:14px;border-bottom:1px dashed #ece5d3;
+    }
+    .db-meta a{color:#c9a961;text-decoration:none;border-bottom:1px solid #ece5d3;}
+    .db-meta a:hover{border-bottom-color:#c9a961;}
+
+    .query-box{
+      position:relative;background:#1a1a1a;color:#f0e5c8;
+      padding:24px 20px;font-family:'JetBrains Mono',monospace;
+      font-size:13px;line-height:1.85;white-space:pre-wrap;word-break:break-word;
+      max-height:500px;overflow:auto;
+    }
+    .query-box .op{color:#c9a961;font-weight:700;}
+    .query-box .field-tag{color:#9ec5fe;}
+    .query-box .quote{color:#a3d977;}
+
+    .btn-copy{
+      position:absolute;top:12px;right:12px;
+      font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.2px;
+      font-weight:700;padding:6px 12px;border:1px solid #c9a961;background:transparent;
+      color:#c9a961;cursor:pointer;transition:.2s;text-transform:uppercase;
+    }
+    .btn-copy:hover{background:#c9a961;color:#1a1a1a;}
+    .btn-copy.done{background:#c9a961;color:#1a1a1a;}
+
+    .tip-list{padding-left:20px;line-height:1.95;color:#555;font-size:14px;margin:0;}
+    .tip-list li{margin-bottom:6px;}
+    .tip-list li em{color:#888;}
+
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    .eyebrow.gold{color:#c9a961;}
+
+    /* Empty state warning */
+    .alert-warn{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c0392b;
+      padding:14px 18px;font-size:13px;color:#555;margin-bottom:20px;line-height:1.7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Literature Search Strategy Builder</span>
+      </div>
+      <div class="eyebrow gold">RESEARCH · INFORMATICS</div>
+      <h1>Literature Search Strategy Builder</h1>
+      <p class="lead">
+        基於系統評價檢索策略構建方法（PRISMA-S、Cochrane Handbook）與布林邏輯，
+        通過「概念組 × 同義詞 × 字段限定 × 篩選條件」的結構化流程，
+        為 PubMed、Web of Science、Scopus、Embase、Cochrane Library、CNKI 等主流數據庫
+        一鍵生成標準檢索式。所有運算在本地完成。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">⏱ 約 5 分鐘</span>
+        <span class="pill">📚 6 大數據庫</span>
+        <span class="pill">🔧 智能語法生成</span>
+        <span class="pill">📋 一鍵複製</span>
+        <span class="pill">🔒 本地計算</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="builder-section">
+    <div class="container narrow">
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps">
+          <span class="step active" data-step="1"><b>01</b> 研究主題</span>
+          <span class="step" data-step="2"><b>02</b> 概念組構建</span>
+          <span class="step" data-step="3"><b>03</b> 字段與篩選</span>
+        </div>
+      </div>
+
+      <form id="builderForm" autocomplete="off">
+
+        <!-- ========== STEP 1: 研究主題 ========== -->
+        <div class="form-step active" data-step="1">
+          <div class="step-num">PART 01</div>
+          <h2>研究主題與背景</h2>
+          <p class="step-desc">用一兩句話描述你的檢索目的；可選 PICO/PEO 框架輔助拆分核心概念。</p>
+
+          <div class="field">
+            <label>研究主題 / 檢索目的（可選）</label>
+            <input type="text" id="topic" placeholder="例：2 型糖尿病患者進行有氧運動對 HbA1c 的影響">
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>研究類型（可選）</label>
+              <select id="researchType">
+                <option value="">不限</option>
+                <option value="systematic">系統評價 / Meta 分析</option>
+                <option value="rct">隨機對照試驗</option>
+                <option value="cohort">隊列研究</option>
+                <option value="case-control">病例對照</option>
+                <option value="cross-sectional">橫斷面研究</option>
+                <option value="qualitative">質性研究</option>
+                <option value="review">敘事性綜述</option>
+                <option value="primary">原始研究（綜合）</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>學科領域（可選）</label>
+              <select id="domain">
+                <option value="">不限</option>
+                <option value="medicine">臨床醫學</option>
+                <option value="public-health">公共衛生</option>
+                <option value="nursing">護理學</option>
+                <option value="psychology">心理學 / 行為科學</option>
+                <option value="education">教育學</option>
+                <option value="social">社會科學</option>
+                <option value="cs">計算機 / 信息學</option>
+                <option value="other">其他</option>
+              </select>
+            </div>
+          </div>
+
+          <span class="pico-toggle" id="picoToggle">＋ 使用 PICO / PEO 框架拆解概念</span>
+          <div class="pico-box" id="picoBox">
+            <div class="field-row">
+              <div class="field">
+                <label>P　研究對象 / 人群</label>
+                <input type="text" id="pico_p" placeholder="例：成年 2 型糖尿病患者">
+              </div>
+              <div class="field">
+                <label>I　干預 / 暴露</label>
+                <input type="text" id="pico_i" placeholder="例：有氧運動">
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label>C　對照（可空）</label>
+                <input type="text" id="pico_c" placeholder="例：常規護理">
+              </div>
+              <div class="field">
+                <label>O　結局指標</label>
+                <input type="text" id="pico_o" placeholder="例：糖化血紅蛋白 HbA1c">
+              </div>
+            </div>
+            <p class="help-text">
+              填寫後，下一步可一鍵將 PICO 各項自動轉化為「概念組」初始模板。
+            </p>
+          </div>
+        </div>
+
+        <!-- ========== STEP 2: 概念組構建 ========== -->
+        <div class="form-step" data-step="2">
+          <div class="step-num">PART 02</div>
+          <h2>概念組與同義詞</h2>
+          <p class="step-desc">
+            每個「概念組」代表你研究中的一個核心概念；組內所有同義詞用 OR 連接以提升召回率，
+            概念組之間用 AND（或 NOT）連接以收斂主題。
+          </p>
+
+          <div class="add-concept-row">
+            <button type="button" class="btn-mini" id="addConceptBtn">＋ 添加概念組</button>
+            <button type="button" class="btn-mini" id="loadPicoBtn">↳ 從 PICO 自動填入</button>
+            <button type="button" class="btn-mini" id="loadDemoBtn">↺ 載入示例（糖尿病 × 運動）</button>
+            <button type="button" class="btn-mini danger" id="clearAllBtn">✕ 清空全部</button>
+          </div>
+
+          <div id="conceptList"></div>
+
+          <p class="help-text" style="margin-top:14px;">
+            提示：同義詞每行一個，或用英文逗號 / 中文逗號 / 分號分隔。包含空格的詞會自動加引號為短語檢索。
+            可使用截詞符 <code>*</code>（如 <code>diabet*</code>）。
+          </p>
+        </div>
+
+        <!-- ========== STEP 3: 字段與篩選 ========== -->
+        <div class="form-step" data-step="3">
+          <div class="step-num">PART 03</div>
+          <h2>篩選條件與限定字段</h2>
+          <p class="step-desc">設置時間、文獻類型與語言；不同數據庫的對應語法將自動轉換。</p>
+
+          <div class="field-row">
+            <div class="field">
+              <label>發表年份（起始）</label>
+              <input type="number" id="yearFrom" min="1900" max="2099" placeholder="例：2015">
+            </div>
+            <div class="field">
+              <label>發表年份（結束）</label>
+              <input type="number" id="yearTo" min="1900" max="2099" placeholder="例：2024">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>文獻類型（多選；不選則不限定）</label>
+            <div class="chip-row" id="docTypeChips">
+              <span class="chip" data-val="review">綜述 Review</span>
+              <span class="chip" data-val="systematic">系統評價 Systematic Review</span>
+              <span class="chip" data-val="meta">Meta-Analysis</span>
+              <span class="chip" data-val="rct">RCT 隨機對照試驗</span>
+              <span class="chip" data-val="clinical">臨床試驗 Clinical Trial</span>
+              <span class="chip" data-val="cohort">隊列研究 Cohort</span>
+              <span class="chip" data-val="case-control">病例對照 Case-Control</span>
+              <span class="chip" data-val="article">原始研究 Article</span>
+              <span class="chip" data-val="conference">會議論文 Conference</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>語言（多選；不選則不限定）</label>
+            <div class="chip-row" id="langChips">
+              <span class="chip" data-val="english">English</span>
+              <span class="chip" data-val="chinese">中文 Chinese</span>
+              <span class="chip" data-val="japanese">日本語 Japanese</span>
+              <span class="chip" data-val="german">Deutsch German</span>
+              <span class="chip" data-val="french">Français French</span>
+              <span class="chip" data-val="spanish">Español Spanish</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>是否排除預印本 / 撤稿（PubMed / WoS）</label>
+            <div class="chip-row" id="excludeChips">
+              <span class="chip" data-val="preprint">排除預印本</span>
+              <span class="chip" data-val="retracted">排除撤稿</span>
+              <span class="chip" data-val="human">僅人類研究 Humans</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-nav">
+          <button type="button" id="prevBtn" class="btn-ghost-dark" disabled>← 上一步</button>
+          <button type="button" id="nextBtn" class="btn-purple">下一步 →</button>
+          <button type="button" id="generateBtn" class="btn-purple" style="display:none;">生成檢索式 →</button>
+        </div>
+      </form>
+
+      <!-- ========== Result ========== -->
+      <div id="result" class="result-panel">
+        <div class="result-head">
+          <div class="eyebrow gold">YOUR SEARCH STRATEGY</div>
+          <h2>檢索式已生成</h2>
+          <p>下方按數據庫切換查看；複製後可直接粘貼進對應數據庫的「高級檢索」框使用。</p>
+        </div>
+
+        <div class="summary-grid" id="summaryGrid"></div>
+
+        <div class="result-section">
+          <h3>🗂 數據庫檢索式</h3>
+          <div class="db-tabs" id="dbTabs"></div>
+          <div id="dbPanes"></div>
+        </div>
+
+        <div class="result-section">
+          <h3>💡 檢索策略建議</h3>
+          <ul class="tip-list" id="tipList"></ul>
+        </div>
+
+        <div class="result-section">
+          <h3>📚 方法學依據</h3>
+          <ul class="tip-list">
+            <li>Cochrane Handbook for Systematic Reviews of Interventions, Chapter 4: Searching for studies.</li>
+            <li>Rethlefsen ML, et al. PRISMA-S: an extension to PRISMA for Reporting Literature Searches in Systematic Reviews. <em>Systematic Reviews</em> (2021).</li>
+            <li>Bramer WM, et al. A systematic approach to searching: an efficient and complete method to develop literature searches. <em>JMLA</em> (2018).</li>
+            <li>McGowan J, et al. PRESS Peer Review of Electronic Search Strategies: 2015 Guideline Statement.</li>
+          </ul>
+        </div>
+
+        <div class="result-section disclaimer">
+          <strong>提　示　</strong>
+          自動生成的檢索式覆蓋了主流字段與布林邏輯規範，但 MeSH/Emtree 等受控詞表需在對應數據庫中進一步核驗；
+          建議由信息檢索專員（如圖書館員）對最終策略進行 PRESS 同行評議。
+        </div>
+
+        <div class="form-nav">
+          <button type="button" class="btn-ghost-dark" id="backToEditBtn">← 返回修改</button>
+          <button type="button" class="btn-purple" onclick="window.print()">打印 / 保存 PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/literature-search.js"></script>
+</body>
+</html>
