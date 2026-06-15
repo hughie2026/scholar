@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Anonymization & DMP Generator · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+
+    /* Breadcrumb */
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+
+    /* Meta pills */
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{
+      background:#fff;border:1px solid #ece5d3;
+      padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;
+    }
+
+    /* Assessment Section */
+    .assessment-section{padding:70px 0;background:#fff;}
+    .assessment-section .narrow{max-width:880px;margin:0 auto;}
+
+    /* Progress */
+    .progress-wrap{margin-bottom:36px;}
+    .progress-bar{height:3px;background:#ece5d3;overflow:hidden;}
+    .progress-fill{height:100%;background:#c9a961;width:16.67%;transition:width .4s ease;}
+    .progress-steps{display:flex;justify-content:space-between;margin-top:16px;gap:8px;flex-wrap:wrap;}
+    .progress-steps .step{font-size:11px;letter-spacing:1.2px;color:#bbb;font-weight:600;text-transform:uppercase;}
+    .progress-steps .step b{display:block;font-size:14px;color:#ccc;margin-bottom:3px;font-weight:700;}
+    .progress-steps .step.active{color:#1a1a1a;}
+    .progress-steps .step.active b{color:#c9a961;}
+    .progress-steps .step.done{color:#555;}
+    .progress-steps .step.done b{color:#c9a961;}
+
+    /* Form Step Card */
+    .form-step{display:none;background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:42px 38px;}
+    .form-step.active{display:block;}
+    .step-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
+    .form-step h2{font-size:28px;color:#1a1a1a;margin:0 0 10px;line-height:1.3;}
+    .step-desc{font-size:14px;color:#888;margin:0 0 32px;line-height:1.75;}
+
+    /* Fields */
+    .field{margin-bottom:24px;}
+    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:600px){.field-row{grid-template-columns:1fr;gap:0;}}
+    .field-hint{font-size:12px;color:#999;margin-top:6px;line-height:1.6;}
+
+    .field input[type="number"],
+    .field input[type="text"],
+    .field input[type="date"],
+    .field textarea,
+    .field select{
+      width:100%;padding:12px 14px;font-size:14px;
+      border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+      font-family:inherit;outline:none;transition:.2s;border-radius:0;
+    }
+    .field textarea{min-height:90px;resize:vertical;line-height:1.6;}
+    .field input:focus, .field select:focus, .field textarea:focus{border-color:#c9a961;}
+
+    /* Radio buttons */
+    .radio-row{display:flex;gap:12px;flex-wrap:wrap;}
+    .radio-btn{flex:1;min-width:120px;cursor:pointer;}
+    .radio-btn input{display:none;}
+    .radio-btn span{
+      display:block;text-align:center;padding:12px 18px;
+      border:1px solid #ece5d3;background:#fff;color:#555;
+      font-size:14px;transition:.2s;
+    }
+    .radio-btn:hover span{border-color:#d4c5a0;}
+    .radio-btn input:checked + span{
+      border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;
+    }
+
+    /* Checkbox grid */
+    .check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+    .check-card{cursor:pointer;}
+    .check-card input{display:none;}
+    .check-card span{
+      display:block;padding:12px 14px;border:1px solid #ece5d3;background:#fff;
+      color:#555;font-size:13px;transition:.2s;line-height:1.5;
+    }
+    .check-card:hover span{border-color:#d4c5a0;}
+    .check-card input:checked + span{
+      border-color:#c9a961;color:#1a1a1a;background:#faf7f0;font-weight:600;
+    }
+    .check-card span small{display:block;color:#999;font-weight:400;font-size:11px;letter-spacing:.3px;margin-top:3px;}
+
+    /* Form Navigation */
+    .form-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;}
+    .btn-purple, .btn-ghost-dark{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;
+      font-weight:700;padding:14px 28px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .btn-ghost-dark:disabled{opacity:.35;cursor:not-allowed;}
+    .btn-ghost-dark:disabled:hover{background:transparent;color:#1a1a1a;}
+
+    /* Result Panel */
+    .result-panel{background:transparent;}
+    .result-head{text-align:center;padding:0 0 36px;margin-bottom:30px;border-bottom:1px solid #ece5d3;}
+    .result-head h2{font-size:36px;color:#1a1a1a;margin:10px 0 14px;line-height:1.2;}
+    .result-head p{color:#555;font-size:15px;line-height:1.7;max-width:560px;margin:0 auto;}
+
+    .score-card{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:36px;display:grid;grid-template-columns:auto 1fr;gap:42px;
+      align-items:center;margin-bottom:24px;
+    }
+    @media(max-width:680px){.score-card{grid-template-columns:1fr;gap:24px;}}
+    .score-left{text-align:left;}
+    .score-num{font-family:'Encode Sans',sans-serif;font-size:64px;color:#c9a961;font-weight:700;line-height:1;}
+    .score-num small{font-size:18px;color:#888;font-weight:400;margin-left:4px;}
+    .score-label{font-size:12px;letter-spacing:1.8px;color:#1a1a1a;margin-top:10px;font-weight:700;text-transform:uppercase;}
+    .score-bar{height:8px;background:#ece5d3;overflow:hidden;}
+    .score-fill{height:100%;background:#c9a961;width:0;transition:width .9s ease;}
+    .score-tier{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#888;letter-spacing:.5px;}
+
+    .result-section{
+      background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:28px 32px;margin-bottom:20px;
+    }
+    .result-section h3{font-size:18px;color:#1a1a1a;margin:0 0 18px;font-weight:700;}
+    .result-section ul{padding-left:20px;line-height:1.95;color:#555;font-size:14px;margin:0;}
+    .result-section li{margin-bottom:6px;}
+    .result-section li em{color:#888;}
+
+    .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;}
+    .metric{background:#faf7f0;border:1px solid #ece5d3;padding:20px 16px;text-align:center;}
+    .metric-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:10px;text-transform:uppercase;}
+    .metric-value{font-family:'Encode Sans',sans-serif;font-size:28px;color:#1a1a1a;font-weight:700;line-height:1;}
+    .metric-value small{font-size:13px;color:#888;font-weight:400;margin-left:2px;}
+    .metric-note{font-size:12px;color:#888;margin-top:8px;letter-spacing:.3px;}
+
+    /* DMP Document Preview */
+    .dmp-doc{background:#fff;border:1px solid #ece5d3;padding:36px 38px;font-size:13.5px;line-height:1.85;color:#333;}
+    .dmp-doc h4{font-size:15px;color:#c9a961;margin:22px 0 8px;letter-spacing:1px;text-transform:uppercase;font-weight:700;border-bottom:1px solid #ece5d3;padding-bottom:6px;}
+    .dmp-doc h4:first-child{margin-top:0;}
+    .dmp-doc p{margin:0 0 10px;}
+    .dmp-doc .kv{display:grid;grid-template-columns:160px 1fr;gap:6px 18px;margin-bottom:10px;}
+    .dmp-doc .kv b{color:#1a1a1a;font-weight:600;}
+    .dmp-doc .kv span{color:#555;}
+
+    .badge{display:inline-block;padding:3px 10px;font-size:11px;letter-spacing:.6px;background:#faf7f0;border:1px solid #ece5d3;color:#c9a961;margin:2px 4px 2px 0;font-weight:600;}
+    .badge.danger{color:#a85a4f;border-color:#e8d4ce;background:#faf2f0;}
+    .badge.warn{color:#a8884f;border-color:#e8dfce;background:#faf7f0;}
+    .badge.ok{color:#5a8a6a;border-color:#d6e3da;background:#f3f8f5;}
+
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    .eyebrow.gold{color:#c9a961;}
+
+    /* Print friendly */
+    @media print{
+      .form-nav, .progress-wrap, .page-hero, .footer, .main-header, .utility-bar{display:none !important;}
+      .result-section{break-inside:avoid;}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Data Anonymization & DMP Generator</span>
+      </div>
+      <div class="eyebrow gold">DATA · GOVERNANCE</div>
+      <h1>資料匿名化與資料管理計畫生成器</h1>
+      <p class="lead">
+        本工具基於 GDPR、《個人資訊保護法（PIPL）》、HIPAA Safe Harbor 與 ISO/IEC 27701 等框架，
+        幫你快速評估研究 / 專案資料的敏感度，匹配合適的匿名化技術組合，
+        並一鍵生成符合主流範式（DCC、Horizon Europe、NIH）的資料管理計畫（DMP）文件。
+        全部計算在本地完成，不上傳任何資料。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">⏱ 約 6 分鐘</span>
+        <span class="pill">📊 6 個步驟</span>
+        <span class="pill">📄 自動生成 DMP</span>
+        <span class="pill">🔒 本地計算</span>
+        <span class="pill">📖 GDPR · PIPL · HIPAA</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="assessment-section">
+    <div class="container narrow">
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps">
+          <span class="step active" data-step="1"><b>01</b> 專案資訊</span>
+          <span class="step" data-step="2"><b>02</b> 資料類型</span>
+          <span class="step" data-step="3"><b>03</b> 敏感度</span>
+          <span class="step" data-step="4"><b>04</b> 匿名化策略</span>
+          <span class="step" data-step="5"><b>05</b> 儲存安全</span>
+          <span class="step" data-step="6"><b>06</b> 共享保留</span>
+        </div>
+      </div>
+
+      <form id="dmpForm" class="assessment-form" autocomplete="off">
+
+        <!-- ========== STEP 1: 專案資訊 ========== -->
+        <div class="form-step active" data-step="1">
+          <div class="step-num">PART 01</div>
+          <h2>專案基本資訊</h2>
+          <p class="step-desc">用於生成 DMP 文件抬頭，不參與風險評分。</p>
+
+          <div class="field">
+            <label>專案 / 研究名稱</label>
+            <input type="text" name="projectName" required placeholder="例：城市青年心理健康追蹤研究">
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>負責人 / PI</label>
+              <input type="text" name="piName" required placeholder="例：張曉明">
+            </div>
+            <div class="field">
+              <label>所屬機構</label>
+              <input type="text" name="institution" required placeholder="例：某某大學公共衛生學院">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>專案開始日期</label>
+              <input type="date" name="startDate" required>
+            </div>
+            <div class="field">
+              <label>專案結束日期</label>
+              <input type="date" name="endDate" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>研究領域</label>
+            <select name="domain" required>
+              <option value="">請選擇</option>
+              <option value="medical">醫療 / 臨床研究</option>
+              <option value="public-health">公共衛生 / 流行病學</option>
+              <option value="social">社會科學 / 心理學</option>
+              <option value="education">教育研究</option>
+              <option value="business">商業 / 市場研究</option>
+              <option value="tech">資訊科學 / 機器學習</option>
+              <option value="gov">政府 / 政策研究</option>
+              <option value="other">其他</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>研究目標摘要（可選）</label>
+            <textarea name="objective" placeholder="一兩句話描述本研究的目標與資料用途，將被寫入 DMP。"></textarea>
+          </div>
+        </div>
+
+        <!-- ========== STEP 2: 資料類型 ========== -->
+        <div class="form-step" data-step="2">
+          <div class="step-num">PART 02</div>
+          <h2>資料類型與來源</h2>
+          <p class="step-desc">勾選所有將會收集的資料類型，可複選。</p>
+
+          <div class="field">
+            <label>包含哪些類型的資料？</label>
+            <div class="check-grid" data-group="dataTypes">
+              <label class="check-card"><input type="checkbox" name="dt_demographic" value="2"><span>人口學資料<small>姓名、年齡、性別、地址</small></span></label>
+              <label class="check-card"><input type="checkbox" name="dt_contact" value="2"><span>聯絡資料<small>電話、Email、通訊地址</small></span></label>
+              <label class="check-card"><input type="checkbox" name="dt_id" value="4"><span>身分識別碼<small>身分證、護照、健保號</small></span></label>
+              <label class="check-card"><input type="checkbox" name="dt_health" value="4"><span>健康 / 醫療資料<small>病歷、診斷、用藥、影像</small></span></label>
+              <label class="check-card"><input type="checkbox" name="dt_genetic" value="5"><span>基因 / 生物特徵<small>DNA、指紋、人臉</small></span></label>
+              <label class="check-card"><input type="checkbox" name="dt_financial" value="3"><span>財務資料<small>收入、銀行賬戶、信用</small></span></label>
+              <label class="check-card"><input type="checkbox" name="dt_location" value="3"><span>位置資料<small>GPS、軌跡、定位記錄</small></span></label>
+              <label class="check-card"><input type="checkbox" name="dt_behavior" value="2"><span>行為資料<small>瀏覽、消費、操作日誌</small></span></label>
+              <label class="check-card"><input type="checkbox" name="dt_minor" value="4"><span>未成年人資料<small>14 歲以下</small></span></label>
+              <label class="check-card"><input type="checkbox" name="dt_sensitive" value="4"><span>敏感屬性<small>宗教、性取向、政治</small></span></label>
+              <label class="check-card"><input type="checkbox" name="dt_anonymous" value="0"><span>純匿名統計資料<small>聚合或合成數據</small></span></label>
+              <label class="check-card"><input type="checkbox" name="dt_other" value="2"><span>其他可識別資料<small>自由文本、開放問卷</small></span></label>
+            </div>
+            <p class="field-hint">至少需勾選一項。涉及未成年人、生物特徵、健康資料時，匿名化要求更嚴。</p>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>資料採集方式</label>
+              <select name="collectionMethod" required>
+                <option value="">請選擇</option>
+                <option value="survey">問卷 / 訪談</option>
+                <option value="device">儀器 / 感測器</option>
+                <option value="ehr">既有系統 / 病歷導出</option>
+                <option value="web">網路抓取 / 日誌</option>
+                <option value="experiment">實驗測量</option>
+                <option value="public">公開資料集</option>
+                <option value="mixed">混合多種</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>預估樣本量</label>
+              <select name="sampleSize" required>
+                <option value="">請選擇</option>
+                <option value="small">&lt; 100</option>
+                <option value="medium">100 – 1,000</option>
+                <option value="large">1,000 – 10,000</option>
+                <option value="xlarge">10,000 – 100,000</option>
+                <option value="huge">&gt; 100,000</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 3: 敏感度 ========== -->
+        <div class="form-step" data-step="3">
+          <div class="step-num">PART 03</div>
+          <h2>資料敏感度評估</h2>
+          <p class="step-desc">這 5 題用於量化資料的再識別風險，得分越高匿名化要求越嚴。</p>
+
+          <div class="field">
+            <label>1. 資料中是否包含可直接識別個人的欄位（PII）？</label>
+            <select name="s1" required>
+              <option value="">請選擇</option>
+              <option value="0">完全不包含</option>
+              <option value="2">包含少量間接識別欄位（如出生年月、職業）</option>
+              <option value="3">包含可間接識別組合（如出生年月 + 郵遞區號 + 性別）</option>
+              <option value="5">包含直接識別欄位（姓名、身分證號、Email）</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>2. 資料若洩漏對個人的潛在傷害程度？</label>
+            <select name="s2" required>
+              <option value="">請選擇</option>
+              <option value="1">幾乎無影響（公開或匿名統計）</option>
+              <option value="2">輕度影響（一般偏好、公開行為）</option>
+              <option value="3">中度影響（聯絡騷擾、商業歧視風險）</option>
+              <option value="4">較重影響（財務損失、職業歧視）</option>
+              <option value="5">嚴重影響（健康歧視、人身安全、社會性死亡）</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>3. 資料是否會與其他外部資料集鏈接（linkage）？</label>
+            <select name="s3" required>
+              <option value="">請選擇</option>
+              <option value="0">完全不鏈接</option>
+              <option value="2">僅與內部去識別資料鏈接</option>
+              <option value="3">與外部公開資料鏈接</option>
+              <option value="5">與外部含 PII 的資料鏈接</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>4. 是否涉及跨境傳輸 / 跨機構共享？</label>
+            <select name="s4" required>
+              <option value="">請選擇</option>
+              <option value="0">僅限本機構內部使用</option>
+              <option value="2">與本國其他研究機構共享</option>
+              <option value="4">跨境傳輸至他國（同等保護水平）</option>
+              <option value="5">跨境傳輸至他國（保護水平不確定）</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>5. 受試者 / 資料主體的同意狀態？</label>
+            <select name="s5" required>
+              <option value="">請選擇</option>
+              <option value="0">已獲明確、具體、可撤回的書面同意</option>
+              <option value="2">已獲一般性同意（廣義研究用途）</option>
+              <option value="3">使用既有資料 / 二次利用，獲倫理委員會豁免</option>
+              <option value="5">未獲取或無法追溯同意狀態</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ========== STEP 4: 匿名化策略 ========== -->
+        <div class="form-step" data-step="4">
+          <div class="step-num">PART 04</div>
+          <h2>匿名化技術選擇</h2>
+          <p class="step-desc">根據資料用途選擇技術組合。我們會依據前面的敏感度自動標註是否充分。</p>
+
+          <div class="field">
+            <label>計畫採用哪些匿名化 / 去識別技術？（可複選）</label>
+            <div class="check-grid" data-group="techs">
+              <label class="check-card"><input type="checkbox" name="tech_remove" value="2"><span>直接識別欄位移除<small>刪除姓名、ID、聯絡方式</small></span></label>
+              <label class="check-card"><input type="checkbox" name="tech_pseudo" value="3"><span>假名化 (Pseudonymization)<small>用代碼替換 ID，保留映射表</small></span></label>
+              <label class="check-card"><input type="checkbox" name="tech_hash" value="3"><span>雜湊 + 加鹽<small>SHA-256 + Salt 不可逆</small></span></label>
+              <label class="check-card"><input type="checkbox" name="tech_kanon" value="4"><span>k-匿名 (k-anonymity)<small>每組至少 k 個相同準識別碼</small></span></label>
+              <label class="check-card"><input type="checkbox" name="tech_ldiv" value="4"><span>l-多樣性 (l-diversity)<small>敏感屬性至少 l 種取值</small></span></label>
+              <label class="check-card"><input type="checkbox" name="tech_tclose" value="4"><span>t-接近 (t-closeness)<small>敏感屬性分布接近總體</small></span></label>
+              <label class="check-card"><input type="checkbox" name="tech_dp" value="5"><span>差分隱私 (Differential Privacy)<small>添加可控雜訊</small></span></label>
+              <label class="check-card"><input type="checkbox" name="tech_generalize" value="3"><span>泛化 (Generalization)<small>年齡分組、地區歸併</small></span></label>
+              <label class="check-card"><input type="checkbox" name="tech_suppress" value="2"><span>抑制 (Suppression)<small>遮蔽特殊極端值</small></span></label>
+              <label class="check-card"><input type="checkbox" name="tech_synthetic" value="4"><span>合成資料<small>生成統計性質相同的虛擬資料</small></span></label>
+              <label class="check-card"><input type="checkbox" name="tech_encrypt" value="3"><span>同態加密 / 安全多方計算<small>加密狀態下計算</small></span></label>
+              <label class="check-card"><input type="checkbox" name="tech_federated" value="4"><span>聯邦學習<small>資料不出本地，僅交換參數</small></span></label>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>計畫使用的工具 / 函式庫（可選）</label>
+              <input type="text" name="tools" placeholder="例：ARX, sdcMicro, Diffprivlib, OpenDP">
+            </div>
+            <div class="field">
+              <label>k 值（如使用 k-匿名）</label>
+              <input type="number" name="kValue" min="2" max="100" placeholder="建議 ≥ 5">
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 5: 儲存安全 ========== -->
+        <div class="form-step" data-step="5">
+          <div class="step-num">PART 05</div>
+          <h2>資料儲存與安全控制</h2>
+          <p class="step-desc">參照 ISO/IEC 27001 與 NIST SP 800-53 安全控制族。</p>
+
+          <div class="field">
+            <label>儲存位置</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="storage" value="local" required><span>本地受控伺服器</span></label>
+              <label class="radio-btn"><input type="radio" name="storage" value="institution"><span>機構雲端（私有雲）</span></label>
+              <label class="radio-btn"><input type="radio" name="storage" value="public-cloud"><span>商業公有雲</span></label>
+              <label class="radio-btn"><input type="radio" name="storage" value="hybrid"><span>混合架構</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>採用哪些安全控制措施？（可複選）</label>
+            <div class="check-grid" data-group="security">
+              <label class="check-card"><input type="checkbox" name="sec_encrypt_rest" value="3"><span>靜態加密<small>AES-256 / 全盤加密</small></span></label>
+              <label class="check-card"><input type="checkbox" name="sec_encrypt_transit" value="3"><span>傳輸加密<small>TLS 1.2+ / SFTP</small></span></label>
+              <label class="check-card"><input type="checkbox" name="sec_access" value="3"><span>分級存取控制<small>RBAC / ABAC</small></span></label>
+              <label class="check-card"><input type="checkbox" name="sec_mfa" value="2"><span>多因素認證 (MFA)<small>OTP / 硬體金鑰</small></span></label>
+              <label class="check-card"><input type="checkbox" name="sec_audit" value="2"><span>稽核日誌<small>所有讀寫可追溯</small></span></label>
+              <label class="check-card"><input type="checkbox" name="sec_backup" value="2"><span>定期備份<small>3-2-1 原則</small></span></label>
+              <label class="check-card"><input type="checkbox" name="sec_physical" value="2"><span>物理安全<small>機房門禁、監控</small></span></label>
+              <label class="check-card"><input type="checkbox" name="sec_isolation" value="3"><span>網路隔離<small>VPN / 隔離區</small></span></label>
+              <label class="check-card"><input type="checkbox" name="sec_dlp" value="2"><span>資料外洩防護 (DLP)<small>輸出監控</small></span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>資料責任人 / DPO 安排</label>
+            <select name="dpo" required>
+              <option value="">請選擇</option>
+              <option value="appointed">已指定專職資料保護長 (DPO)</option>
+              <option value="dual">由 PI 兼任資料保護負責人</option>
+              <option value="committee">由倫理 / 資安委員會集中管理</option>
+              <option value="none">尚未指定（不建議）</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ========== STEP 6: 共享保留 ========== -->
+        <div class="form-step" data-step="6">
+          <div class="step-num">PART 06</div>
+          <h2>資料共享與保留</h2>
+          <p class="step-desc">FAIR 原則（Findable, Accessible, Interoperable, Reusable）下的開放策略。</p>
+
+          <div class="field">
+            <label>計畫的資料共享級別</label>
+            <select name="sharing" required>
+              <option value="">請選擇</option>
+              <option value="open">開放共享 — 隨論文公開於資料庫（Zenodo / Dryad）</option>
+              <option value="restricted">受限共享 — 經審查後申請使用（DUA）</option>
+              <option value="internal">機構內共享 — 僅本機構研究人員</option>
+              <option value="closed">不共享 — 僅本研究團隊使用</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>授權方式</label>
+            <select name="license">
+              <option value="">請選擇</option>
+              <option value="cc0">CC0 — 公共領域</option>
+              <option value="ccby">CC BY — 署名</option>
+              <option value="ccbync">CC BY-NC — 署名 · 非商業</option>
+              <option value="custom">自訂資料使用協議 (DUA)</option>
+              <option value="na">不適用</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>原始資料保留期限</label>
+              <select name="retention" required>
+                <option value="">請選擇</option>
+                <option value="1y">≤ 1 年（短期）</option>
+                <option value="3y">3 年</option>
+                <option value="5y">5 年</option>
+                <option value="10y">10 年（多數資助機構要求）</option>
+                <option value="permanent">長期保存於資料庫</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>保留期滿銷毀方式</label>
+              <select name="destruction" required>
+                <option value="">請選擇</option>
+                <option value="overwrite">多次覆寫（軟體刪除）</option>
+                <option value="degauss">消磁 / 物理破壞</option>
+                <option value="shred">紙本碎紙</option>
+                <option value="archive">轉為長期匿名化檔案</option>
+                <option value="undecided">尚未確定</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>是否已通過倫理審查（IRB / 倫理委員會）？</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="irb" value="approved" required><span>已通過</span></label>
+              <label class="radio-btn"><input type="radio" name="irb" value="pending"><span>審查中</span></label>
+              <label class="radio-btn"><input type="radio" name="irb" value="exempt"><span>已豁免</span></label>
+              <label class="radio-btn"><input type="radio" name="irb" value="none"><span>無</span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button type="button" id="prevBtn" class="btn-ghost-dark" disabled>← 上一步</button>
+          <button type="button" id="nextBtn" class="btn-purple">下一步 →</button>
+          <button type="button" id="submitBtn" class="btn-purple" style="display:none;">生成 DMP</button>
+        </div>
+      </form>
+
+      <!-- ========== Result ========== -->
+      <div id="result" class="result-panel" style="display:none;">
+        <div class="result-head">
+          <div class="eyebrow gold">YOUR DATA MANAGEMENT PLAN</div>
+          <h2>資料管理計畫評估結果</h2>
+          <p>結果由你填寫的內容綜合計算得出，包含風險評分、推薦匿名化技術，以及一份可下載的完整 DMP 文件。</p>
+        </div>
+
+        <div class="score-card" id="scoreCard">
+          <div class="score-left">
+            <div class="score-num"><span id="riskScore">--</span><small>/ 100</small></div>
+            <div class="score-label" id="riskLabel">RISK SCORE</div>
+          </div>
+          <div class="score-right">
+            <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
+            <div class="score-tier">
+              <span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
+            </div>
+            <p style="margin-top:14px;font-size:13px;color:#666;line-height:1.7;" id="riskNarrative"></p>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>📊 五大維度評估</h3>
+          <div class="metric-grid">
+            <div class="metric">
+              <div class="metric-label">資料敏感度</div>
+              <div class="metric-value"><span id="dimSensVal">--</span><small>/ 25</small></div>
+              <div class="metric-note" id="dimSensTag">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">識別風險</div>
+              <div class="metric-value"><span id="dimIdVal">--</span><small>/ 25</small></div>
+              <div class="metric-note" id="dimIdTag">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">匿名化充分性</div>
+              <div class="metric-value"><span id="dimAnonVal">--</span><small>/ 25</small></div>
+              <div class="metric-note" id="dimAnonTag">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">儲存安全</div>
+              <div class="metric-value"><span id="dimSecVal">--</span><small>/ 25</small></div>
+              <div class="metric-note" id="dimSecTag">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">合規完備性</div>
+              <div class="metric-value"><span id="dimCompVal">--</span><small>/ 25</small></div>
+              <div class="metric-note" id="dimCompTag">--</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>🛡️ 推薦匿名化技術組合</h3>
+          <p style="font-size:14px;color:#555;line-height:1.85;margin:0 0 12px;" id="anonAdvice"></p>
+          <div id="anonBadges"></div>
+        </div>
+
+        <div class="result-section">
+          <h3>📋 合規性檢查</h3>
+          <ul id="complianceList"></ul>
+        </div>
+
+        <div class="result-section">
+          <h3>💡 改進建議</h3>
+          <ul id="recommendations"></ul>
+        </div>
+
+        <div class="result-section">
+          <h3>📄 自動生成 DMP 文件</h3>
+          <p style="font-size:13px;color:#888;margin:0 0 18px;">下方為依據 Horizon Europe / NIH 範式生成的 DMP，可直接下載為 Markdown 或 TXT 檔。</p>
+          <div class="dmp-doc" id="dmpDoc"></div>
+          <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+            <button type="button" class="btn-purple" id="downloadMd">下載 Markdown</button>
+            <button type="button" class="btn-ghost-dark" id="downloadTxt">下載 TXT</button>
+            <button type="button" class="btn-ghost-dark" id="copyDoc">複製到剪貼板</button>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>📚 評估依據</h3>
+          <ul>
+            <li>EU GDPR — General Data Protection Regulation (2016/679)</li>
+            <li>《中華人民共和國個人資訊保護法》(PIPL, 2021)</li>
+            <li>HIPAA Privacy Rule — Safe Harbor De-identification Method</li>
+            <li>ISO/IEC 27701:2019 — Privacy Information Management</li>
+            <li>Sweeney L. (2002). <em>k-anonymity: A model for protecting privacy</em>. IJUFKS.</li>
+            <li>Dwork C. (2006). <em>Differential Privacy</em>. ICALP.</li>
+            <li>FAIR Data Principles (Wilkinson et al., 2016)</li>
+            <li>DCC Checklist for a Data Management Plan v4.0</li>
+          </ul>
+        </div>
+
+        <div class="result-section disclaimer">
+          <strong>免責聲明　</strong>
+          本工具不構成法律意見或合規認證。實際資料處理須結合所在司法管轄區法規，並由倫理委員會 / DPO 審核確認。
+        </div>
+
+        <div class="form-nav">
+          <button type="button" class="btn-ghost-dark" onclick="location.reload()">重新評估</button>
+          <button type="button" class="btn-purple" onclick="window.print()">打印 / 保存 PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/dmp-generator.js"></script>
+</body>
+</html>
