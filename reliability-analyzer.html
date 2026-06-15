@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questionnaire Reliability Analyzer · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* ========== Page Hero ========== */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+
+    /* Breadcrumb */
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{
+      background:#fff;border:1px solid #ece5d3;
+      padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;
+    }
+
+    /* ========== Tool Section ========== */
+    .tool-section{padding:70px 0;background:#fff;}
+    .tool-section .narrow{max-width:960px;margin:0 auto;}
+
+    /* Progress */
+    .progress-wrap{margin-bottom:36px;}
+    .progress-bar{height:3px;background:#ece5d3;overflow:hidden;}
+    .progress-fill{height:100%;background:#c9a961;width:33.33%;transition:width .4s ease;}
+    .progress-steps{display:flex;justify-content:space-between;margin-top:16px;gap:8px;flex-wrap:wrap;}
+    .progress-steps .step{font-size:11px;letter-spacing:1.2px;color:#bbb;font-weight:600;text-transform:uppercase;flex:1;}
+    .progress-steps .step b{display:block;font-size:14px;color:#ccc;margin-bottom:3px;font-weight:700;}
+    .progress-steps .step.active{color:#1a1a1a;}
+    .progress-steps .step.active b{color:#c9a961;}
+    .progress-steps .step.done{color:#555;}
+    .progress-steps .step.done b{color:#c9a961;}
+
+    /* Step Card */
+    .form-step{display:none;background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:42px 38px;}
+    .form-step.active{display:block;}
+    .step-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
+    .form-step h2{font-size:28px;color:#1a1a1a;margin:0 0 10px;line-height:1.3;}
+    .step-desc{font-size:14px;color:#888;margin:0 0 32px;line-height:1.75;}
+
+    /* Fields */
+    .field{margin-bottom:24px;}
+    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .field-row.three{grid-template-columns:1fr 1fr 1fr;}
+    @media(max-width:600px){.field-row,.field-row.three{grid-template-columns:1fr;gap:0;}}
+
+    .field input[type="number"],
+    .field input[type="text"],
+    .field select,
+    .field textarea{
+      width:100%;padding:12px 14px;font-size:14px;
+      border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+      font-family:inherit;outline:none;transition:.2s;border-radius:0;
+    }
+    .field textarea{
+      font-family:'JetBrains Mono','Consolas',monospace;font-size:13px;line-height:1.65;
+      min-height:240px;resize:vertical;background:#faf7f0;
+    }
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:#c9a961;background:#fff;}
+    .field-hint{font-size:12px;color:#999;margin-top:8px;line-height:1.6;}
+
+    /* Radio buttons */
+    .radio-row{display:flex;gap:12px;flex-wrap:wrap;}
+    .radio-btn{flex:1;min-width:120px;cursor:pointer;}
+    .radio-btn input{display:none;}
+    .radio-btn span{
+      display:block;text-align:center;padding:12px 18px;
+      border:1px solid #ece5d3;background:#fff;color:#555;
+      font-size:14px;transition:.2s;
+    }
+    .radio-btn:hover span{border-color:#d4c5a0;}
+    .radio-btn input:checked + span{
+      border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;
+    }
+
+    /* Inline mini-buttons */
+    .mini-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+    .mini-btn{
+      font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.4px;font-weight:700;
+      padding:8px 14px;border:1px solid #ece5d3;background:#fff;color:#555;cursor:pointer;
+      transition:.2s;text-transform:uppercase;
+    }
+    .mini-btn:hover{border-color:#c9a961;color:#c9a961;background:#faf7f0;}
+
+    /* Form Navigation */
+    .form-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;}
+    .btn-purple,.btn-ghost-dark{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;
+      font-weight:700;padding:14px 28px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .btn-ghost-dark:disabled{opacity:.35;cursor:not-allowed;}
+    .btn-ghost-dark:disabled:hover{background:transparent;color:#1a1a1a;}
+
+    /* Data preview */
+    .preview-box{
+      background:#faf7f0;border:1px solid #ece5d3;padding:14px 16px;
+      font-family:'JetBrains Mono',monospace;font-size:12px;color:#555;
+      max-height:160px;overflow:auto;line-height:1.7;
+    }
+    .preview-box .ok{color:#c9a961;font-weight:700;}
+    .preview-box .err{color:#c0392b;font-weight:700;}
+
+    /* Reverse-item chips */
+    .item-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+    .chip{
+      font-size:12px;padding:7px 12px;border:1px solid #ece5d3;background:#fff;color:#555;
+      cursor:pointer;user-select:none;transition:.2s;letter-spacing:.3px;
+    }
+    .chip:hover{border-color:#d4c5a0;}
+    .chip.on{background:#faf7f0;border-color:#c9a961;color:#c9a961;font-weight:700;}
+
+    /* ========== Result ========== */
+    .result-panel{background:transparent;}
+    .result-head{text-align:center;padding:0 0 36px;margin-bottom:30px;border-bottom:1px solid #ece5d3;}
+    .result-head h2{font-size:36px;color:#1a1a1a;margin:10px 0 14px;line-height:1.2;}
+    .result-head p{color:#555;font-size:15px;line-height:1.7;max-width:560px;margin:0 auto;}
+
+    .score-card{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:36px;display:grid;grid-template-columns:auto 1fr;gap:42px;
+      align-items:center;margin-bottom:24px;
+    }
+    @media(max-width:680px){.score-card{grid-template-columns:1fr;gap:24px;}}
+    .score-num{font-family:'Encode Sans',sans-serif;font-size:64px;color:#c9a961;font-weight:700;line-height:1;}
+    .score-num small{font-size:18px;color:#888;font-weight:400;margin-left:4px;}
+    .score-label{font-size:12px;letter-spacing:1.8px;color:#1a1a1a;margin-top:10px;font-weight:700;text-transform:uppercase;}
+    .score-bar{height:8px;background:#ece5d3;overflow:hidden;}
+    .score-fill{height:100%;background:#c9a961;width:0;transition:width .9s ease;}
+    .score-tier{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#888;letter-spacing:.5px;}
+
+    .result-section{
+      background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:28px 32px;margin-bottom:20px;
+    }
+    .result-section h3{font-size:18px;color:#1a1a1a;margin:0 0 18px;font-weight:700;}
+    .result-section ul{padding-left:20px;line-height:1.95;color:#555;font-size:14px;margin:0;}
+    .result-section li{margin-bottom:6px;}
+
+    .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;}
+    .metric{background:#faf7f0;border:1px solid #ece5d3;padding:20px 16px;text-align:center;}
+    .metric-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:10px;text-transform:uppercase;}
+    .metric-value{font-family:'Encode Sans',sans-serif;font-size:28px;color:#1a1a1a;font-weight:700;line-height:1;}
+    .metric-value small{font-size:13px;color:#888;font-weight:400;margin-left:2px;}
+    .metric-note{font-size:12px;color:#888;margin-top:8px;letter-spacing:.3px;}
+
+    /* Item table */
+    .table-wrap{overflow-x:auto;}
+    .item-table{width:100%;border-collapse:collapse;font-size:13px;color:#333;}
+    .item-table th,.item-table td{
+      padding:12px 14px;text-align:right;border-bottom:1px solid #ece5d3;white-space:nowrap;
+    }
+    .item-table th{
+      background:#faf7f0;color:#888;font-size:11px;letter-spacing:1.2px;
+      text-transform:uppercase;font-weight:700;text-align:right;
+    }
+    .item-table th:first-child,.item-table td:first-child{text-align:left;}
+    .item-table tbody tr:hover{background:#faf7f0;}
+    .item-table .num{font-family:'Encode Sans',sans-serif;}
+    .item-table .flag{
+      display:inline-block;padding:2px 8px;font-size:10px;letter-spacing:1px;
+      background:#fdecea;color:#c0392b;font-weight:700;
+    }
+    .item-table .flag.rev{background:#faf7f0;color:#c9a961;}
+
+    /* Bar viz */
+    .bar-row{display:grid;grid-template-columns:80px 1fr 70px;gap:14px;align-items:center;margin-bottom:8px;font-size:13px;}
+    .bar-row .name{color:#555;}
+    .bar-row .val{color:#1a1a1a;font-family:'Encode Sans',sans-serif;font-weight:700;text-align:right;}
+    .bar-track{height:10px;background:#f3eddc;position:relative;}
+    .bar-fill{height:100%;background:#c9a961;}
+    .bar-fill.warn{background:#d49a4a;}
+    .bar-fill.bad{background:#c0392b;}
+
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    .eyebrow.gold{color:#c9a961;}
+
+    @media print{
+      .main-header,.utility-bar,.page-hero,.footer,.form-nav,.progress-wrap,.form-step{display:none!important;}
+      .result-panel{display:block!important;}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Reliability Analyzer</span>
+      </div>
+      <div class="eyebrow gold">PSYCHOMETRICS · RELIABILITY</div>
+      <h1>Questionnaire Reliability Analyzer</h1>
+      <p class="lead">
+        針對 Likert 量表問卷的內部一致性信度分析工具。輸入受訪者作答數據，即可在本地計算
+        Cronbach's α、Spearman-Brown 折半信度、Guttman λ6、項目-總分相關以及
+        刪除題項後的 α 變化，輔助你評估與優化量表結構。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">⏱ 約 2 分鐘</span>
+        <span class="pill">📊 多項信度指標</span>
+        <span class="pill">🔁 支持反向題</span>
+        <span class="pill">🔒 本地計算</span>
+        <span class="pill">📥 CSV / TSV</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="tool-section">
+    <div class="container narrow">
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps">
+          <span class="step active" data-step="1"><b>01</b> 數據輸入</span>
+          <span class="step" data-step="2"><b>02</b> 量表設定</span>
+          <span class="step" data-step="3"><b>03</b> 結果分析</span>
+        </div>
+      </div>
+
+      <form id="toolForm" autocomplete="off">
+
+        <!-- ========== STEP 1 ========== -->
+        <div class="form-step active" data-step="1">
+          <div class="step-num">PART 01</div>
+          <h2>數據輸入</h2>
+          <p class="step-desc">支持貼上 CSV / TSV 數據；每行為一位受訪者，每列為一道題目。</p>
+
+          <div class="field">
+            <label>作答數據</label>
+            <textarea id="dataInput" placeholder="Q1,Q2,Q3,Q4,Q5
+4,5,4,2,5
+3,4,3,3,4
+5,5,5,1,5
+..."></textarea>
+            <div class="mini-actions">
+              <button type="button" class="mini-btn" id="loadSample">載入示例數據</button>
+              <button type="button" class="mini-btn" id="clearData">清空</button>
+              <label class="mini-btn" style="display:inline-flex;align-items:center;">
+                上傳 CSV
+                <input type="file" id="fileInput" accept=".csv,.tsv,.txt" style="display:none;">
+              </label>
+            </div>
+          </div>
+
+          <div class="field-row three">
+            <div class="field">
+              <label>分隔符</label>
+              <select id="sep">
+                <option value="auto">自動偵測</option>
+                <option value=",">逗號 ,</option>
+                <option value="\t">Tab</option>
+                <option value=";">分號 ;</option>
+                <option value=" ">空格</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>是否含表頭</label>
+              <div class="radio-row">
+                <label class="radio-btn"><input type="radio" name="hasHeader" value="yes" checked><span>有</span></label>
+                <label class="radio-btn"><input type="radio" name="hasHeader" value="no"><span>無</span></label>
+              </div>
+            </div>
+            <div class="field">
+              <label>缺失值處理</label>
+              <select id="missing">
+                <option value="listwise">整列刪除 (Listwise)</option>
+                <option value="pairwise">成對刪除 (Pairwise)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>數據預覽</label>
+            <div class="preview-box" id="preview">尚未輸入數據。</div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 2 ========== -->
+        <div class="form-step" data-step="2">
+          <div class="step-num">PART 02</div>
+          <h2>量表設定</h2>
+          <p class="step-desc">設定 Likert 量表的取值範圍，並選出需要反向計分的題目。</p>
+
+          <div class="field-row">
+            <div class="field">
+              <label>量表最小值</label>
+              <input type="number" id="scaleMin" value="1" step="1">
+            </div>
+            <div class="field">
+              <label>量表最大值</label>
+              <input type="number" id="scaleMax" value="5" step="1">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>反向題（點擊題項切換）</label>
+            <div class="item-chips" id="itemChips">
+              <span style="color:#999;font-size:13px;">請先在第一步輸入數據。</span>
+            </div>
+            <div class="field-hint">反向題會在計算前先按 (min + max − x) 的規則自動翻轉計分。</div>
+          </div>
+
+          <div class="field">
+            <label>子量表（可選）</label>
+            <input type="text" id="subscale" placeholder="例：1-5 / 全部；或留空表示分析全部題目作為單一量表">
+            <div class="field-hint">支持區間與單值，例如 <code>1-5,8,10-12</code>。留空則分析全部題目。</div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 3 預留結果區 ========== -->
+        <div class="form-step" data-step="3">
+          <div class="step-num">PART 03</div>
+          <h2>分析就緒</h2>
+          <p class="step-desc">點擊下方「開始分析」即可在本地完成計算。</p>
+          <div style="background:#faf7f0;border:1px solid #ece5d3;padding:24px;font-size:13px;color:#555;line-height:1.85;">
+            <strong style="color:#c9a961;letter-spacing:1.2px;">提示　</strong>
+            一般學術應用建議樣本量至少為題目數的 5–10 倍，且總樣本不少於 100，
+            以保證信度估計的穩定性。樣本越小，α 估計的置信區間越寬。
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button type="button" id="prevBtn" class="btn-ghost-dark" disabled>← 上一步</button>
+          <button type="button" id="nextBtn" class="btn-purple">下一步 →</button>
+          <button type="button" id="submitBtn" class="btn-purple" style="display:none;">開始分析</button>
+        </div>
+      </form>
+
+      <!-- ========== Result ========== -->
+      <div id="result" class="result-panel" style="display:none;">
+        <div class="result-head">
+          <div class="eyebrow gold">YOUR RESULTS</div>
+          <h2>信度分析報告</h2>
+          <p>下列結果均基於你貼上的原始數據在本地計算得出。</p>
+        </div>
+
+        <div class="score-card">
+          <div class="score-left">
+            <div class="score-num"><span id="alphaVal">--</span></div>
+            <div class="score-label">CRONBACH'S α</div>
+          </div>
+          <div class="score-right">
+            <div class="score-bar"><div class="score-fill" id="alphaFill"></div></div>
+            <div class="score-tier">
+              <span>0</span><span>.50</span><span>.70</span><span>.80</span><span>.90</span><span>1.0</span>
+            </div>
+            <div style="margin-top:14px;font-size:13px;color:#555;line-height:1.65;" id="alphaVerdict">--</div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>📊 整體信度指標</h3>
+          <div class="metric-grid">
+            <div class="metric">
+              <div class="metric-label">Cronbach's α</div>
+              <div class="metric-value"><span id="mAlpha">--</span></div>
+              <div class="metric-note">Raw</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Standardized α</div>
+              <div class="metric-value"><span id="mStdAlpha">--</span></div>
+              <div class="metric-note">基於相關矩陣</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Split-half</div>
+              <div class="metric-value"><span id="mSplit">--</span></div>
+              <div class="metric-note">Spearman-Brown</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Guttman λ6</div>
+              <div class="metric-value"><span id="mLambda">--</span></div>
+              <div class="metric-note">下界估計</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">平均項間相關</div>
+              <div class="metric-value"><span id="mIIC">--</span></div>
+              <div class="metric-note">Mean Inter-Item r</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">樣本量</div>
+              <div class="metric-value"><span id="mN">--</span></div>
+              <div class="metric-note">N（有效）</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">題目數</div>
+              <div class="metric-value"><span id="mK">--</span></div>
+              <div class="metric-note">k items</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">總分均值</div>
+              <div class="metric-value"><span id="mTotMean">--</span></div>
+              <div class="metric-note">±<span id="mTotSd">--</span> SD</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>🧮 項目分析（Item Analysis）</h3>
+          <div class="table-wrap">
+            <table class="item-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Mean</th>
+                  <th>SD</th>
+                  <th>Item-Total r</th>
+                  <th>α if Deleted</th>
+                  <th>備註</th>
+                </tr>
+              </thead>
+              <tbody id="itemTable"></tbody>
+            </table>
+          </div>
+          <div class="field-hint" style="margin-top:14px;">
+            * Item-Total r 為「校正後項目-總分相關」(Corrected Item-Total Correlation)，已從總分中扣除該項貢獻；
+            一般建議 r ≥ .30，且刪除某題後 α 顯著上升時應重新審視該題。
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>📈 刪除題項後的 α 變化</h3>
+          <div id="alphaDelChart" style="margin-top:6px;"></div>
+        </div>
+
+        <div class="result-section">
+          <h3>🧭 結果解讀</h3>
+          <p id="interpretation" style="font-size:14px;line-height:1.85;color:#555;margin:0;"></p>
+        </div>
+
+        <div class="result-section">
+          <h3>💡 優化建議</h3>
+          <ul id="recommendations"></ul>
+        </div>
+
+        <div class="result-section">
+          <h3>📚 計算依據</h3>
+          <ul>
+            <li>Cronbach, L. J. (1951). Coefficient alpha and the internal structure of tests. <em>Psychometrika</em>, 16(3), 297–334.</li>
+            <li>Guttman, L. (1945). A basis for analyzing test-retest reliability. <em>Psychometrika</em>, 10, 255–282.</li>
+            <li>Nunnally, J. C., & Bernstein, I. H. (1994). <em>Psychometric Theory</em> (3rd ed.). McGraw-Hill.</li>
+            <li>DeVellis, R. F. (2017). <em>Scale Development: Theory and Applications</em> (4th ed.). Sage.</li>
+          </ul>
+        </div>
+
+        <div class="result-section disclaimer">
+          <strong>免責聲明　</strong>
+          本工具計算結果僅作為量表初步評估參考；正式研究中建議結合驗證性因子分析 (CFA)、
+          McDonald's ω 等指標綜合判斷量表的信效度。
+        </div>
+
+        <div class="form-nav">
+          <button type="button" class="btn-ghost-dark" onclick="location.reload()">重新分析</button>
+          <button type="button" class="btn-purple" onclick="window.print()">打印 / 保存 PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/reliability.js"></script>
+</body>
+</html>
