@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>研究倫理申請生成器 | Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    .tool-hero {
+      min-height: 520px;
+    }
+
+    .tool-hero .hero-lead {
+      max-width: 840px;
+    }
+
+    .ethics-section {
+      background: #f7f5ef;
+      padding: 90px 0;
+    }
+
+    .ethics-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.35fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .tool-card,
+    .result-card,
+    .recommend-card,
+    .info-card {
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.08);
+      border-radius: 22px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
+    }
+
+    .tool-card,
+    .result-card {
+      padding: 30px;
+    }
+
+    .tool-card {
+      position: sticky;
+      top: 24px;
+    }
+
+    .tool-card h2,
+    .result-card h2 {
+      color: #102235;
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+      margin: 8px 0 14px;
+    }
+
+    .tool-card p,
+    .result-card p {
+      color: #5f6b75;
+      line-height: 1.75;
+      margin: 0;
+    }
+
+    .ethics-form {
+      display: grid;
+      gap: 22px;
+      margin-top: 26px;
+    }
+
+    .form-block {
+      border-top: 1px solid rgba(16, 34, 53, 0.08);
+      padding-top: 22px;
+    }
+
+    .form-block:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .form-block h3 {
+      color: #102235;
+      font-size: 20px;
+      margin: 0 0 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-family: "Encode Sans", "Open Sans", sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #102235;
+      font-weight: 800;
+    }
+
+    .ethics-form input,
+    .ethics-form select,
+    .ethics-form textarea {
+      width: 100%;
+      border: 1px solid rgba(16, 34, 53, 0.16);
+      background: #fbfaf7;
+      color: #102235;
+      border-radius: 14px;
+      padding: 13px 14px;
+      font: inherit;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .ethics-form textarea {
+      min-height: 92px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    .ethics-form input:focus,
+    .ethics-form select:focus,
+    .ethics-form textarea:focus {
+      border-color: #c9a35a;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(201, 163, 90, 0.16);
+    }
+
+    .hint {
+      color: #7d8790;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .check-choice {
+      position: relative;
+    }
+
+    .check-choice input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .check-choice span {
+      display: block;
+      border: 1px solid rgba(16, 34, 53, 0.12);
+      background: #fbfaf7;
+      border-radius: 14px;
+      padding: 12px 13px;
+      color: #334155;
+      cursor: pointer;
+      font-weight: 700;
+      line-height: 1.4;
+      transition: all 0.2s ease;
+    }
+
+    .check-choice input:checked + span {
+      border-color: #c9a35a;
+      background: rgba(201, 163, 90, 0.12);
+      color: #102235;
+      box-shadow: inset 0 0 0 1px rgba(201, 163, 90, 0.25);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .btn-reset {
+      border: 1px solid rgba(16, 34, 53, 0.16);
+      background: transparent;
+      color: #102235;
+      border-radius: 999px;
+      padding: 13px 22px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-reset:hover {
+      background: rgba(16, 34, 53, 0.06);
+    }
+
+    .warning-box {
+      display: none;
+      margin-top: 16px;
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: #fff7e6;
+      color: #8a5a11;
+      border: 1px solid rgba(201, 163, 90, 0.28);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .warning-box.show {
+      display: block;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin: 22px 0 26px;
+    }
+
+    .metric {
+      background: #fbfaf7;
+      border: 1px solid rgba(16, 34, 53, 0.08);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .metric-label {
+      color: #7d8790;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-family: "Encode Sans", "Open Sans", sans-serif;
+      color: #102235;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .risk-pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 8px 13px;
+      background: #f1eadc;
+      color: #102235;
+      font-weight: 800;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .result-block {
+      margin-top: 30px;
+    }
+
+    .result-block h3 {
+      color: #102235;
+      font-size: 22px;
+      margin: 0 0 14px;
+      letter-spacing: -0.02em;
+    }
+
+    .recommend-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .recommend-card {
+      box-shadow: none;
+      padding: 18px;
+    }
+
+    .recommend-card h4 {
+      color: #102235;
+      margin: 0 0 8px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .recommend-card p {
+      color: #5f6b75;
+      margin: 0;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #f1eadc;
+      color: #102235;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .output-area {
+      width: 100%;
+      min-height: 560px;
+      border: 1px solid rgba(16, 34, 53, 0.12);
+      background: #fbfaf7;
+      border-radius: 18px;
+      padding: 18px;
+      color: #102235;
+      line-height: 1.7;
+      font-family: "Open Sans", sans-serif;
+      resize: vertical;
+      outline: none;
+    }
+
+    .output-area:focus {
+      border-color: #c9a35a;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(201, 163, 90, 0.16);
+    }
+
+    .method-section {
+      background: #ffffff;
+      padding: 86px 0;
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .info-card {
+      padding: 26px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.06);
+    }
+
+    .info-card .value-num {
+      color: #c9a35a;
+    }
+
+    .info-card h4 {
+      color: #102235;
+      margin: 8px 0 10px;
+      font-size: 20px;
+    }
+
+    .info-card p {
+      color: #5f6b75;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    @media (max-width: 1080px) {
+      .ethics-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-card {
+        position: static;
+      }
+
+      .dashboard-grid,
+      .method-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .form-grid,
+      .checkbox-grid,
+      .dashboard-grid,
+      .method-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-card,
+      .result-card {
+        padding: 22px;
+      }
+    }
+
+    @media print {
+      .utility-bar,
+      .main-header,
+      .hero,
+      .tool-card,
+      .method-section,
+      .mission-banner,
+      .footer,
+      .actions,
+      .recommend-list,
+      .dashboard-grid,
+      .risk-pill,
+      .result-card > .eyebrow,
+      .result-card > h2,
+      .result-card > p {
+        display: none !important;
+      }
+
+      .ethics-section {
+        background: #ffffff;
+        padding: 0;
+      }
+
+      .ethics-shell {
+        display: block;
+      }
+
+      .result-card {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+      }
+
+      .output-area {
+        border: none;
+        background: #ffffff;
+        min-height: auto;
+        white-space: pre-wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Utility Bar -->
+  <div class="utility-bar">
+    <div class="container utility-inner">
+      <span>HUGHIE'S ONLINE LAB</span>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html#modules">Tools</a>
+        <a href="#method">Method</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero tool-hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-inner">
+      <div class="hero-content">
+        <div class="hero-eyebrow">Research Ethics · IRB / REC Draft · Browser-based</div>
+        <h1>研究倫理申請<br><span class="hero-highlight">生成器</span></h1>
+        <p class="hero-lead">
+          幫助研究者快速整理倫理申請所需的核心內容，包括研究目的、參與者招募、知情同意、
+          風險控制、資料保護、AI 使用與研究者聲明。生成結果可複製、下載或列印。
+        </p>
+        <div class="hero-actions">
+          <a href="#ethicsTool" class="btn-gold">Start Drafting</a>
+          <a href="#method" class="btn-ghost">Read Method →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tool -->
+  <main id="ethicsTool" class="ethics-section">
+    <div class="container">
+      <div class="ethics-shell">
+
+        <section class="tool-card">
+          <div class="eyebrow">APPLICATION BUILDER</div>
+          <h2>填寫研究項目信息。</h2>
+          <p>
+            本工具生成的是倫理申請草稿，不替代你所在院校、期刊、資助方或 IRB / REC 的正式模板與審查要求。
+          </p>
+
+          <form id="ethicsForm" class="ethics-form" novalidate>
+
+            <div class="form-block">
+              <h3>01. 基本信息</h3>
+              <div class="form-grid">
+                <div class="form-group full">
+                  <label for="projectTitle">研究項目標題</label>
+                  <input id="projectTitle" type="text" placeholder="例：大學生數字健康素養與健康行為關係研究" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="piName">主要研究者</label>
+                  <input id="piName" type="text" placeholder="例：Dr. Hughie Tao" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="institution">所屬機構</label>
+                  <input id="institution" type="text" placeholder="例：澳門旅遊大學" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="department">學院 / 部門</label>
+                  <input id="department" type="text" placeholder="例：健康與旅遊管理學院">
+                </div>
+
+                <div class="form-group">
+                  <label for="discipline">研究領域</label>
+                  <select id="discipline">
+                    <option value="公共衛生">公共衛生</option>
+                    <option value="款待與旅遊">款待與旅遊</option>
+                    <option value="心理學與行為科學">心理學與行為科學</option>
+                    <option value="教育研究">教育研究</option>
+                    <option value="管理學與社會科學">管理學與社會科學</option>
+                    <option value="數字健康 / AI 研究">數字健康 / AI 研究</option>
+                    <option value="其他">其他</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="reviewType">預期審查類型</label>
+                  <select id="reviewType">
+                    <option value="未確定，由倫理委員會判定">未確定，由倫理委員會判定</option>
+                    <option value="豁免審查 / Exempt Review">豁免審查 / Exempt Review</option>
+                    <option value="快速審查 / Expedited Review">快速審查 / Expedited Review</option>
+                    <option value="完整審查 / Full Board Review">完整審查 / Full Board Review</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-block">
+              <h3>02. 研究內容</h3>
+              <div class="form-grid">
+                <div class="form-group full">
+                  <label for="summary">研究摘要</label>
+                  <textarea id="summary" placeholder="簡要說明研究背景、問題與研究重要性。" required></textarea>
+                </div>
+
+                <div class="form-group full">
+                  <label for="objectives">研究目的</label>
+                  <textarea id="objectives" placeholder="列出研究目的，例如：探討、比較、評估、建立模型等。" required></textarea>
+                </div>
+
+                <div class="form-group full">
+                  <label for="researchQuestions">研究問題 / 假設</label>
+                  <textarea id="researchQuestions" placeholder="例：RQ1... H1..."></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="studyDesign">研究設計</label>
+                  <select id="studyDesign">
+                    <option value="橫斷面問卷研究">橫斷面問卷研究</option>
+                    <option value="質性訪談研究">質性訪談研究</option>
+                    <option value="混合方法研究">混合方法研究</option>
+                    <option value="實驗 / 干預研究">實驗 / 干預研究</option>
+                    <option value="二手資料分析">二手資料分析</option>
+                    <option value="網絡資料 / 社交媒體研究">網絡資料 / 社交媒體研究</option>
+                    <option value="文獻綜述 / 系統綜述">文獻綜述 / 系統綜述</option>
+                    <option value="其他">其他</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="studyDuration">研究週期</label>
+                  <input id="studyDuration" type="text" placeholder="例：2026年1月至2026年6月">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-block">
+              <h3>03. 研究對象與招募</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="participants">研究對象</label>
+                  <input id="participants" type="text" placeholder="例：18歲及以上大學生 / 酒店從業者 / 旅客" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="sampleSize">預計樣本量</label>
+                  <input id="sampleSize" type="number" min="1" placeholder="例：300">
+                </div>
+
+                <div class="form-group full">
+                  <label for="inclusionCriteria">納入標準</label>
+                  <textarea id="inclusionCriteria" placeholder="例：年滿18歲；能閱讀中文；自願參與研究。"></textarea>
+                </div>
+
+                <div class="form-group full">
+                  <label for="exclusionCriteria">排除標準</label>
+                  <textarea id="exclusionCriteria" placeholder="例：無法提供知情同意；重複填答；資料明顯無效。"></textarea>
+                </div>
+
+                <div class="form-group full">
+                  <label>特殊或脆弱群體</label>
+                  <div class="checkbox-grid">
+                    <label class="check-choice">
+                      <input type="checkbox" name="vulnerableGroups" value="未成年人">
+                      <span>未成年人</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="vulnerableGroups" value="孕婦">
+                      <span>孕婦</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="vulnerableGroups" value="患者或醫療服務使用者">
+                      <span>患者或醫療服務使用者</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="vulnerableGroups" value="員工 / 學生等可能存在權力關係者">
+                      <span>員工 / 學生等權力關係者</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="vulnerableGroups" value="低收入或弱勢社群">
+                      <span>低收入或弱勢社群</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="vulnerableGroups" value="無">
+                      <span>無特殊群體</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group full">
+                  <label for="recruitment">招募方式</label>
+                  <textarea id="recruitment" placeholder="例：通過課堂公告、電子郵件、社交媒體海報或合作機構轉發招募資訊。"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-block">
+              <h3>04. 資料收集與研究程序</h3>
+              <div class="form-grid">
+                <div class="form-group full">
+                  <label>資料收集方法</label>
+                  <div class="checkbox-grid">
+                    <label class="check-choice">
+                      <input type="checkbox" name="methods" value="問卷調查">
+                      <span>問卷調查</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="methods" value="半結構式訪談">
+                      <span>半結構式訪談</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="methods" value="焦點小組">
+                      <span>焦點小組</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="methods" value="觀察法">
+                      <span>觀察法</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="methods" value="實驗 / 干預">
+                      <span>實驗 / 干預</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="methods" value="二手資料分析">
+                      <span>二手資料分析</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="methods" value="網絡公開資料 / 社交媒體資料">
+                      <span>網絡公開資料 / 社交媒體資料</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="methods" value="錄音 / 錄像">
+                      <span>錄音 / 錄像</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group full">
+                  <label for="procedure">研究程序</label>
+                  <textarea id="procedure" placeholder="描述參與者會經歷什麼步驟、每一步需要多久、在哪裡或通過什麼平台完成。"></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="timeBurden">參與所需時間</label>
+                  <input id="timeBurden" type="text" placeholder="例：約10–15分鐘">
+                </div>
+
+                <div class="form-group">
+                  <label for="incentive">參與補償 / 獎勵</label>
+                  <input id="incentive" type="text" placeholder="例：無 / 抽獎 / 小額禮券">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-block">
+              <h3>05. 資料、隱私與 AI 使用</h3>
+              <div class="form-grid">
+                <div class="form-group full">
+                  <label>可能收集的資料類型</label>
+                  <div class="checkbox-grid">
+                    <label class="check-choice">
+                      <input type="checkbox" name="dataTypes" value="人口學資料">
+                      <span>人口學資料</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="dataTypes" value="健康相關資料">
+                      <span>健康相關資料</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="dataTypes" value="心理或情緒資料">
+                      <span>心理或情緒資料</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="dataTypes" value="工作或學業表現資料">
+                      <span>工作或學業表現資料</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="dataTypes" value="聯絡資料">
+                      <span>聯絡資料</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="dataTypes" value="音頻 / 視頻資料">
+                      <span>音頻 / 視頻資料</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="dataTypes" value="網絡行為或社交媒體資料">
+                      <span>網絡行為或社交媒體資料</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="dataTypes" value="匿名問卷資料">
+                      <span>匿名問卷資料</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group full">
+                  <label>資料保護措施</label>
+                  <div class="checkbox-grid">
+                    <label class="check-choice">
+                      <input type="checkbox" name="privacyMeasures" value="匿名化或去識別化處理">
+                      <span>匿名化 / 去識別化</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="privacyMeasures" value="加密儲存">
+                      <span>加密儲存</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="privacyMeasures" value="限制研究團隊成員訪問">
+                      <span>限制訪問權限</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="privacyMeasures" value="資料與聯絡方式分開保存">
+                      <span>資料與聯絡方式分開保存</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="privacyMeasures" value="使用密碼保護設備或雲端空間">
+                      <span>密碼保護</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="privacyMeasures" value="只報告匯總結果">
+                      <span>只報告匯總結果</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="retention">資料保存期限</label>
+                  <select id="retention">
+                    <option value="研究完成後保存1年，之後安全刪除">1 年</option>
+                    <option value="研究完成後保存3年，之後安全刪除">3 年</option>
+                    <option value="研究完成後保存5年，之後安全刪除" selected>5 年</option>
+                    <option value="依機構政策保存，期滿後安全刪除">依機構政策</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="dataStorage">資料儲存位置</label>
+                  <input id="dataStorage" type="text" placeholder="例：機構加密雲端硬碟 / 研究者加密電腦">
+                </div>
+
+                <div class="form-group">
+                  <label for="aiUse">是否使用 AI 工具</label>
+                  <select id="aiUse">
+                    <option value="不使用 AI 工具">不使用 AI 工具</option>
+                    <option value="使用 AI 輔助文獻整理 / 語言潤色">使用 AI 輔助文獻整理 / 語言潤色</option>
+                    <option value="使用 AI 輔助資料分析">使用 AI 輔助資料分析</option>
+                    <option value="使用 AI 與參與者互動或生成研究材料">使用 AI 與參與者互動或生成研究材料</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="crossBorder">是否跨境傳輸資料</label>
+                  <select id="crossBorder">
+                    <option value="否">否</option>
+                    <option value="是，需進一步說明資料傳輸與保護措施">是</option>
+                    <option value="未確定">未確定</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-block">
+              <h3>06. 知情同意、風險與利益</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="consentMode">知情同意方式</label>
+                  <select id="consentMode">
+                    <option value="線上知情同意">線上知情同意</option>
+                    <option value="書面知情同意">書面知情同意</option>
+                    <option value="口頭知情同意">口頭知情同意</option>
+                    <option value="申請豁免知情同意">申請豁免知情同意</option>
+                    <option value="視研究情境另行說明">視研究情境另行說明</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="withdrawal">退出機制</label>
+                  <input id="withdrawal" type="text" placeholder="例：參與者可在提交前隨時退出；提交後可於兩週內聯繫研究者撤回資料。">
+                </div>
+
+                <div class="form-group full">
+                  <label>潛在倫理風險</label>
+                  <div class="checkbox-grid">
+                    <label class="check-choice">
+                      <input type="checkbox" name="riskFlags" value="涉及敏感個人資料">
+                      <span>敏感個人資料</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="riskFlags" value="可能引起心理不適">
+                      <span>心理不適</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="riskFlags" value="存在權力關係或招募壓力">
+                      <span>權力關係 / 招募壓力</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="riskFlags" value="涉及欺瞞或不完全告知">
+                      <span>欺瞞 / 不完全告知</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="riskFlags" value="涉及干預或實驗操作">
+                      <span>干預 / 實驗操作</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="riskFlags" value="涉及公開網絡資料但可能存在再識別風險">
+                      <span>網絡資料再識別風險</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="riskFlags" value="涉及跨境資料傳輸">
+                      <span>跨境資料傳輸</span>
+                    </label>
+                    <label class="check-choice">
+                      <input type="checkbox" name="riskFlags" value="無明顯高於日常生活的風險">
+                      <span>無明顯高於日常生活風險</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group full">
+                  <label for="riskMitigation">風險控制措施</label>
+                  <textarea id="riskMitigation" placeholder="描述如何減少心理壓力、保障自願參與、避免識別個人身份、提供支援資源等。"></textarea>
+                </div>
+
+                <div class="form-group full">
+                  <label for="benefits">預期利益</label>
+                  <textarea id="benefits" placeholder="說明參與者、研究領域、實踐機構或社會可能獲得的直接或間接利益。"></textarea>
+                </div>
+
+                <div class="form-group full">
+                  <label for="dissemination">研究成果發布方式</label>
+                  <textarea id="dissemination" placeholder="例：學術論文、會議報告、課題報告；所有結果以匯總形式呈現。"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div id="formWarning" class="warning-box"></div>
+
+            <div class="actions">
+              <button type="submit" class="btn-gold">生成倫理申請草稿</button>
+              <button type="reset" class="btn-reset">Reset</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="result-card" aria-live="polite">
+          <div class="eyebrow">GENERATED APPLICATION</div>
+          <h2 id="resultTitle">等待生成。</h2>
+          <p id="resultLead">
+            完成左側表單後，這裡會顯示倫理風險層級、補充建議與完整申請草稿。
+          </p>
+          <div id="riskPill" class="risk-pill">尚未評估</div>
+
+          <div class="dashboard-grid">
+            <div class="metric">
+              <div class="metric-label">Risk Level</div>
+              <div id="metricRisk" class="metric-value">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Sections</div>
+              <div id="metricSections" class="metric-value">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Consent</div>
+              <div id="metricConsent" class="metric-value">—</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Data</div>
+              <div id="metricData" class="metric-value">—</div>
+            </div>
+          </div>
+
+          <div class="result-block">
+            <h3>倫理補充建議</h3>
+            <div id="recommendList" class="recommend-list"></div>
+          </div>
+
+          <div class="result-block">
+            <h3>申請草稿</h3>
+            <textarea id="generatedOutput" class="output-area" spellcheck="false"></textarea>
+          </div>
+
+          <div class="actions">
+            <button id="copyBtn" type="button" class="btn-gold">複製草稿</button>
+            <button id="downloadBtn" type="button" class="btn-reset">下載 TXT</button>
+            <button id="printBtn" type="button" class="btn-reset">列印 / 另存 PDF</button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Method -->
+  <section id="method" class="method-section">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">METHOD</div>
+        <h2>這個工具如何生成倫理申請？</h2>
+        <p class="section-sub">
+          本工具採用規則式文本生成邏輯，協助研究者整理常見倫理申請內容。正式提交前，請依照所在機構模板逐項核對。
+        </p>
+      </div>
+
+      <div class="method-grid">
+        <div class="info-card">
+          <div class="value-num">01</div>
+          <h4>結構化整理</h4>
+          <p>
+            將研究目的、方法、參與者、招募、知情同意、風險、資料保護與成果發布整理成倫理申請常見段落。
+          </p>
+        </div>
+
+        <div class="info-card">
+          <div class="value-num">02</div>
+          <h4>風險提示</h4>
+          <p>
+            根據脆弱群體、敏感資料、錄音錄像、AI 使用、跨境資料與干預研究等因素生成風險層級與補充建議。
+          </p>
+        </div>
+
+        <div class="info-card">
+          <div class="value-num">03</div>
+          <h4>本地生成</h4>
+          <p>
+            所有內容均在瀏覽器本地生成，不上傳研究資料。請在正式提交前刪改不適用內容並加入機構要求的附件。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission Banner -->
+  <section class="mission-banner">
+    <div class="container mission-inner">
+      <div class="mission-quote">"</div>
+      <p class="mission-text">
+        Ethical research begins before data collection — in how we protect people, context, and trust.
+      </p>
+      <div class="mission-by">— HUGHIE'S ONLINE LAB</div>
+    </div>
+  </section>
+
+  <!-- Contact / Footer -->
+  <footer id="contact" class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+
+      <div class="footer-contact">
+        <h5>Contact</h5>
+        <div class="contact-item">
+          <div class="contact-label">EMAIL</div>
+          <a href="mailto:hughietao@utm.edu.mo">hughietao@utm.edu.mo</a>
+        </div>
+        <div class="contact-item">
+          <div class="contact-label">OFFICE</div>
+          <p>中國澳門特別行政區氹仔徐日昇寅公馬路<br>澳門旅遊大學　耀東樓 508C 辦公室</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute legal, institutional, or ethics-board advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/research-ethics-application-generator.js"></script>
+</body>
+</html>
