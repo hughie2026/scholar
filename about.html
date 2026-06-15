@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:720px;}
+    .about-section{padding:70px 0;}
+    .about-section + .about-section{border-top:1px solid #ece5d3;}
+    .section-light-bg{background:#faf7f0;}
+    .two-col{display:grid;grid-template-columns:1fr 1.3fr;gap:60px;align-items:start;}
+    .two-col h2{font-size:32px;margin:8px 0 20px;color:#1a1a1a;}
+    .two-col p{color:#555;line-height:1.85;margin-bottom:14px;}
+    @media(max-width:860px){.two-col{grid-template-columns:1fr;gap:30px;}}
+    .pillar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:30px;}
+    .pillar{background:#fff;border:1px solid #ece5d3;border-top:3px solid #c9a961;padding:28px;}
+    .pillar h4{font-size:17px;color:#1a1a1a;margin:8px 0 10px;}
+    .pillar p{font-size:14px;color:#555;line-height:1.7;}
+    .pillar .num{font-size:13px;color:#c9a961;font-weight:700;letter-spacing:1.5px;}
+    .timeline{margin-top:30px;}
+    .tl-item{display:grid;grid-template-columns:120px 1fr;gap:24px;padding:18px 0;border-bottom:1px solid #ece5d3;}
+    .tl-item:last-child{border-bottom:none;}
+    .tl-year{color:#c9a961;font-weight:700;letter-spacing:1px;}
+    .tl-content h5{font-size:16px;color:#1a1a1a;margin:0 0 6px;}
+    .tl-content p{font-size:14px;color:#555;line-height:1.7;margin:0;}
+    .founder-card{background:#fff;border:1px solid #ece5d3;padding:32px;}
+    .founder-card h3{font-size:22px;color:#1a1a1a;margin:0 0 6px;}
+    .founder-card .role{color:#c9a961;font-size:13px;letter-spacing:1.5px;font-weight:700;margin-bottom:18px;}
+    .founder-card p{font-size:14px;color:#555;line-height:1.8;}
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html" class="active">About</a>
+        <a href="tools.html">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="eyebrow">ABOUT THE LAB</div>
+      <h1>把學術成果，<br>還給每一個願意思考的人。</h1>
+      <p class="lead">
+        Hughie's Online Lab 是一個獨立運作的線上研究與工具實驗室，致力於把公共衛生、行為科學與款待研究中的學術方法，
+        轉化為任何人都能直接使用的互動工具。我們相信知識不應被學術圍牆隔斷，
+        而每一次嚴謹計算，都應該服務於真實的健康決策。
+      </p>
+    </div>
+  </section>
+
+  <section class="about-section">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <div class="eyebrow">OUR STORY</div>
+          <h2>從一個問題開始。</h2>
+        </div>
+        <div>
+          <p>
+            實驗室的雛形，源於一個常見卻被忽視的觀察：學術界每年產出數以萬計的量表、模型與評估工具，
+            但其中絕大多數被鎖在 PDF、附錄與付費資料庫裡，無法觸達真正需要它們的個人、家庭與基層工作者。
+          </p>
+          <p>
+            2024 年起，我們開始將一些經典且公開的研究方法重新編寫成輕量級的網頁工具，
+            從個人健康素養評估、心血管風險計算，到研究倫理草稿生成器，
+            希望讓任何擁有一台聯網設備的人，都能進行一次認真的自我評估或學術探索。
+          </p>
+          <p>
+            我們不是一家公司，也不收取任何使用費用。所有工具背後的演算法均引用自公開發表的學術文獻，
+            計算過程完全在你的瀏覽器中完成，不上傳、不儲存、不追蹤。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section section-light-bg">
+    <div class="container">
+      <div class="eyebrow">WHAT WE BELIEVE</div>
+      <h2 style="font-size:32px;color:#1a1a1a;margin:8px 0 8px;">四個原則。</h2>
+      <p style="color:#555;max-width:680px;line-height:1.75;">這些原則不是宣言，而是我們在每一行代碼、每一次選擇背後的判斷依據。</p>
+
+      <div class="pillar-grid">
+        <div class="pillar">
+          <div class="num">01</div>
+          <h4>開放取用</h4>
+          <p>所有工具免費開放，不註冊、不收費、不投放廣告。我們相信公共健康知識是公共物品。</p>
+        </div>
+        <div class="pillar">
+          <div class="num">02</div>
+          <h4>實證為本</h4>
+          <p>每一個計算邏輯都引用自公開發表的學術文獻，我們在工具頁面標註出處，讓使用者可追溯、可驗證。</p>
+        </div>
+        <div class="pillar">
+          <div class="num">03</div>
+          <h4>隱私優先</h4>
+          <p>所有計算在使用者瀏覽器中完成，數據不離開你的設備，我們不蒐集、不上傳、不分析任何個人資料。</p>
+        </div>
+        <div class="pillar">
+          <div class="num">04</div>
+          <h4>謙遜邊界</h4>
+          <p>工具用於資訊參考與自我探索，不替代專業醫療、法律或學術建議。我們在每個工具中明確標註其侷限。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section">
+    <div class="container">
+      <div class="two-col">
+        <div>
+          <div class="eyebrow">FOUNDER</div>
+          <h2>關於主理人。</h2>
+        </div>
+        <div class="founder-card">
+          <h3>Dr. Hughie Tao, Xiaoyu</h3>
+          <div class="role">FOUNDER · RESEARCHER</div>
+          <p>
+            陶曉宇博士，現任教於澳門旅遊大學，研究方向涵蓋公共衛生、健康行為、款待學科前沿與研究方法論。
+            長期關注如何將學術研究轉化為公眾可用的工具，並推動開放科學與循證實踐的交叉應用。
+          </p>
+          <p>
+            Hughie's Online Lab 由其於業餘時間獨立搭建與維護，所有工具均為非商業性質的學術公益項目。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section section-light-bg">
+    <div class="container">
+      <div class="eyebrow">MILESTONES</div>
+      <h2 style="font-size:32px;color:#1a1a1a;margin:8px 0 24px;">一條時間線。</h2>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">2024 春</div>
+          <div class="tl-content">
+            <h5>實驗室構想成形</h5>
+            <p>從一個關於"健康素養可不可以線上自測"的小問題開始，第一個原型工具誕生。</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2024 秋</div>
+          <div class="tl-content">
+            <h5>首批工具上線</h5>
+            <p>個人健康素養評估、ASCVD 心血管風險計算器等首批工具陸續開放給公眾使用。</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2025 春</div>
+          <div class="tl-content">
+            <h5>學術工具線拓展</h5>
+            <p>加入款待學科與公共衛生研究熱點推薦器、研究倫理申請生成器，服務於青年研究者。</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2025 冬</div>
+          <div class="tl-content">
+            <h5>引入即時數據儀表板</h5>
+            <p>整合公開環境與健康 API，於主頁呈現空氣質量、紫外線、花粉與體感氣象等動態指標。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
