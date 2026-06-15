@@ -3,52 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>款待學科學術熱點推薦器 | Hughie's Online Lab</title>
+  <title>學術熱點推薦器 | Hughie's Online Lab</title>
   <link rel="stylesheet" href="assets/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    .tool-hero {
-      min-height: 520px;
+    /* ===== Hero ===== */
+    .tool-hero { min-height: 540px; position: relative; overflow: hidden; }
+    .tool-hero .hero-lead { max-width: 820px; }
+    .hero-disciplines {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 22px 0 28px;
+    }
+    .hero-disciplines span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.86);
+      backdrop-filter: blur(6px);
     }
 
-    .tool-hero .hero-lead {
-      max-width: 820px;
-    }
-
+    /* ===== Section ===== */
     .trend-section {
-      background: #f7f5ef;
-      padding: 90px 0;
+      background: linear-gradient(180deg, #f7f5ef 0%, #f1ede2 100%);
+      padding: 90px 0 100px;
     }
-
     .trend-shell {
       display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
-      gap: 28px;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.65fr);
+      gap: 30px;
       align-items: start;
     }
 
-    .panel,
-    .result-panel,
-    .hotspot-card,
-    .paper-card,
-    .branch-card {
-      background: #ffffff;
-      border: 1px solid rgba(16, 34, 53, 0.08);
-      border-radius: 22px;
-      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
-    }
-
+    /* ===== Cards ===== */
     .panel,
     .result-panel {
-      padding: 28px;
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+      border-radius: 24px;
+      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.08);
+      padding: 30px;
     }
-
-    .panel {
-      position: sticky;
-      top: 24px;
-    }
-
+    .panel { position: sticky; top: 24px; }
     .panel h2,
     .result-panel h2 {
       color: #102235;
@@ -57,49 +60,35 @@
       letter-spacing: -0.04em;
       margin: 8px 0 14px;
     }
-
     .panel p,
-    .result-panel p {
-      color: #5f6b75;
-      line-height: 1.75;
-      margin: 0;
-    }
+    .result-panel p { color: #5f6b75; line-height: 1.75; margin: 0; }
 
-    .control-group {
-      margin-top: 22px;
-    }
-
+    /* ===== Form Controls ===== */
+    .control-group { margin-top: 22px; }
     .control-group label {
       display: block;
       font-family: "Encode Sans", "Open Sans", sans-serif;
-      font-size: 12px;
-      letter-spacing: 0.1em;
+      font-size: 11px;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: #102235;
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-
     .control-group select,
     .control-group input,
     .control-group textarea {
       width: 100%;
-      border: 1px solid rgba(16, 34, 53, 0.16);
+      border: 1px solid rgba(16, 34, 53, 0.14);
       background: #fbfaf7;
       color: #102235;
       border-radius: 14px;
       padding: 13px 14px;
       font: inherit;
       outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      transition: all 0.2s ease;
     }
-
-    .control-group textarea {
-      min-height: 86px;
-      resize: vertical;
-      line-height: 1.65;
-    }
-
+    .control-group textarea { min-height: 86px; resize: vertical; line-height: 1.65; }
     .control-group select:focus,
     .control-group input:focus,
     .control-group textarea:focus {
@@ -107,54 +96,71 @@
       background: #ffffff;
       box-shadow: 0 0 0 4px rgba(201, 163, 90, 0.16);
     }
+    .hint { color: #7d8790; font-size: 13px; line-height: 1.6; margin-top: 8px; }
 
-    .hint {
-      color: #7d8790;
-      font-size: 13px;
-      line-height: 1.6;
-      margin-top: 8px;
-    }
-
+    /* ===== Branch Tabs ===== */
     .branch-tabs {
       display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      margin-top: 14px;
+      margin-top: 6px;
     }
-
     .branch-tab {
-      border: 1px solid rgba(16, 34, 53, 0.12);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid rgba(16, 34, 53, 0.1);
       background: #fbfaf7;
       border-radius: 16px;
-      padding: 13px 14px;
+      padding: 12px 14px;
       cursor: pointer;
-      color: #334155;
       text-align: left;
-      font-weight: 800;
-      transition: all 0.2s ease;
+      transition: all 0.22s ease;
+      position: relative;
     }
-
-    .branch-tab span {
+    .branch-tab .icon {
+      width: 36px; height: 36px;
+      display: grid; place-items: center;
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.08);
+      border-radius: 11px;
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: all 0.22s ease;
+    }
+    .branch-tab .label {
+      font-weight: 800; color: #102235;
+      font-size: 13.5px; line-height: 1.25;
+    }
+    .branch-tab .label small {
       display: block;
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 11px; font-weight: 600;
       color: #7d8790;
-      margin-top: 3px;
+      margin-top: 2px;
+      letter-spacing: 0.04em;
     }
-
-    .branch-tab.active,
     .branch-tab:hover {
-      background: rgba(201, 163, 90, 0.12);
+      border-color: rgba(201, 163, 90, 0.6);
+      transform: translateY(-1px);
+    }
+    .branch-tab.active {
+      background: linear-gradient(180deg, #ffffff 0%, #fbf4e4 100%);
       border-color: #c9a35a;
-      color: #102235;
+      box-shadow: 0 8px 24px rgba(201, 163, 90, 0.2);
+    }
+    .branch-tab.active .icon {
+      background: #c9a35a;
+      border-color: #c9a35a;
+      color: #ffffff;
     }
 
+    /* ===== Actions ===== */
     .actions {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 24px;
+      margin-top: 26px;
     }
-
     .btn-reset {
       border: 1px solid rgba(16, 34, 53, 0.16);
       background: transparent;
@@ -165,75 +171,100 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
+    .btn-reset:hover { background: rgba(16, 34, 53, 0.06); }
+    .btn-gold[disabled],
+    .btn-reset[disabled] { opacity: 0.55; cursor: not-allowed; }
 
-    .btn-reset:hover {
-      background: rgba(16, 34, 53, 0.06);
-    }
-
+    /* ===== Status ===== */
     .status-box {
       display: none;
       margin-top: 18px;
-      border-radius: 16px;
-      padding: 14px 16px;
+      border-radius: 14px;
+      padding: 13px 16px;
       background: #fbfaf7;
       color: #5f6b75;
       border: 1px solid rgba(16, 34, 53, 0.08);
-      line-height: 1.65;
-      font-size: 14px;
+      line-height: 1.6;
+      font-size: 13.5px;
     }
-
-    .status-box.show {
-      display: block;
-    }
-
+    .status-box.show { display: block; }
     .status-box.warning {
       background: #fff7e6;
       color: #8a5a11;
-      border-color: rgba(201, 163, 90, 0.28);
+      border-color: rgba(201, 163, 90, 0.3);
+    }
+    .status-box.error {
+      background: #fdecec;
+      color: #9a2929;
+      border-color: rgba(154, 41, 41, 0.25);
     }
 
+    /* ===== Metrics ===== */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
-      margin: 22px 0 26px;
+      margin: 24px 0 28px;
     }
-
     .metric {
       background: #fbfaf7;
       border: 1px solid rgba(16, 34, 53, 0.08);
       border-radius: 18px;
-      padding: 18px;
+      padding: 18px 18px 20px;
+      position: relative;
+      overflow: hidden;
     }
-
+    .metric::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 32px; height: 3px;
+      background: #c9a35a;
+      border-radius: 0 0 4px 0;
+    }
     .metric-label {
       color: #7d8790;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-
     .metric-value {
       font-family: "Encode Sans", "Open Sans", sans-serif;
       color: #102235;
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 800;
       letter-spacing: -0.04em;
+      line-height: 1.1;
+    }
+    .metric-value small {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #7d8790;
+      margin-top: 4px;
+      letter-spacing: 0;
     }
 
-    .result-block {
-      margin-top: 30px;
-    }
-
+    /* ===== Result Blocks ===== */
+    .result-block { margin-top: 32px; }
     .result-block h3 {
       color: #102235;
-      font-size: 22px;
-      margin: 0 0 14px;
+      font-size: 21px;
+      margin: 0 0 16px;
       letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-
+    .result-block h3::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 20px;
+      background: #c9a35a;
+      border-radius: 2px;
+    }
     .hotspot-list,
     .paper-list,
     .branch-list,
@@ -242,155 +273,290 @@
       gap: 14px;
     }
 
-    .hotspot-card,
-    .paper-card,
-    .branch-card {
-      box-shadow: none;
-      padding: 18px;
-    }
-
-    .hotspot-top {
-      display: flex;
-      justify-content: space-between;
+    /* ===== Hotspot Card ===== */
+    .hotspot-card {
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.08);
+      border-radius: 18px;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 48px 1fr;
       gap: 16px;
-      align-items: flex-start;
+      transition: all 0.2s ease;
     }
-
-    .hotspot-card h4,
-    .paper-card h4,
-    .branch-card h4 {
-      color: #102235;
-      margin: 0 0 8px;
-      font-size: 18px;
-      line-height: 1.35;
+    .hotspot-card:hover {
+      border-color: rgba(201, 163, 90, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
     }
-
-    .score-pill,
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      padding: 6px 10px;
-      background: #f1eadc;
-      color: #102235;
-      font-size: 12px;
+    .hotspot-rank {
+      font-family: "Encode Sans", sans-serif;
+      font-size: 28px;
       font-weight: 800;
-      white-space: nowrap;
+      color: #c9a35a;
+      letter-spacing: -0.04em;
+      line-height: 1;
     }
-
-    .tag-row {
+    .hotspot-body h4 {
+      color: #102235;
+      margin: 0 0 6px;
+      font-size: 17px;
+      line-height: 1.4;
+    }
+    .hotspot-body p {
+      color: #5f6b75;
+      margin: 0;
+      line-height: 1.7;
+      font-size: 13.5px;
+    }
+    .hotspot-meta {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 12px;
+      align-items: center;
+    }
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 5px 12px;
+      background: linear-gradient(135deg, #f1eadc 0%, #e8dcb9 100%);
+      color: #6b4a16;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .score-pill::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: #c9a35a;
+      border-radius: 50%;
+    }
+    .tag {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 5px 11px;
+      background: #f7f5ef;
+      color: #102235;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid rgba(16, 34, 53, 0.06);
     }
 
-    .hotspot-card p,
-    .paper-card p,
-    .branch-card p {
-      color: #5f6b75;
-      margin: 0;
-      line-height: 1.7;
-      font-size: 14px;
+    /* ===== Paper Card ===== */
+    .paper-card {
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.08);
+      border-radius: 18px;
+      padding: 20px;
+      transition: all 0.2s ease;
     }
-
+    .paper-card:hover {
+      border-color: rgba(201, 163, 90, 0.4);
+      transform: translateY(-2px);
+    }
     .paper-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
       color: #7d8790;
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
       margin-bottom: 10px;
+      text-transform: uppercase;
     }
-
-    .paper-card a {
-      color: #102235;
-      text-decoration: none;
-    }
-
-    .paper-card a:hover {
+    .paper-meta span { display: inline-flex; align-items: center; }
+    .paper-meta span + span::before {
+      content: '·';
+      margin: 0 6px;
       color: #c9a35a;
     }
+    .paper-card h4 {
+      color: #102235;
+      margin: 0 0 8px;
+      font-size: 16.5px;
+      line-height: 1.45;
+    }
+    .paper-card a { color: #102235; text-decoration: none; transition: color 0.2s ease; }
+    .paper-card a:hover { color: #c9a35a; }
+    .paper-card p {
+      color: #5f6b75;
+      margin: 0;
+      line-height: 1.7;
+      font-size: 13.5px;
+    }
+    .paper-authors {
+      color: #5f6b75;
+      font-size: 13px;
+      margin: 0 0 8px;
+      font-style: italic;
+    }
 
-    .idea-box {
-      background: #102235;
+    /* ===== Branch Summary Card ===== */
+    .branch-card {
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.08);
+      border-radius: 18px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .branch-card .icon {
+      width: 44px; height: 44px;
+      display: grid; place-items: center;
+      background: #fbfaf7;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+      border-radius: 12px;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .branch-card-body { flex: 1; min-width: 0; }
+    .branch-card h4 {
+      color: #102235;
+      margin: 0 0 4px;
+      font-size: 15px;
+    }
+    .branch-card p {
+      color: #5f6b75;
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .branch-bar {
+      width: 100%;
+      height: 6px;
+      background: #f1ede2;
+      border-radius: 999px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .branch-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #c9a35a 0%, #e8c884 100%);
+      border-radius: 999px;
+      transition: width 0.6s ease;
+    }
+
+    /* ===== Idea Card ===== */
+    .idea-card {
+      background: linear-gradient(135deg, #102235 0%, #1a324b 100%);
       color: #ffffff;
       border-radius: 20px;
       padding: 22px;
+      position: relative;
+      overflow: hidden;
     }
-
-    .idea-box h4 {
+    .idea-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(201, 163, 90, 0.18) 0%, transparent 70%);
+    }
+    .idea-num {
+      font-family: "Encode Sans", sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: #c9a35a;
+      margin-bottom: 8px;
+    }
+    .idea-card h4 {
       margin: 0 0 8px;
       color: #ffffff;
-      font-size: 18px;
+      font-size: 17px;
+      line-height: 1.4;
+      position: relative;
     }
-
-    .idea-box p {
+    .idea-card p {
       margin: 0;
       color: rgba(255, 255, 255, 0.78);
       line-height: 1.75;
+      font-size: 13.5px;
+      position: relative;
     }
 
-    .method-section {
+    /* ===== Skeleton ===== */
+    .skeleton {
+      background: linear-gradient(90deg, #f1ede2 0%, #f7f5ef 50%, #f1ede2 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 12px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .skeleton-card {
       background: #ffffff;
-      padding: 86px 0;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+      border-radius: 18px;
+      padding: 20px;
+    }
+    .skeleton-line { height: 14px; margin-bottom: 10px; }
+    .skeleton-line.w-50 { width: 50%; }
+    .skeleton-line.w-80 { width: 80%; }
+    .skeleton-line.w-30 { width: 30%; }
+
+    .fade-in { animation: fadeIn 0.45s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
+    /* ===== Empty state ===== */
+    .empty-hint {
+      color: #9aa3ac;
+      font-size: 14px;
+      padding: 18px 0;
+      text-align: center;
+    }
+
+    /* ===== Method ===== */
+    .method-section { background: #ffffff; padding: 90px 0; }
     .method-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 22px;
     }
-
     .info-card {
       background: #ffffff;
       border: 1px solid rgba(16, 34, 53, 0.08);
       border-radius: 22px;
-      padding: 26px;
+      padding: 28px;
       box-shadow: 0 24px 70px rgba(15, 23, 42, 0.06);
+      transition: transform 0.25s ease;
     }
-
+    .info-card:hover { transform: translateY(-4px); }
     .info-card .value-num {
       color: #c9a35a;
+      font-family: "Encode Sans", sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.12em;
     }
-
     .info-card h4 {
       color: #102235;
-      margin: 8px 0 10px;
+      margin: 10px 0 12px;
       font-size: 20px;
     }
+    .info-card p { color: #5f6b75; line-height: 1.7; margin: 0; }
 
-    .info-card p {
-      color: #5f6b75;
-      line-height: 1.7;
-      margin: 0;
-    }
-
+    /* ===== Responsive ===== */
     @media (max-width: 1080px) {
-      .trend-shell {
-        grid-template-columns: 1fr;
-      }
-
-      .panel {
-        position: static;
-      }
-
-      .dashboard-grid,
-      .method-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+      .trend-shell { grid-template-columns: 1fr; }
+      .panel { position: static; }
+      .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+      .method-grid { grid-template-columns: repeat(2, 1fr); }
     }
-
     @media (max-width: 680px) {
-      .dashboard-grid,
-      .method-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .panel,
-      .result-panel {
-        padding: 22px;
-      }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .method-grid { grid-template-columns: 1fr; }
+      .branch-tabs { grid-template-columns: 1fr; }
+      .panel, .result-panel { padding: 22px; }
     }
   </style>
 </head>
@@ -426,12 +592,20 @@
     <div class="hero-bg"></div>
     <div class="container hero-inner">
       <div class="hero-content">
-        <div class="hero-eyebrow">Hospitality · Research Trends · Real-time Retrieval</div>
-        <h1>款待學科<br><span class="hero-highlight">學術熱點推薦器</span></h1>
+        <div class="hero-eyebrow">Multi-discipline · Research Trends · Real-time Retrieval</div>
+        <h1>學術熱點<br><span class="hero-highlight">推薦器</span></h1>
         <p class="hero-lead">
-          基於公開學術資料庫的即時檢索，快速掃描款待學科不同分支的近期研究主題、
-          高頻關鍵詞與代表性文獻，幫助研究者形成選題靈感與文獻追蹤線索。
+          基於公開學術資料庫的即時檢索，跨六大學科分支掃描近期研究主題、高頻關鍵詞與代表性文獻，
+          幫助研究者快速形成選題靈感與文獻追蹤線索。
         </p>
+        <div class="hero-disciplines">
+          <span>🏥 公共衛生</span>
+          <span>💊 健康管理</span>
+          <span>🏨 款待科學</span>
+          <span>🎪 會展管理</span>
+          <span>🥗 食品與營養</span>
+          <span>✈️ 旅遊科學</span>
+        </div>
         <div class="hero-actions">
           <a href="#trendTool" class="btn-gold">Start Discovery</a>
           <a href="#method" class="btn-ghost">Read Method →</a>
@@ -448,12 +622,10 @@
         <aside class="panel">
           <div class="eyebrow">DISCOVERY SETTINGS</div>
           <h2>選擇學科分支。</h2>
-          <p>
-            系統會根據分支關鍵詞即時檢索近年文獻，並用標題、摘要、主題與關鍵詞計算熱點分數。
-          </p>
+          <p>系統會根據分支關鍵詞即時檢索近年文獻，並用主題、引用與時間綜合計算熱點分數。</p>
 
           <div class="control-group">
-            <label>款待學科分支</label>
+            <label>學科分支</label>
             <div id="branchTabs" class="branch-tabs"></div>
           </div>
 
@@ -477,17 +649,9 @@
           </div>
 
           <div class="control-group">
-            <label for="customQuery">自定義補充關鍵詞</label>
-            <textarea id="customQuery" placeholder="例：AI service robot sustainability customer experience"></textarea>
-            <div class="hint">可留空。英文關鍵詞通常能獲得更穩定的檢索結果。</div>
-          </div>
-
-          <div class="control-group">
-            <label for="apiKeyInput">OpenAlex API Key</label>
-            <input id="apiKeyInput" type="password" placeholder="可留空；正式部署建議使用後端代理">
-            <div class="hint">
-              若公開頁面調用失敗，請在 JS 中加入 API key，或用 Cloudflare Worker / 後端代理隱藏 key。
-            </div>
+            <label for="customQuery">自定義補充關鍵詞（選填）</label>
+            <textarea id="customQuery" placeholder="例：AI service robot · sustainability · customer experience"></textarea>
+            <div class="hint">英文關鍵詞通常能獲得更穩定的檢索結果。</div>
           </div>
 
           <div class="actions">
@@ -502,7 +666,7 @@
           <div class="eyebrow">REAL-TIME RESULTS</div>
           <h2 id="resultTitle">等待檢索。</h2>
           <p id="resultLead">
-            請選擇左側學科分支並點擊「檢索熱點」。結果會顯示熱點主題、代表性文獻與研究選題建議。
+            請選擇左側學科分支並點擊「檢索熱點」。系統會給出熱點主題、研究選題建議與代表性文獻。
           </p>
 
           <div class="dashboard-grid">
@@ -515,7 +679,7 @@
               <div id="metricHotspots" class="metric-value">—</div>
             </div>
             <div class="metric">
-              <div class="metric-label">Latest Year</div>
+              <div class="metric-label">Median Year</div>
               <div id="metricLatestYear" class="metric-value">—</div>
             </div>
             <div class="metric">
@@ -526,22 +690,30 @@
 
           <div class="result-block">
             <h3>推薦學術熱點</h3>
-            <div id="hotspotList" class="hotspot-list"></div>
+            <div id="hotspotList" class="hotspot-list">
+              <div class="empty-hint">熱點將會出現在這裡。</div>
+            </div>
           </div>
 
           <div class="result-block">
             <h3>可延伸的研究選題</h3>
-            <div id="ideaList" class="idea-list"></div>
+            <div id="ideaList" class="idea-list">
+              <div class="empty-hint">研究選題建議將會出現在這裡。</div>
+            </div>
           </div>
 
           <div class="result-block">
             <h3>代表性近期文獻</h3>
-            <div id="paperList" class="paper-list"></div>
+            <div id="paperList" class="paper-list">
+              <div class="empty-hint">文獻列表將會出現在這裡。</div>
+            </div>
           </div>
 
           <div class="result-block">
             <h3>分支熱度概覽</h3>
-            <div id="branchSummary" class="branch-list"></div>
+            <div id="branchSummary" class="branch-list">
+              <div class="empty-hint">點擊「分析全部分支」即可查看跨學科熱度比較。</div>
+            </div>
           </div>
         </section>
 
@@ -555,34 +727,26 @@
       <div class="section-head">
         <div class="eyebrow">METHOD</div>
         <h2>如何判斷「學術熱點」？</h2>
-        <p class="section-sub">
-          本工具不是替代系統綜述，而是用於快速掃描近期研究方向、形成選題靈感與追蹤文獻線索。
-        </p>
+        <p class="section-sub">本工具不是替代系統綜述，而是用於快速掃描近期研究方向、形成選題靈感與追蹤文獻線索。</p>
       </div>
 
       <div class="method-grid">
         <div class="info-card">
           <div class="value-num">01</div>
           <h4>即時檢索</h4>
-          <p>
-            根據學科分支關鍵詞調用 OpenAlex Works API，限定近年發表的學術成果，並提取標題、年份、引用、主題與摘要。
-          </p>
+          <p>調用 OpenAlex Works API 查詢分支關鍵詞，限定近年發表，提取標題、年份、引用、主題與摘要等元數據。</p>
         </div>
 
         <div class="info-card">
           <div class="value-num">02</div>
           <h4>熱點計分</h4>
-          <p>
-            工具會綜合關鍵詞命中、近期程度與被引情況生成熱點分數。分數越高，代表該主題在當前檢索結果中越活躍。
-          </p>
+          <p>主題出現頻次、被引次數與發表年份按權重加總，再做歸一化，產生 0-100 的熱點分數。</p>
         </div>
 
         <div class="info-card">
           <div class="value-num">03</div>
           <h4>人工校讀</h4>
-          <p>
-            熱點推薦只能作為初篩。正式研究仍需進一步閱讀全文、確認理論脈絡、研究缺口與資料可得性。
-          </p>
+          <p>熱點推薦只能作為初篩。正式研究仍需閱讀全文、確認理論脈絡、研究缺口與資料可得性。</p>
         </div>
       </div>
     </div>
