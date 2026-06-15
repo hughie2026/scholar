@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tools · Hughie's Online Lab</title>
+  <title>Contact · Hughie's Online Lab</title>
   <link rel="stylesheet" href="assets/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -11,12 +11,26 @@
     .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
     .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
     .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:720px;}
-    .cat-block{padding:60px 0;border-bottom:1px solid #ece5d3;}
-    .cat-block:last-child{border-bottom:none;}
-    .cat-head{display:flex;align-items:baseline;gap:18px;margin-bottom:8px;flex-wrap:wrap;}
-    .cat-head h2{font-size:30px;color:#1a1a1a;margin:0;}
-    .cat-head .cat-count{font-size:14px;color:#888;font-weight:500;}
-    .cat-desc{color:#666;line-height:1.75;margin:0 0 30px;max-width:720px;}
+
+    .contact-section{padding:70px 0;}
+    .contact-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:50px;align-items:start;}
+    @media(max-width:880px){.contact-grid{grid-template-columns:1fr;gap:30px;}}
+
+    .contact-list{display:flex;flex-direction:column;gap:22px;}
+    .ci{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:22px 24px;}
+    .ci-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:6px;}
+    .ci-value{font-size:16px;color:#1a1a1a;line-height:1.65;}
+    .ci-value a{color:#1a1a1a;text-decoration:none;border-bottom:1px solid #d4c5a0;transition:color .2s;}
+    .ci-value a:hover{color:#c9a961;}
+    .ci-sub{font-size:13px;color:#888;margin-top:4px;}
+
+    .map-wrap{background:#fff;border:1px solid #ece5d3;padding:8px;}
+    .map-wrap iframe{display:block;width:100%;height:480px;border:0;}
+    .map-cap{font-size:13px;color:#888;text-align:right;padding:8px 4px 4px;}
+    .map-cap a{color:#c9a961;text-decoration:none;}
+
+    .closing{background:#faf7f0;padding:50px 0;text-align:center;border-top:1px solid #ece5d3;}
+    .closing p{max-width:680px;margin:0 auto;color:#555;line-height:1.85;font-size:15px;}
   </style>
 </head>
 <body>
@@ -37,123 +51,84 @@
       <nav class="primary-nav">
         <a href="index.html">Home</a>
         <a href="about.html">About</a>
-        <a href="tools.html" class="active">Tools</a>
-        <a href="contact.html">Contact</a>
+        <a href="tools.html">Tools</a>
+        <a href="contact.html" class="active">Contact</a>
       </nav>
     </div>
   </header>
 
   <section class="page-hero">
     <div class="container">
-      <div class="eyebrow">RESEARCH TOOLS</div>
-      <h1>探索實驗室</h1>
+      <div class="eyebrow">GET IN TOUCH</div>
+      <h1>歡迎與我們聯繫。</h1>
       <p class="lead">
-        每一個模組都是一個獨立的研究工具，分類陳列於此。
-        實驗室處於早期建設階段，更多模組正在陸續開發中。
-        所有工具免費開放，計算完全在你的瀏覽器中完成。
+        無論你是研究合作者、媒體記者、學生，或對某個工具有改進建議，
+        都可以通過以下任一方式找到我們。我們會在合理的時間內回覆。
       </p>
     </div>
   </section>
 
-  <!-- Category 1: 個體測評 -->
-  <section class="cat-block">
+  <section class="contact-section">
     <div class="container">
-      <div class="cat-head">
-        <div class="eyebrow" style="margin:0;">CATEGORY 01</div>
-        <h2>個體測評</h2>
-        <span class="cat-count">2 個工具</span>
-      </div>
-      <p class="cat-desc">面向一般使用者，幫助你以結構化的方式瞭解自身的健康狀態與決策能力。</p>
+      <div class="contact-grid">
 
-      <div class="module-grid">
-        <a href="health-literacy-assessment.html" class="module-card available">
-          <div class="card-img card-img-1">
-            <span class="card-status soon">個體測評</span>
+        <div class="contact-list">
+          <div class="ci">
+            <div class="ci-label">PERSONAL WEBSITE</div>
+            <div class="ci-value"><a href="https://www.hughie.hk" target="_blank" rel="noopener">www.hughie.hk</a></div>
+            <div class="ci-sub">發起者個人學術主頁</div>
           </div>
-          <div class="card-body">
-            <div class="card-cat">健康 · 素養</div>
-            <h3>個人健康素養評估</h3>
-            <p>評估你獲取、理解、評價與運用健康資訊的能力，幫助你瞭解自己在日常健康決策中的優勢與盲點。</p>
-            <span class="card-cta">點擊進入</span>
-          </div>
-        </a>
 
-        <a href="ascvd-risk-calculator.html" class="module-card available">
-          <div class="card-img card-img-2">
-            <span class="card-status soon">個體測評</span>
+          <div class="ci">
+            <div class="ci-label">PHONE</div>
+            <div class="ci-value"><a href="tel:+85385981356">+853 8598 1356</a></div>
+            <div class="ci-sub">辦公時間：週一至週五 09:00–17:45（GMT+8）</div>
           </div>
-          <div class="card-body">
-            <div class="card-cat">心血管 · 風險</div>
-            <h3>十年心血管疾病風險評估</h3>
-            <p>基於公開的 ASCVD 風險評估方法，估算未來十年發生動脈粥樣硬化性心血管疾病事件的風險，幫助你瞭解個人心血管健康狀態。</p>
-            <span class="card-cta">點擊進入</span>
+
+          <div class="ci">
+            <div class="ci-label">EMAIL</div>
+            <div class="ci-value"><a href="mailto:hughietao@utm.edu.mo">hughietao@utm.edu.mo</a></div>
+            <div class="ci-sub">學術合作、工具反饋、其他聯絡</div>
           </div>
-        </a>
+
+          <div class="ci">
+            <div class="ci-label">OFFICE</div>
+            <div class="ci-value">
+              澳門旅遊大學氹仔校區　展耀東樓 508C 辦公室<br>
+              中國澳門特別行政區氹仔徐日昇寅公馬路
+            </div>
+            <div class="ci-sub">University of Tourism Macao · Taipa Campus</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="map-wrap">
+            <iframe
+              src="https://www.openstreetmap.org/export/embed.html?bbox=113.5526%2C22.1599%2C113.5646%2C22.1689&amp;layer=mapnik&amp;marker=22.164431%2C113.558591"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="澳門旅遊大學氹仔校區 · 展耀東樓">
+            </iframe>
+          </div>
+          <div class="map-cap">
+            地圖數據 ©
+            <a href="https://www.openstreetmap.org/?mlat=22.164431&amp;mlon=113.558591#map=18/22.164431/113.558591" target="_blank" rel="noopener">OpenStreetMap</a>
+            貢獻者 ·
+            <a href="https://www.openstreetmap.org/directions?from=&amp;to=22.164431%2C113.558591" target="_blank" rel="noopener">查看路線</a>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- Category 2: 學術工具 -->
-  <section class="cat-block">
+  <section class="closing">
     <div class="container">
-      <div class="cat-head">
-        <div class="eyebrow" style="margin:0;">CATEGORY 02</div>
-        <h2>學術工具</h2>
-        <span class="cat-count">3 個工具</span>
-      </div>
-      <p class="cat-desc">面向研究者、研究生與青年學者，輔助文獻探索、選題判斷與學術寫作流程。</p>
-
-      <div class="module-grid">
-        <a href="hospitality-research-trends.html" class="module-card available">
-          <div class="card-img card-img-3">
-            <span class="card-status soon">學術工具</span>
-          </div>
-          <div class="card-body">
-            <div class="card-cat">款待 · 學術熱點</div>
-            <h3>學術熱點推薦器</h3>
-            <p>基於公開學術資料庫即時檢索近期文獻，推薦公共衛生、健康管理、款待科學等學科及其分支的研究熱點。</p>
-            <span class="card-cta">點擊進入</span>
-          </div>
-        </a>
-
-        <a href="research-ethics-application-generator.html" class="module-card available">
-          <div class="card-img card-img-6">
-            <span class="card-status soon">學術工具</span>
-          </div>
-          <div class="card-body">
-            <div class="card-cat">研究 · 倫理申請</div>
-            <h3>研究倫理申請生成器</h3>
-            <p>幫助研究者整理研究目的、參與者招募、知情同意、資料保護、風險控制與 AI 使用說明，生成倫理申請草稿。</p>
-            <span class="card-cta">點擊進入</span>
-          </div>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Category 3: 健康實踐 -->
-  <section class="cat-block">
-    <div class="container">
-      <div class="cat-head">
-        <div class="eyebrow" style="margin:0;">CATEGORY 03</div>
-        <h2>健康實踐</h2>
-        <span class="cat-count">1 個工具</span>
-      </div>
-      <p class="cat-desc">面向具體生活場景，把健康知識落地為可執行的清單與準備方案。</p>
-
-      <div class="module-grid">
-        <a href="international-travel-health.html" class="module-card available">
-          <div class="card-img card-img-5">
-            <span class="card-status soon">健康工具</span>
-          </div>
-          <div class="card-body">
-            <div class="card-cat">旅行 · 保健</div>
-            <h3>國際旅行保健行前評估器</h3>
-            <p>根據目的地、旅行方式與個人健康狀況，生成疫苗核對、飲食飲水、防蚊、慢病用藥、保險與就醫準備清單。</p>
-            <span class="card-cta">點擊進入</span>
-          </div>
-        </a>
-      </div>
+      <p>
+        Hughie's Online Lab 是一個非商業性質的學術公益項目。
+        我們無法為個人提供醫療、法律或財務建議，但很樂意與你討論工具設計、研究方法、
+        以及任何能讓開放科學走得更遠的合作可能。
+      </p>
     </div>
   </section>
 
@@ -173,7 +148,7 @@
         <h5>Quick Links</h5>
         <div class="contact-item"><a href="index.html">Home</a></div>
         <div class="contact-item"><a href="about.html">About the Lab</a></div>
-        <div class="contact-item"><a href="contact.html">Contact</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
       </div>
     </div>
     <div class="footer-bottom">
