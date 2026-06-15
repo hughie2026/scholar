@@ -1,546 +1,1018 @@
-/* =========================================================
- * 學術熱點推薦器
- * 多學科支援：公共衛生 / 健康管理 / 款待科學 /
- *           會展管理 / 食品與營養 / 旅遊科學
- * 資料源：OpenAlex Works API（免費、無需 key，使用 mailto polite pool）
- * ========================================================= */
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>學術熱點推薦器 | Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 
-// ====== 內建 API 設定（不需用戶輸入）======
-// OpenAlex 免費使用，僅需提供聯絡郵箱進入 polite pool 以獲得更穩定的速率
-const OPENALEX_MAILTO = 'hughietao@utm.edu.mo';
-// 若未來要改用付費或私有 endpoint，可在此填寫；留空即使用公開 API
-const OPENALEX_API_KEY = '';
-const OPENALEX_BASE = 'https://api.openalex.org/works';
+  <style>
+    /* ============================================================
+       Hero
+       ============================================================ */
+    .tool-hero { min-height: 480px; }
+    .tool-hero .hero-lead { max-width: 780px; }
+    .hero-discipline-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 22px 0 26px;
+    }
+    .hero-discipline-row span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.86);
+      backdrop-filter: blur(6px);
+    }
 
-// ====== 學科分支定義 ======
-const BRANCHES = {
-  publicHealth: {
-    id: 'publicHealth',
-    name: '公共衛生',
-    nameEn: 'Public Health',
-    icon: '🏥',
-    keywords: [
-      'public health', 'epidemiology', 'health policy',
-      'health equity', 'disease prevention', 'global health',
-      'health communication', 'health behavior intervention'
-    ]
-  },
-  healthMgmt: {
-    id: 'healthMgmt',
-    name: '健康管理',
-    nameEn: 'Health Management',
-    icon: '💊',
-    keywords: [
-      'health management', 'wellness program', 'chronic disease management',
-      'preventive healthcare', 'health informatics', 'patient experience',
-      'digital health', 'mHealth'
-    ]
-  },
-  hospitality: {
-    id: 'hospitality',
-    name: '款待科學',
-    nameEn: 'Hospitality Science',
-    icon: '🏨',
-    keywords: [
-      'hospitality management', 'hotel industry', 'guest experience',
-      'service quality', 'hospitality marketing', 'lodging',
-      'hospitality technology', 'restaurant management'
-    ]
-  },
-  mice: {
-    id: 'mice',
-    name: '會展管理',
-    nameEn: 'MICE / Event Management',
-    icon: '🎪',
-    keywords: [
-      'MICE industry', 'event management', 'convention tourism',
-      'exhibition management', 'business events', 'meetings industry',
-      'festival management', 'trade show'
-    ]
-  },
-  foodNutrition: {
-    id: 'foodNutrition',
-    name: '食品與營養科學',
-    nameEn: 'Food & Nutrition Science',
-    icon: '🥗',
-    keywords: [
-      'food science', 'nutrition', 'dietary intake',
-      'food safety', 'functional food', 'nutraceutical',
-      'food technology', 'sustainable diet'
-    ]
-  },
-  tourism: {
-    id: 'tourism',
-    name: '旅遊科學',
-    nameEn: 'Tourism Science',
-    icon: '✈️',
-    keywords: [
-      'tourism management', 'tourist behavior', 'destination management',
-      'sustainable tourism', 'travel experience', 'cultural tourism',
-      'smart tourism', 'tourism marketing'
-    ]
-  }
-};
+    /* ============================================================
+       Discovery Console（全寬步驟式控制台）
+       ============================================================ */
+    .console-section {
+      background: linear-gradient(180deg, #f7f5ef 0%, #f1ede2 100%);
+      padding: 70px 0 40px;
+    }
+    .console-shell {
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+      border-radius: 28px;
+      box-shadow: 0 30px 90px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+    }
+    .console-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 32px;
+      gap: 16px;
+      border-bottom: 1px solid rgba(16, 34, 53, 0.05);
+      background: linear-gradient(90deg, #fbfaf7 0%, #ffffff 100%);
+    }
+    .console-head .title-block .eyebrow { margin: 0 0 4px; }
+    .console-head h2 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+      color: #102235;
+    }
+    .console-head .head-meta {
+      color: #5f6b75;
+      font-size: 13px;
+      max-width: 380px;
+      line-height: 1.55;
+    }
 
-// ====== 停用詞（用於補充關鍵詞抽取，目前已用 OpenAlex topics，故僅作備援）======
-const STOPWORDS = new Set([
-  'the','a','an','and','or','of','in','on','at','to','for','with','by','from','as',
-  'is','are','was','were','be','been','being','this','that','these','those','it','its',
-  'study','research','analysis','approach','based','using','use','used','case','effect',
-  'effects','impact','role','among','between','during','after','before','through','via',
-  'we','our','their','they','can','may','also','more','most','than','such','into','one',
-  'two','three','new','findings','results','paper','review','article','data'
-]);
+    .step-block {
+      padding: 28px 32px;
+      border-bottom: 1px solid rgba(16, 34, 53, 0.05);
+    }
+    .step-block:last-child { border-bottom: none; }
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .step-number {
+      width: 32px; height: 32px;
+      display: grid; place-items: center;
+      background: #102235;
+      color: #ffffff;
+      border-radius: 50%;
+      font-family: "Encode Sans", sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+    .step-title {
+      font-family: "Encode Sans", sans-serif;
+      font-weight: 800;
+      color: #102235;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+    }
+    .step-title small {
+      display: inline-block;
+      margin-left: 10px;
+      font-weight: 600;
+      color: #7d8790;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
 
-// ====== 狀態 ======
-const state = {
-  selectedBranch: 'hospitality',
-  lastResult: null
-};
+    /* ---------- Step 1: Discipline cards ---------- */
+    .discipline-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .discipline-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 18px 16px;
+      background: #fbfaf7;
+      border: 1px solid rgba(16, 34, 53, 0.08);
+      border-radius: 18px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.22s ease;
+    }
+    .discipline-card .icon {
+      width: 38px; height: 38px;
+      display: grid; place-items: center;
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.08);
+      border-radius: 11px;
+      font-size: 20px;
+      transition: all 0.22s ease;
+    }
+    .discipline-card .name {
+      font-weight: 800;
+      color: #102235;
+      font-size: 14.5px;
+      line-height: 1.3;
+    }
+    .discipline-card .name small {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #7d8790;
+      margin-top: 3px;
+      letter-spacing: 0.04em;
+    }
+    .discipline-card:hover {
+      border-color: rgba(201, 163, 90, 0.55);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+    .discipline-card.active {
+      background: linear-gradient(180deg, #ffffff 0%, #fbf4e4 100%);
+      border-color: #c9a35a;
+      box-shadow: 0 12px 30px rgba(201, 163, 90, 0.22);
+    }
+    .discipline-card.active .icon {
+      background: #c9a35a;
+      border-color: #c9a35a;
+      color: #ffffff;
+    }
+    .discipline-card.active::after {
+      content: '';
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #c9a35a;
+    }
 
-// ====== DOM 引用 ======
-const $ = (id) => document.getElementById(id);
-const els = {
-  branchTabs: $('branchTabs'),
-  yearRange: $('yearRange'),
-  sortMode: $('sortMode'),
-  customQuery: $('customQuery'),
-  runBtn: $('runBtn'),
-  allBtn: $('allBtn'),
-  statusBox: $('statusBox'),
-  resultTitle: $('resultTitle'),
-  resultLead: $('resultLead'),
-  metricWorks: $('metricWorks'),
-  metricHotspots: $('metricHotspots'),
-  metricLatestYear: $('metricLatestYear'),
-  metricTopBranch: $('metricTopBranch'),
-  hotspotList: $('hotspotList'),
-  ideaList: $('ideaList'),
-  paperList: $('paperList'),
-  branchSummary: $('branchSummary')
-};
+    /* ---------- Step 2: Sub-field chips ---------- */
+    .subfield-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      padding: 9px 16px;
+      border: 1px solid rgba(16, 34, 53, 0.12);
+      background: #ffffff;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      letter-spacing: 0;
+    }
+    .chip:hover {
+      border-color: rgba(201, 163, 90, 0.55);
+      color: #102235;
+      background: #fbf6e9;
+    }
+    .chip.active {
+      background: #102235;
+      color: #ffffff;
+      border-color: #102235;
+    }
+    .chip.chip-all {
+      border-style: dashed;
+    }
+    .chip.chip-all.active {
+      background: #c9a35a;
+      border-color: #c9a35a;
+      color: #ffffff;
+      border-style: solid;
+    }
 
-// ====== 初始化 ======
-function init() {
-  renderBranchTabs();
-  els.runBtn.addEventListener('click', () => runSingle());
-  els.allBtn.addEventListener('click', () => runAll());
-}
+    /* ---------- Step 3: Filters ---------- */
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      align-items: end;
+    }
+    .filter-cell { grid-column: span 3; }
+    .filter-cell.cell-textarea { grid-column: span 6; }
+    .filter-cell.cell-actions {
+      grid-column: span 12;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: flex-end;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(16, 34, 53, 0.08);
+      margin-top: 6px;
+    }
+    .filter-label {
+      display: block;
+      font-family: "Encode Sans", "Open Sans", sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #102235;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .filter-input {
+      width: 100%;
+      border: 1px solid rgba(16, 34, 53, 0.14);
+      background: #fbfaf7;
+      color: #102235;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    textarea.filter-input { min-height: 60px; resize: vertical; line-height: 1.6; }
+    .filter-input:focus {
+      border-color: #c9a35a;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(201, 163, 90, 0.16);
+    }
+    .filter-hint {
+      color: #7d8790;
+      font-size: 12px;
+      margin-top: 6px;
+      line-height: 1.55;
+    }
 
-function renderBranchTabs() {
-  els.branchTabs.innerHTML = Object.values(BRANCHES).map(b => `
-    <button class="branch-tab ${b.id === state.selectedBranch ? 'active' : ''}"
-            data-id="${b.id}" type="button">
-      <span class="icon">${b.icon}</span>
-      <span class="label">
-        ${b.name}
-        <small>${b.nameEn}</small>
-      </span>
-    </button>
-  `).join('');
-  els.branchTabs.querySelectorAll('.branch-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.selectedBranch = btn.dataset.id;
-      els.branchTabs.querySelectorAll('.branch-tab').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
-  });
-}
+    .btn-reset {
+      border: 1px solid rgba(16, 34, 53, 0.16);
+      background: transparent;
+      color: #102235;
+      border-radius: 999px;
+      padding: 12px 22px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-reset:hover { background: rgba(16, 34, 53, 0.06); }
+    .btn-gold[disabled],
+    .btn-reset[disabled] { opacity: 0.55; cursor: not-allowed; }
 
-// ====== 狀態提示 ======
-function setStatus(msg, type = '') {
-  els.statusBox.className = 'status-box show ' + type;
-  els.statusBox.textContent = msg;
-}
-function clearStatus() {
-  els.statusBox.className = 'status-box';
-  els.statusBox.textContent = '';
-}
-function setLoading(loading) {
-  els.runBtn.disabled = loading;
-  els.allBtn.disabled = loading;
-  els.runBtn.textContent = loading ? '檢索中…' : '檢索熱點';
-}
+    /* Status box */
+    .status-box {
+      display: none;
+      margin: 0 32px 28px;
+      border-radius: 14px;
+      padding: 13px 16px;
+      background: #fbfaf7;
+      color: #5f6b75;
+      border: 1px solid rgba(16, 34, 53, 0.08);
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .status-box.show { display: block; }
+    .status-box.warning { background: #fff7e6; color: #8a5a11; border-color: rgba(201, 163, 90, 0.3); }
+    .status-box.error { background: #fdecec; color: #9a2929; border-color: rgba(154, 41, 41, 0.25); }
 
-// ====== Skeleton ======
-function showSkeletons() {
-  const skel = (lines = 3) => `
-    <div class="skeleton-card">
-      ${Array.from({ length: lines }, (_, i) =>
-        `<div class="skeleton skeleton-line ${i === lines - 1 ? 'w-50' : i === 0 ? 'w-30' : 'w-80'}"></div>`
-      ).join('')}
-    </div>`;
-  els.hotspotList.innerHTML = skel(3) + skel(3) + skel(3);
-  els.paperList.innerHTML = skel(4) + skel(4);
-  els.ideaList.innerHTML = skel(2) + skel(2);
-}
+    /* ============================================================
+       Results
+       ============================================================ */
+    .results-section {
+      background: #f7f5ef;
+      padding: 24px 0 100px;
+    }
 
-// ====== OpenAlex 檢索 ======
-async function fetchWorks(branch, years, sortMode, customExtra = '') {
-  // 構造 search query：分支關鍵詞 OR 連接，並可附加自定義詞
-  const baseTerms = branch.keywords.map(k => `"${k}"`).join(' OR ');
-  const extraTerms = customExtra
-    .split(/[\s,;，；]+/)
-    .filter(Boolean)
-    .map(w => `"${w}"`)
-    .join(' OR ');
-  const searchQuery = extraTerms ? `(${baseTerms}) AND (${extraTerms})` : baseTerms;
+    .results-headline {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin: 24px 0 22px;
+    }
+    .results-headline h2 {
+      margin: 0;
+      color: #102235;
+      font-size: 30px;
+      letter-spacing: -0.04em;
+    }
+    .results-headline p {
+      margin: 6px 0 0;
+      color: #5f6b75;
+      max-width: 640px;
+      line-height: 1.65;
+    }
 
-  const fromYear = new Date().getFullYear() - parseInt(years, 10);
-  const sortParam = sortMode === 'date'
-    ? 'publication_date:desc'
-    : sortMode === 'citation'
-      ? 'cited_by_count:desc'
-      : 'relevance_score:desc';
+    /* Metrics row */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .metric-card {
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+      border-radius: 18px;
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
+    }
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 36px; height: 3px;
+      background: #c9a35a;
+      border-radius: 0 0 4px 0;
+    }
+    .metric-label {
+      color: #7d8790;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .metric-value {
+      font-family: "Encode Sans", "Open Sans", sans-serif;
+      color: #102235;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+    }
+    .metric-value small {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #7d8790;
+      margin-top: 4px;
+      letter-spacing: 0;
+    }
 
-  const params = new URLSearchParams({
-    search: searchQuery,
-    filter: `from_publication_date:${fromYear}-01-01,is_paratext:false,type:article`,
-    sort: sortParam,
-    'per-page': '40',
-    mailto: OPENALEX_MAILTO
-  });
-  const url = `${OPENALEX_BASE}?${params.toString()}`;
+    /* Result grid */
+    .result-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+    .module {
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+      border-radius: 22px;
+      box-shadow: 0 18px 50px rgba(15, 23, 42, 0.06);
+      padding: 26px 28px 28px;
+    }
+    .module + .module-fullwidth { margin-top: 0; }
+    .module-fullwidth { margin-bottom: 22px; }
 
-  const headers = { 'Accept': 'application/json' };
-  if (OPENALEX_API_KEY) headers['Authorization'] = `Bearer ${OPENALEX_API_KEY}`;
+    .module-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .module-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #102235;
+      font-size: 19px;
+      letter-spacing: -0.02em;
+      font-weight: 800;
+      margin: 0;
+    }
+    .module-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 18px;
+      background: #c9a35a;
+      border-radius: 2px;
+    }
+    .module-count {
+      font-size: 12px;
+      font-weight: 700;
+      color: #7d8790;
+      padding: 4px 10px;
+      background: #fbfaf7;
+      border-radius: 999px;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+    }
 
-  const res = await fetch(url, { headers });
-  if (!res.ok) throw new Error(`OpenAlex 檢索失敗（HTTP ${res.status}）`);
-  const data = await res.json();
-  return data.results || [];
-}
+    /* Hotspot Card */
+    .hotspot-list { display: grid; gap: 12px; }
+    .hotspot-card {
+      background: #fbfaf7;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+      border-radius: 16px;
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 14px;
+      transition: all 0.2s ease;
+    }
+    .hotspot-card:hover {
+      background: #ffffff;
+      border-color: rgba(201, 163, 90, 0.45);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.07);
+    }
+    .hotspot-rank {
+      font-family: "Encode Sans", sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: #c9a35a;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .hotspot-body h4 {
+      color: #102235;
+      margin: 0 0 6px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+    .hotspot-body p {
+      color: #5f6b75;
+      margin: 0;
+      font-size: 13.2px;
+      line-height: 1.65;
+    }
+    .hotspot-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+      align-items: center;
+    }
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 4px 11px;
+      background: linear-gradient(135deg, #f1eadc 0%, #e8dcb9 100%);
+      color: #6b4a16;
+      font-size: 11.5px;
+      font-weight: 800;
+    }
+    .score-pill::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: #c9a35a;
+      border-radius: 50%;
+    }
+    .tag {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #ffffff;
+      color: #102235;
+      font-size: 11.5px;
+      font-weight: 700;
+      border: 1px solid rgba(16, 34, 53, 0.08);
+    }
 
-// ====== Abstract 還原 ======
-function rebuildAbstract(invertedIndex) {
-  if (!invertedIndex) return '';
-  const arr = [];
-  for (const [word, positions] of Object.entries(invertedIndex)) {
-    positions.forEach(pos => arr.push([pos, word]));
-  }
-  arr.sort((a, b) => a[0] - b[0]);
-  let txt = arr.map(p => p[1]).join(' ');
-  if (txt.length > 280) txt = txt.slice(0, 280) + '…';
-  return txt;
-}
+    /* Idea Card */
+    .idea-list { display: grid; gap: 12px; }
+    .idea-card {
+      background: linear-gradient(135deg, #102235 0%, #1a324b 100%);
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .idea-card::before {
+      content: '';
+      position: absolute;
+      top: -20px; right: -20px;
+      width: 110px; height: 110px;
+      background: radial-gradient(circle, rgba(201, 163, 90, 0.2) 0%, transparent 70%);
+    }
+    .idea-num {
+      font-family: "Encode Sans", sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: #c9a35a;
+      margin-bottom: 6px;
+    }
+    .idea-card h4 {
+      margin: 0 0 6px;
+      color: #ffffff;
+      font-size: 15.5px;
+      line-height: 1.4;
+      position: relative;
+    }
+    .idea-card p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.78);
+      line-height: 1.7;
+      font-size: 13px;
+      position: relative;
+    }
 
-// ====== 熱點抽取 ======
-function extractHotspots(works) {
-  const topicMap = new Map(); // key -> { name, count, citations, latestYear, weighted }
+    /* Paper Card */
+    .paper-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .paper-card {
+      background: #fbfaf7;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+      border-radius: 16px;
+      padding: 18px 20px;
+      transition: all 0.2s ease;
+    }
+    .paper-card:hover {
+      background: #ffffff;
+      border-color: rgba(201, 163, 90, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(15, 23, 42, 0.07);
+    }
+    .paper-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      color: #7d8790;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .paper-meta span + span::before {
+      content: '·';
+      margin: 0 6px;
+      color: #c9a35a;
+    }
+    .paper-card h4 {
+      color: #102235;
+      margin: 0 0 8px;
+      font-size: 15.5px;
+      line-height: 1.45;
+    }
+    .paper-card a { color: #102235; text-decoration: none; transition: color 0.2s ease; }
+    .paper-card a:hover { color: #c9a35a; }
+    .paper-authors {
+      color: #5f6b75;
+      font-size: 12.5px;
+      margin: 0 0 8px;
+      font-style: italic;
+    }
+    .paper-card p {
+      color: #5f6b75;
+      margin: 0;
+      line-height: 1.65;
+      font-size: 13px;
+    }
 
-  const currentYear = new Date().getFullYear();
-  works.forEach(w => {
-    const year = w.publication_year || currentYear;
-    const recency = Math.max(0.4, 1 - (currentYear - year) * 0.15);
-    const cited = w.cited_by_count || 0;
-    const citationBoost = 1 + Math.log10(1 + cited) * 0.3;
+    /* Branch Summary Card */
+    .branch-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .branch-card {
+      background: #fbfaf7;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+      border-radius: 16px;
+      padding: 18px 20px;
+      transition: all 0.2s ease;
+    }
+    .branch-card:hover {
+      background: #ffffff;
+      border-color: rgba(201, 163, 90, 0.4);
+    }
+    .branch-card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .branch-card-head .icon {
+      width: 36px; height: 36px;
+      display: grid; place-items: center;
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+      border-radius: 10px;
+      font-size: 18px;
+    }
+    .branch-card h4 { margin: 0; color: #102235; font-size: 14.5px; }
+    .branch-card h4 small {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #7d8790;
+      letter-spacing: 0.04em;
+    }
+    .branch-card p { color: #5f6b75; margin: 0 0 10px; font-size: 12.5px; line-height: 1.6; }
+    .branch-bar {
+      width: 100%;
+      height: 6px;
+      background: #f1ede2;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .branch-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #c9a35a 0%, #e8c884 100%);
+      border-radius: 999px;
+      transition: width 0.6s ease;
+    }
+    .branch-stat {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: #7d8790;
+      margin-top: 6px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
 
-    // 主來源：OpenAlex topics
-    const topics = (w.topics || []).slice(0, 3);
-    topics.forEach((t, idx) => {
-      if (!t || !t.display_name) return;
-      const key = t.display_name.toLowerCase();
-      const slot = topicMap.get(key) || {
-        name: t.display_name,
-        field: t.field?.display_name || '',
-        count: 0, citations: 0, latestYear: 0, weighted: 0
-      };
-      slot.count += 1;
-      slot.citations += cited;
-      slot.latestYear = Math.max(slot.latestYear, year);
-      const positionWeight = 1 - idx * 0.18;
-      slot.weighted += recency * citationBoost * positionWeight;
-      topicMap.set(key, slot);
-    });
-  });
+    /* Skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, #f1ede2 0%, #f7f5ef 50%, #f1ede2 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 10px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .skeleton-card {
+      background: #fbfaf7;
+      border: 1px solid rgba(16, 34, 53, 0.06);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .skeleton-line { height: 13px; margin-bottom: 10px; }
+    .skeleton-line.w-50 { width: 50%; }
+    .skeleton-line.w-80 { width: 80%; }
+    .skeleton-line.w-30 { width: 30%; }
 
-  const all = [...topicMap.values()];
-  if (all.length === 0) return [];
-  const max = Math.max(...all.map(t => t.weighted), 1);
-  return all
-    .map(t => ({ ...t, score: Math.round((t.weighted / max) * 100) }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 8);
-}
+    .fade-in { animation: fadeIn 0.45s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-// ====== 研究選題生成 ======
-function generateIdeas(branch, hotspots) {
-  if (hotspots.length === 0) return [];
-  const ideas = [];
-  const top = hotspots.slice(0, 5);
+    .empty-hint {
+      color: #9aa3ac;
+      font-size: 13.5px;
+      padding: 22px 0;
+      text-align: center;
+    }
 
-  if (top[0] && top[1]) {
-    ideas.push({
-      title: `${top[0].name} 與 ${top[1].name} 的交互作用`,
-      desc: `在「${branch.name}」情境下，探究 ${top[0].name} 對 ${top[1].name} 的影響機制，可採用問卷調查、實驗法或文本挖掘進行驗證。`
-    });
-  }
-  if (top[0]) {
-    ideas.push({
-      title: `${top[0].name} 的系統性綜述與元分析`,
-      desc: `針對近 5 年內 ${top[0].name} 的相關研究進行系統性回顧，整合不同情境下的效應量，識別研究缺口。`
-    });
-  }
-  if (top[2]) {
-    ideas.push({
-      title: `${top[2].name} 在 ${branch.name} 中的本土化應用`,
-      desc: `結合區域脈絡（如大灣區、東南亞），探索 ${top[2].name} 的落地路徑、影響因素與實證效果。`
-    });
-  }
-  if (top[3] && top[4]) {
-    ideas.push({
-      title: `跨主題整合：${top[3].name} × ${top[4].name}`,
-      desc: `從多理論視角審視兩個熱點的協同效應，建構整合性概念框架，並提出可檢驗的命題。`
-    });
-  }
-  if (top[0]) {
-    ideas.push({
-      title: `${top[0].name} 的方法論創新`,
-      desc: `將機器學習、社會網絡分析或縱向追蹤方法引入 ${top[0].name} 研究，補足傳統橫斷面設計的不足。`
-    });
-  }
-  return ideas.slice(0, 5);
-}
+    /* Method */
+    .method-section { background: #ffffff; padding: 90px 0; }
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+    .info-card {
+      background: #ffffff;
+      border: 1px solid rgba(16, 34, 53, 0.08);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.06);
+      transition: transform 0.25s ease;
+    }
+    .info-card:hover { transform: translateY(-4px); }
+    .info-card .value-num {
+      color: #c9a35a;
+      font-family: "Encode Sans", sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+    }
+    .info-card h4 { color: #102235; margin: 10px 0 12px; font-size: 20px; }
+    .info-card p { color: #5f6b75; line-height: 1.7; margin: 0; }
 
-// ====== 渲染 ======
-function renderHotspots(hotspots, branch) {
-  if (hotspots.length === 0) {
-    els.hotspotList.innerHTML = `<div class="empty-hint">未檢索到足夠資料以生成熱點，建議放寬時間範圍。</div>`;
-    return;
-  }
-  els.hotspotList.innerHTML = hotspots.map((h, i) => `
-    <div class="hotspot-card fade-in">
-      <div class="hotspot-rank">${String(i + 1).padStart(2, '0')}</div>
-      <div class="hotspot-body">
-        <h4>${escapeHtml(h.name)}</h4>
-        <p>${branch.name}領域中該主題出現於 <strong>${h.count}</strong> 篇近期文獻，累計被引 <strong>${h.citations}</strong> 次，最新年份 ${h.latestYear || '—'}。</p>
-        <div class="hotspot-meta">
-          <span class="score-pill">熱度 ${h.score}</span>
-          ${h.field ? `<span class="tag">${escapeHtml(h.field)}</span>` : ''}
-          <span class="tag">${h.count} 篇</span>
+    /* Responsive */
+    @media (max-width: 1080px) {
+      .discipline-grid { grid-template-columns: repeat(3, 1fr); }
+      .filter-cell { grid-column: span 6; }
+      .filter-cell.cell-textarea { grid-column: span 12; }
+      .result-grid { grid-template-columns: 1fr; }
+      .metrics-row { grid-template-columns: repeat(2, 1fr); }
+      .paper-list { grid-template-columns: 1fr; }
+      .branch-list { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 680px) {
+      .discipline-grid { grid-template-columns: repeat(2, 1fr); }
+      .metrics-row { grid-template-columns: 1fr; }
+      .branch-list { grid-template-columns: 1fr; }
+      .console-head, .step-block { padding-left: 22px; padding-right: 22px; }
+      .module { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Utility Bar -->
+  <div class="utility-bar">
+    <div class="container utility-inner">
+      <span>HUGHIE'S ONLINE LAB</span>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html#modules">Tools</a>
+        <a href="#method">Method</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero tool-hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-inner">
+      <div class="hero-content">
+        <div class="hero-eyebrow">Multi-discipline · Sub-fields · Real-time Retrieval</div>
+        <h1>學術熱點<br><span class="hero-highlight">推薦器</span></h1>
+        <p class="hero-lead">
+          覆蓋六大一級學科與其下細分研究方向，基於公開學術資料庫實時掃描近期熱門主題、
+          高頻關鍵詞與代表性文獻，幫助研究者快速形成選題靈感與文獻追蹤線索。
+        </p>
+        <div class="hero-discipline-row">
+          <span>🏥 公共衛生</span>
+          <span>💊 健康管理</span>
+          <span>🏨 款待科學</span>
+          <span>🎪 會展管理</span>
+          <span>🥗 食品與營養</span>
+          <span>✈️ 旅遊科學</span>
+        </div>
+        <div class="hero-actions">
+          <a href="#trendTool" class="btn-gold">Start Discovery</a>
+          <a href="#method" class="btn-ghost">Read Method →</a>
         </div>
       </div>
     </div>
-  `).join('');
-}
+  </section>
 
-function renderPapers(works, sortMode) {
-  if (works.length === 0) {
-    els.paperList.innerHTML = `<div class="empty-hint">未檢索到符合條件的文獻。</div>`;
-    return;
-  }
-  // 取前 10 篇展示
-  const top = works.slice(0, 10);
-  els.paperList.innerHTML = top.map(w => {
-    const authors = (w.authorships || []).slice(0, 3)
-      .map(a => a.author?.display_name).filter(Boolean).join(', ');
-    const venue = w.primary_location?.source?.display_name || w.host_venue?.display_name || '';
-    const abstract = rebuildAbstract(w.abstract_inverted_index);
-    const url = w.doi ? `https://doi.org/${w.doi.replace('https://doi.org/','')}` : (w.id || '#');
-    const tags = (w.topics || []).slice(0, 3).map(t => t.display_name).filter(Boolean);
-
-    return `
-      <div class="paper-card fade-in">
-        <div class="paper-meta">
-          <span>${w.publication_year || '—'}</span>
-          ${venue ? `<span>${escapeHtml(venue)}</span>` : ''}
-          <span>${w.cited_by_count || 0} citations</span>
-        </div>
-        <h4><a href="${url}" target="_blank" rel="noopener">${escapeHtml(w.title || '(no title)')}</a></h4>
-        ${authors ? `<p class="paper-authors">${escapeHtml(authors)}${(w.authorships || []).length > 3 ? ' et al.' : ''}</p>` : ''}
-        ${abstract ? `<p>${escapeHtml(abstract)}</p>` : ''}
-        ${tags.length ? `<div class="hotspot-meta">${tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
-      </div>
-    `;
-  }).join('');
-}
-
-function renderIdeas(ideas) {
-  if (ideas.length === 0) {
-    els.ideaList.innerHTML = `<div class="empty-hint">尚無研究選題建議。</div>`;
-    return;
-  }
-  els.ideaList.innerHTML = ideas.map((idea, i) => `
-    <div class="idea-card fade-in">
-      <div class="idea-num">IDEA ${String(i + 1).padStart(2, '0')}</div>
-      <h4>${escapeHtml(idea.title)}</h4>
-      <p>${escapeHtml(idea.desc)}</p>
-    </div>
-  `).join('');
-}
-
-function renderBranchSummary(summary) {
-  if (!summary || summary.length === 0) {
-    els.branchSummary.innerHTML = `<div class="empty-hint">點擊「分析全部分支」即可查看跨學科熱度比較。</div>`;
-    return;
-  }
-  const max = Math.max(...summary.map(s => s.score), 1);
-  els.branchSummary.innerHTML = summary
-    .sort((a, b) => b.score - a.score)
-    .map(s => {
-      const pct = Math.round((s.score / max) * 100);
-      return `
-        <div class="branch-card fade-in">
-          <div class="icon">${s.icon}</div>
-          <div class="branch-card-body">
-            <h4>${s.name} <span class="tag" style="margin-left:6px;">${s.works} 篇</span></h4>
-            <p>Top hotspot: ${escapeHtml(s.topHotspot || '—')}</p>
-            <div class="branch-bar"><div class="branch-bar-fill" style="width:${pct}%"></div></div>
+  <!-- Discovery Console -->
+  <section id="trendTool" class="console-section">
+    <div class="container">
+      <div class="console-shell">
+        <div class="console-head">
+          <div class="title-block">
+            <div class="eyebrow">DISCOVERY CONSOLE</div>
+            <h2>三步定位你的研究熱點</h2>
           </div>
-        </div>`;
-    }).join('');
-}
+          <div class="head-meta">
+            選擇一級學科與二級分支，加上時間窗與排序，系統會即時返回主題、文獻與選題建議。
+          </div>
+        </div>
 
-function updateMetrics({ works, hotspots, medianYear, topBranch }) {
-  els.metricWorks.textContent = works ?? '—';
-  els.metricHotspots.textContent = hotspots ?? '—';
-  els.metricLatestYear.textContent = medianYear ?? '—';
-  els.metricTopBranch.innerHTML = topBranch
-    ? `<span style="font-size:18px;">${topBranch}</span>`
-    : '—';
-}
+        <!-- Step 1 -->
+        <div class="step-block">
+          <div class="step-header">
+            <div class="step-number">1</div>
+            <div class="step-title">選擇一級學科 <small>Discipline</small></div>
+          </div>
+          <div id="disciplineGrid" class="discipline-grid"></div>
+        </div>
 
-// ====== 入口：單分支 ======
-async function runSingle() {
-  const branch = BRANCHES[state.selectedBranch];
-  if (!branch) return;
-  const years = els.yearRange.value;
-  const sortMode = els.sortMode.value;
-  const customExtra = els.customQuery.value.trim();
+        <!-- Step 2 -->
+        <div class="step-block">
+          <div class="step-header">
+            <div class="step-number">2</div>
+            <div class="step-title">選擇二級分支 <small>Sub-field</small></div>
+          </div>
+          <div id="subfieldRow" class="subfield-row"></div>
+        </div>
 
-  setLoading(true);
-  setStatus(`正在檢索 ${branch.name}（${branch.nameEn}）近 ${years} 年的文獻…`);
-  showSkeletons();
+        <!-- Step 3 -->
+        <div class="step-block">
+          <div class="step-header">
+            <div class="step-number">3</div>
+            <div class="step-title">設定篩選與檢索 <small>Filters & Run</small></div>
+          </div>
 
-  try {
-    const works = await fetchWorks(branch, years, sortMode, customExtra);
-    if (works.length === 0) {
-      setStatus('未檢索到任何文獻，建議拉長時間範圍或調整關鍵詞。', 'warning');
-      els.resultTitle.textContent = '無結果。';
-      els.resultLead.textContent = '可嘗試切換到其他分支或放寬時間範圍。';
-      updateMetrics({ works: 0, hotspots: 0, medianYear: '—', topBranch: branch.icon + ' ' + branch.name });
-      els.hotspotList.innerHTML = `<div class="empty-hint">無熱點可推薦。</div>`;
-      els.paperList.innerHTML = `<div class="empty-hint">無文獻可顯示。</div>`;
-      els.ideaList.innerHTML = `<div class="empty-hint">無研究選題建議。</div>`;
-      return;
-    }
+          <div class="filter-row">
+            <div class="filter-cell">
+              <label class="filter-label" for="yearRange">時間範圍</label>
+              <select id="yearRange" class="filter-input">
+                <option value="1">近 1 年</option>
+                <option value="2" selected>近 2 年</option>
+                <option value="3">近 3 年</option>
+                <option value="5">近 5 年</option>
+              </select>
+            </div>
 
-    const hotspots = extractHotspots(works);
-    const ideas = generateIdeas(branch, hotspots);
-    const years_arr = works.map(w => w.publication_year).filter(Boolean).sort();
-    const medianYear = years_arr[Math.floor(years_arr.length / 2)] || '—';
+            <div class="filter-cell">
+              <label class="filter-label" for="sortMode">排序方式</label>
+              <select id="sortMode" class="filter-input">
+                <option value="relevance" selected>綜合熱度</option>
+                <option value="date">最新發表</option>
+                <option value="citation">被引次數</option>
+              </select>
+            </div>
 
-    els.resultTitle.textContent = `${branch.name}學術熱點。`;
-    els.resultLead.textContent = `共檢索到 ${works.length} 篇文獻，識別出 ${hotspots.length} 個熱點主題，下方列出排名前 ${Math.min(10, works.length)} 篇代表性文獻。`;
-    updateMetrics({
-      works: works.length,
-      hotspots: hotspots.length,
-      medianYear,
-      topBranch: branch.icon + ' ' + branch.name
-    });
+            <div class="filter-cell cell-textarea">
+              <label class="filter-label" for="customQuery">補充關鍵詞（選填）</label>
+              <textarea id="customQuery" class="filter-input" placeholder="例：AI service robot · sustainability · customer experience"></textarea>
+              <div class="filter-hint">英文關鍵詞會獲得更穩定的檢索結果。</div>
+            </div>
 
-    renderHotspots(hotspots, branch);
-    renderIdeas(ideas);
-    renderPapers(works, sortMode);
-    state.lastResult = { branch, works, hotspots };
-    clearStatus();
-  } catch (err) {
-    console.error(err);
-    setStatus('檢索失敗：' + err.message + '。請稍後再試，或檢查網路。', 'error');
-    els.hotspotList.innerHTML = `<div class="empty-hint">檢索異常，請稍後再試。</div>`;
-    els.paperList.innerHTML = '';
-    els.ideaList.innerHTML = '';
-  } finally {
-    setLoading(false);
-  }
-}
+            <div class="filter-cell cell-actions">
+              <button id="allBtn" class="btn-reset" type="button">分析全部一級學科</button>
+              <button id="runBtn" class="btn-gold" type="button">檢索熱點 →</button>
+            </div>
+          </div>
+        </div>
 
-// ====== 入口：分析全部分支 ======
-async function runAll() {
-  const years = els.yearRange.value;
-  const sortMode = els.sortMode.value;
-  const customExtra = els.customQuery.value.trim();
+        <div id="statusBox" class="status-box"></div>
+      </div>
+    </div>
+  </section>
 
-  setLoading(true);
-  els.allBtn.textContent = '分析中…';
-  showSkeletons();
-  els.branchSummary.innerHTML = '';
+  <!-- Results -->
+  <main class="results-section">
+    <div class="container">
+      <div class="results-headline">
+        <div>
+          <div class="eyebrow">REAL-TIME RESULTS</div>
+          <h2 id="resultTitle">等待檢索。</h2>
+          <p id="resultLead">請於上方控制台選擇一級學科與二級分支，並點擊「檢索熱點」以查看結果。</p>
+        </div>
+      </div>
 
-  const summary = [];
-  let totalWorks = 0;
-  let allHotspotCount = 0;
-  let bestBranch = null;
-  let bestScore = -1;
+      <!-- Metrics -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-label">Retrieved Works</div>
+          <div id="metricWorks" class="metric-value">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Hotspots</div>
+          <div id="metricHotspots" class="metric-value">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Median Year</div>
+          <div id="metricLatestYear" class="metric-value">—</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Active Field</div>
+          <div id="metricTopBranch" class="metric-value">—</div>
+        </div>
+      </div>
 
-  try {
-    for (const branch of Object.values(BRANCHES)) {
-      setStatus(`正在分析：${branch.name} (${branch.nameEn})…`);
-      try {
-        const works = await fetchWorks(branch, years, sortMode, customExtra);
-        const hotspots = extractHotspots(works);
-        totalWorks += works.length;
-        allHotspotCount += hotspots.length;
-        const branchScore = hotspots.reduce((s, h) => s + h.score, 0);
-        const item = {
-          ...branch,
-          works: works.length,
-          hotspotCount: hotspots.length,
-          score: branchScore,
-          topHotspot: hotspots[0]?.name || '—'
-        };
-        summary.push(item);
-        if (branchScore > bestScore) {
-          bestScore = branchScore;
-          bestBranch = branch;
-        }
-        // 漸進渲染
-        renderBranchSummary([...summary]);
-      } catch (e) {
-        console.warn(`${branch.name} 檢索失敗`, e);
-        summary.push({ ...branch, works: 0, hotspotCount: 0, score: 0, topHotspot: '檢索失敗' });
-        renderBranchSummary([...summary]);
-      }
-      // 速率友好
-      await new Promise(r => setTimeout(r, 350));
-    }
+      <!-- Hotspots + Ideas -->
+      <div class="result-grid">
+        <div class="module">
+          <div class="module-head">
+            <h3 class="module-title">推薦學術熱點</h3>
+            <span id="hotspotCount" class="module-count">—</span>
+          </div>
+          <div id="hotspotList" class="hotspot-list">
+            <div class="empty-hint">熱點將會出現在這裡。</div>
+          </div>
+        </div>
 
-    // 拿表現最強分支去填充上方主結果區
-    if (bestBranch) {
-      const top = summary.find(s => s.id === bestBranch.id);
-      els.resultTitle.textContent = `跨學科熱度排行。`;
-      els.resultLead.textContent = `已遍歷 6 個分支，當前最活躍的是「${top.name}」，下面同步展示其代表熱點與選題建議。`;
-      updateMetrics({
-        works: totalWorks,
-        hotspots: allHotspotCount,
-        medianYear: new Date().getFullYear(),
-        topBranch: bestBranch.icon + ' ' + bestBranch.name
-      });
-      // 重新拉一次 best branch 來填熱點與文獻
-      const works = await fetchWorks(bestBranch, years, sortMode, customExtra);
-      const hotspots = extractHotspots(works);
-      const ideas = generateIdeas(bestBranch, hotspots);
-      renderHotspots(hotspots, bestBranch);
-      renderIdeas(ideas);
-      renderPapers(works, sortMode);
-    }
+        <div class="module">
+          <div class="module-head">
+            <h3 class="module-title">可延伸的研究選題</h3>
+            <span id="ideaCount" class="module-count">—</span>
+          </div>
+          <div id="ideaList" class="idea-list">
+            <div class="empty-hint">研究選題建議將會出現在這裡。</div>
+          </div>
+        </div>
+      </div>
 
-    clearStatus();
-  } catch (err) {
-    console.error(err);
-    setStatus('全分支分析失敗：' + err.message, 'error');
-  } finally {
-    setLoading(false);
-    els.allBtn.textContent = '分析全部分支';
-  }
-}
+      <!-- Papers -->
+      <div class="module module-fullwidth">
+        <div class="module-head">
+          <h3 class="module-title">代表性近期文獻</h3>
+          <span id="paperCount" class="module-count">—</span>
+        </div>
+        <div id="paperList" class="paper-list">
+          <div class="empty-hint">文獻列表將會出現在這裡。</div>
+        </div>
+      </div>
 
-// ====== 工具：HTML escape ======
-function escapeHtml(str) {
-  if (str == null) return '';
-  return String(str).replace(/[&<>"']/g, m => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[m]));
-}
+      <!-- Branch Summary -->
+      <div class="module module-fullwidth">
+        <div class="module-head">
+          <h3 class="module-title">一級學科熱度概覽</h3>
+          <span id="branchCount" class="module-count">—</span>
+        </div>
+        <div id="branchSummary" class="branch-list">
+          <div class="empty-hint">點擊「分析全部一級學科」可查看跨學科熱度比較。</div>
+        </div>
+      </div>
+    </div>
+  </main>
 
-// 啟動
-document.addEventListener('DOMContentLoaded', init);
+  <!-- Method -->
+  <section id="method" class="method-section">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">METHOD</div>
+        <h2>如何判斷「學術熱點」？</h2>
+        <p class="section-sub">本工具不是替代系統綜述，而是用於快速掃描近期研究方向、形成選題靈感與追蹤文獻線索。</p>
+      </div>
+
+      <div class="method-grid">
+        <div class="info-card">
+          <div class="value-num">01</div>
+          <h4>即時檢索</h4>
+          <p>調用 OpenAlex Works API 查詢二級分支關鍵詞，限定近年發表，提取標題、年份、引用、主題與摘要等元數據。</p>
+        </div>
+        <div class="info-card">
+          <div class="value-num">02</div>
+          <h4>熱點計分</h4>
+          <p>主題出現頻次、被引次數與發表年份按權重加總，再做歸一化，產生 0-100 的熱點分數。</p>
+        </div>
+        <div class="info-card">
+          <div class="value-num">03</div>
+          <h4>人工校讀</h4>
+          <p>熱點推薦只能作為初篩。正式研究仍需閱讀全文、確認理論脈絡、研究缺口與資料可得性。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission Banner -->
+  <section class="mission-banner">
+    <div class="container mission-inner">
+      <div class="mission-quote">"</div>
+      <p class="mission-text">
+        A research hotspot is not only what is popular, but what is becoming intellectually consequential.
+      </p>
+      <div class="mission-by">— HUGHIE'S ONLINE LAB</div>
+    </div>
+  </section>
+
+  <!-- Contact / Footer -->
+  <footer id="contact" class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+
+      <div class="footer-contact">
+        <h5>Contact</h5>
+        <div class="contact-item">
+          <div class="contact-label">EMAIL</div>
+          <a href="mailto:hughietao@utm.edu.mo">hughietao@utm.edu.mo</a>
+        </div>
+        <div class="contact-item">
+          <div class="contact-label">OFFICE</div>
+          <p>中國澳門特別行政區氹仔徐日昇寅公馬路<br>澳門旅遊大學　耀東樓 508C 辦公室</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/hospitality-research-trends.js"></script>
+</body>
+</html>
