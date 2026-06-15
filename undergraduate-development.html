@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Undergraduate Growth & Development Planner · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+
+    /* Breadcrumb */
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+
+    /* Meta pills */
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{
+      background:#fff;border:1px solid #ece5d3;
+      padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;
+    }
+
+    /* Assessment Section */
+    .assessment-section{padding:70px 0;background:#fff;}
+    .assessment-section .narrow{max-width:840px;margin:0 auto;}
+
+    /* Progress */
+    .progress-wrap{margin-bottom:36px;}
+    .progress-bar{height:3px;background:#ece5d3;overflow:hidden;}
+    .progress-fill{height:100%;background:#c9a961;width:14.28%;transition:width .4s ease;}
+    .progress-steps{display:flex;justify-content:space-between;margin-top:16px;gap:8px;flex-wrap:wrap;}
+    .progress-steps .step{font-size:11px;letter-spacing:1.2px;color:#bbb;font-weight:600;text-transform:uppercase;}
+    .progress-steps .step b{display:block;font-size:14px;color:#ccc;margin-bottom:3px;font-weight:700;}
+    .progress-steps .step.active{color:#1a1a1a;}
+    .progress-steps .step.active b{color:#c9a961;}
+    .progress-steps .step.done{color:#555;}
+    .progress-steps .step.done b{color:#c9a961;}
+
+    /* Form Step Card */
+    .form-step{display:none;background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:42px 38px;}
+    .form-step.active{display:block;}
+    .step-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
+    .form-step h2{font-size:28px;color:#1a1a1a;margin:0 0 10px;line-height:1.3;}
+    .step-desc{font-size:14px;color:#888;margin:0 0 32px;line-height:1.75;}
+
+    /* Fields */
+    .field{margin-bottom:24px;}
+    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:600px){.field-row{grid-template-columns:1fr;gap:0;}}
+
+    .field input[type="number"],
+    .field input[type="text"],
+    .field select,
+    .field textarea{
+      width:100%;padding:12px 14px;font-size:14px;
+      border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+      font-family:inherit;outline:none;transition:.2s;border-radius:0;
+    }
+    .field textarea{min-height:90px;resize:vertical;line-height:1.7;}
+    .field input:focus, .field select:focus, .field textarea:focus{border-color:#c9a961;}
+
+    /* Radio buttons */
+    .radio-row{display:flex;gap:12px;flex-wrap:wrap;}
+    .radio-btn{flex:1;min-width:120px;cursor:pointer;}
+    .radio-btn input{display:none;}
+    .radio-btn span{
+      display:block;text-align:center;padding:12px 18px;
+      border:1px solid #ece5d3;background:#fff;color:#555;
+      font-size:14px;transition:.2s;
+    }
+    .radio-btn:hover span{border-color:#d4c5a0;}
+    .radio-btn input:checked + span{
+      border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;
+    }
+
+    /* Checkbox grid (multi-select goals) */
+    .check-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+    @media(max-width:600px){.check-grid{grid-template-columns:1fr;}}
+    .check-btn{cursor:pointer;}
+    .check-btn input{display:none;}
+    .check-btn span{
+      display:block;padding:12px 16px;border:1px solid #ece5d3;background:#fff;
+      color:#555;font-size:14px;transition:.2s;
+    }
+    .check-btn:hover span{border-color:#d4c5a0;}
+    .check-btn input:checked + span{
+      border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;
+    }
+
+    /* Form Navigation */
+    .form-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;}
+    .btn-purple, .btn-ghost-dark{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;
+      font-weight:700;padding:14px 28px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .btn-ghost-dark:disabled{opacity:.35;cursor:not-allowed;}
+    .btn-ghost-dark:disabled:hover{background:transparent;color:#1a1a1a;}
+
+    /* Result Panel */
+    .result-panel{background:transparent;}
+    .result-head{text-align:center;padding:0 0 36px;margin-bottom:30px;border-bottom:1px solid #ece5d3;}
+    .result-head h2{font-size:36px;color:#1a1a1a;margin:10px 0 14px;line-height:1.2;}
+    .result-head p{color:#555;font-size:15px;line-height:1.7;max-width:560px;margin:0 auto;}
+
+    .score-card{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:36px;display:grid;grid-template-columns:auto 1fr;gap:42px;
+      align-items:center;margin-bottom:24px;
+    }
+    @media(max-width:680px){.score-card{grid-template-columns:1fr;gap:24px;}}
+    .score-left{text-align:left;}
+    .score-num{font-family:'Encode Sans',sans-serif;font-size:64px;color:#c9a961;font-weight:700;line-height:1;}
+    .score-num small{font-size:18px;color:#888;font-weight:400;margin-left:4px;}
+    .score-label{font-size:12px;letter-spacing:1.8px;color:#1a1a1a;margin-top:10px;font-weight:700;text-transform:uppercase;}
+    .score-bar{height:8px;background:#ece5d3;overflow:hidden;}
+    .score-fill{height:100%;background:#c9a961;width:0;transition:width .9s ease;}
+    .score-tier{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#888;letter-spacing:.5px;}
+
+    .result-section{
+      background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:28px 32px;margin-bottom:20px;
+    }
+    .result-section h3{font-size:18px;color:#1a1a1a;margin:0 0 18px;font-weight:700;}
+    .result-section ul{padding-left:20px;line-height:1.95;color:#555;font-size:14px;margin:0;}
+    .result-section li{margin-bottom:6px;}
+    .result-section li em{color:#888;}
+
+    .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;}
+    .metric{background:#faf7f0;border:1px solid #ece5d3;padding:20px 16px;text-align:center;}
+    .metric-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:10px;text-transform:uppercase;}
+    .metric-value{font-family:'Encode Sans',sans-serif;font-size:28px;color:#1a1a1a;font-weight:700;line-height:1;}
+    .metric-value small{font-size:13px;color:#888;font-weight:400;margin-left:2px;}
+    .metric-note{font-size:12px;color:#888;margin-top:8px;letter-spacing:.3px;}
+
+    /* Roadmap timeline */
+    .roadmap{position:relative;padding-left:24px;}
+    .roadmap::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:#ece5d3;}
+    .roadmap-item{position:relative;padding:0 0 22px 18px;}
+    .roadmap-item::before{
+      content:'';position:absolute;left:-22px;top:6px;width:10px;height:10px;
+      background:#c9a961;border:2px solid #fff;box-shadow:0 0 0 1px #c9a961;
+    }
+    .roadmap-item h4{font-size:14px;color:#1a1a1a;margin:0 0 6px;font-weight:700;letter-spacing:.5px;}
+    .roadmap-item p{font-size:13px;color:#555;line-height:1.8;margin:0;}
+
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    /* Eyebrow override (gold) */
+    .eyebrow.gold{color:#c9a961;}
+
+    /* Radar canvas */
+    #radarCanvas{max-width:100%;height:auto;}
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Undergraduate Growth & Development Planner</span>
+      </div>
+      <div class="eyebrow gold">EDUCATION · CAREER PLANNING</div>
+      <h1>本科生成長與發展規劃工具</h1>
+      <p class="lead">
+        本工具基於 Astin 的學生投入理論（Student Involvement Theory）、
+        Tinto 的學生發展模型，以及《高等學校學生發展核心素養框架》，
+        從學業表現、綜合素質、實踐能力、職業規劃、心理發展、人際與溝通六個維度，
+        對本科生綜合發展水平進行量化評估，並生成個性化的成長路徑建議。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">⏱ 約 10 分鐘</span>
+        <span class="pill">📊 6 個維度</span>
+        <span class="pill">📝 30 道題</span>
+        <span class="pill">🔒 本地計算</span>
+        <span class="pill">🎯 含個性化路徑</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="assessment-section">
+    <div class="container narrow">
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps">
+          <span class="step active" data-step="1"><b>01</b> 基本信息</span>
+          <span class="step" data-step="2"><b>02</b> 學業表現</span>
+          <span class="step" data-step="3"><b>03</b> 綜合素質</span>
+          <span class="step" data-step="4"><b>04</b> 實踐能力</span>
+          <span class="step" data-step="5"><b>05</b> 職業規劃</span>
+          <span class="step" data-step="6"><b>06</b> 心理發展</span>
+          <span class="step" data-step="7"><b>07</b> 人際溝通</span>
+        </div>
+      </div>
+
+      <form id="assessmentForm" class="assessment-form" autocomplete="off">
+
+        <!-- ========== STEP 1: 基本信息 ========== -->
+        <div class="form-step active" data-step="1">
+          <div class="step-num">PART 01</div>
+          <h2>基本信息</h2>
+          <p class="step-desc">用於生成更貼合你階段的發展路徑，不計入評分。</p>
+
+          <div class="field">
+            <label>性別</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="gender" value="male" required><span>男</span></label>
+              <label class="radio-btn"><input type="radio" name="gender" value="female"><span>女</span></label>
+              <label class="radio-btn"><input type="radio" name="gender" value="other"><span>其他</span></label>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>當前年級</label>
+              <select name="grade" required>
+                <option value="">請選擇</option>
+                <option value="1">大一</option>
+                <option value="2">大二</option>
+                <option value="3">大三</option>
+                <option value="4">大四</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>學科門類</label>
+              <select name="major" required>
+                <option value="">請選擇</option>
+                <option value="science">理學 / 工學</option>
+                <option value="medical">醫學</option>
+                <option value="economics">經濟 / 管理</option>
+                <option value="humanities">人文 / 社科</option>
+                <option value="arts">藝術 / 設計</option>
+                <option value="education">教育學</option>
+                <option value="agriculture">農 / 林學</option>
+                <option value="law">法學</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>畢業後初步打算（可選，不計入評分）</label>
+            <select name="afterGrad">
+              <option value="">請選擇</option>
+              <option value="domestic_grad">國內升學（考研 / 推免）</option>
+              <option value="abroad_grad">出國 / 出境升學</option>
+              <option value="employment">直接就業</option>
+              <option value="entrepreneur">創業</option>
+              <option value="exam">考編 / 公務員</option>
+              <option value="undecided">尚未決定</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ========== STEP 2: 學業表現 ========== -->
+        <div class="form-step" data-step="2">
+          <div class="step-num">PART 02</div>
+          <h2>學業表現</h2>
+          <p class="step-desc">關於課業成績、學習方法與專業興趣的客觀情況。</p>
+
+          <div class="field">
+            <label>1. 你目前的 GPA 大致範圍（按 4.0 制）</label>
+            <select name="q1" required>
+              <option value="">請選擇</option>
+              <option value="1">2.0 以下</option>
+              <option value="2">2.0 – 2.5</option>
+              <option value="3">2.5 – 3.0</option>
+              <option value="4">3.0 – 3.5</option>
+              <option value="5">3.5 以上</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>2. 在班級或專業中的成績排名</label>
+            <select name="q2" required>
+              <option value="">請選擇</option>
+              <option value="1">後 50%</option>
+              <option value="2">前 50%</option>
+              <option value="3">前 30%</option>
+              <option value="4">前 15%</option>
+              <option value="5">前 5%</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>3. 我有清晰的學習計劃並能堅持執行</label>
+            <select name="q3" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>4. 我對所學專業具有較強的興趣與投入度</label>
+            <select name="q4" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>5. 我能熟練使用至少一種外語進行專業閱讀</label>
+            <select name="q5" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ========== STEP 3: 綜合素質 ========== -->
+        <div class="form-step" data-step="3">
+          <div class="step-num">PART 03</div>
+          <h2>綜合素質</h2>
+          <p class="step-desc">關於社團、活動參與、領導力與時間管理的情況。</p>
+
+          <div class="field">
+            <label>6. 我參與過學生組織、社團或志願服務</label>
+            <select name="q6" required>
+              <option value="">請選擇</option>
+              <option value="1">從未參與</option>
+              <option value="2">偶爾參與</option>
+              <option value="3">一般成員</option>
+              <option value="4">骨幹成員</option>
+              <option value="5">擔任主要負責人</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>7. 我能合理規劃時間，並按時完成多項任務</label>
+            <select name="q7" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>8. 在團隊合作中，我能承擔協調或組織角色</label>
+            <select name="q8" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>9. 我在校期間獲得過獎學金或榮譽稱號</label>
+            <select name="q9" required>
+              <option value="">請選擇</option>
+              <option value="1">沒有</option>
+              <option value="2">院 / 系級榮譽 1 次</option>
+              <option value="3">院 / 系級榮譽多次</option>
+              <option value="4">校級獎學金或榮譽</option>
+              <option value="5">國家級或省級榮譽</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>10. 我具備良好的書面與口頭表達能力</label>
+            <select name="q10" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ========== STEP 4: 實踐能力 ========== -->
+        <div class="form-step" data-step="4">
+          <div class="step-num">PART 04</div>
+          <h2>實踐能力</h2>
+          <p class="step-desc">關於科研、競賽、實習等實踐性經歷的客觀情況。</p>
+
+          <div class="field">
+            <label>11. 我參與過大學生創新創業訓練計劃或科研項目</label>
+            <select name="q11" required>
+              <option value="">請選擇</option>
+              <option value="1">沒有</option>
+              <option value="2">院系級項目參與者</option>
+              <option value="3">校級項目參與者</option>
+              <option value="4">省級或國家級項目參與者</option>
+              <option value="5">擔任項目負責人</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>12. 我參與過學科或專業競賽</label>
+            <select name="q12" required>
+              <option value="">請選擇</option>
+              <option value="1">未參加</option>
+              <option value="2">參加但未獲獎</option>
+              <option value="3">獲校級獎項</option>
+              <option value="4">獲省級獎項</option>
+              <option value="5">獲國家級或國際獎項</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>13. 我有過實習或正式工作經歷</label>
+            <select name="q13" required>
+              <option value="">請選擇</option>
+              <option value="1">沒有</option>
+              <option value="2">短期兼職或社會實踐</option>
+              <option value="3">1 段正式實習</option>
+              <option value="4">2 段及以上實習</option>
+              <option value="5">長期 / 高質量實習（&gt; 3 個月或對口）</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>14. 我能熟練掌握至少一項與專業相關的工具或技能</label>
+            <select name="q14" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>15. 我發表過論文 / 作品 / 專利等成果</label>
+            <select name="q15" required>
+              <option value="">請選擇</option>
+              <option value="1">沒有</option>
+              <option value="2">校內刊物或內部成果</option>
+              <option value="3">普通期刊或會議</option>
+              <option value="4">核心期刊或競賽作品集</option>
+              <option value="5">SCI / SSCI 或同等水平成果</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ========== STEP 5: 職業規劃 ========== -->
+        <div class="form-step" data-step="5">
+          <div class="step-num">PART 05</div>
+          <h2>職業規劃</h2>
+          <p class="step-desc">關於對未來方向的清晰度、準備度與行動力。</p>
+
+          <div class="field">
+            <label>16. 我對畢業後的方向有清晰的目標</label>
+            <select name="q16" required>
+              <option value="">請選擇</option>
+              <option value="1">完全沒有</option>
+              <option value="2">有大致方向但很模糊</option>
+              <option value="3">有方向，但細節未定</option>
+              <option value="4">有相對具體的目標</option>
+              <option value="5">目標清晰且有書面規劃</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>17. 我了解目標方向所需的能力與資質要求</label>
+            <select name="q17" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不了解</option>
+              <option value="2">了解很少</option>
+              <option value="3">有基本了解</option>
+              <option value="4">較為了解</option>
+              <option value="5">非常了解並對應準備</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>18. 我已開始為目標進行針對性準備（考證、備考、技能等）</label>
+            <select name="q18" required>
+              <option value="">請選擇</option>
+              <option value="1">完全沒有</option>
+              <option value="2">剛開始考慮</option>
+              <option value="3">零散準備</option>
+              <option value="4">有計劃地推進</option>
+              <option value="5">系統執行並有成果</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>19. 我會主動利用學校資源（生涯中心 / 導師 / 校友等）</label>
+            <select name="q19" required>
+              <option value="">請選擇</option>
+              <option value="1">從不</option>
+              <option value="2">很少</option>
+              <option value="3">偶爾</option>
+              <option value="4">經常</option>
+              <option value="5">高頻並建立了長期聯繫</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>20. 我目前最關注的成長方向（可多選，至少 1 項）</label>
+            <div class="check-grid">
+              <label class="check-btn"><input type="checkbox" name="goals" value="academic"><span>學術科研深造</span></label>
+              <label class="check-btn"><input type="checkbox" name="goals" value="employment"><span>就業競爭力</span></label>
+              <label class="check-btn"><input type="checkbox" name="goals" value="exam"><span>考公 / 考編</span></label>
+              <label class="check-btn"><input type="checkbox" name="goals" value="abroad"><span>出國 / 出境</span></label>
+              <label class="check-btn"><input type="checkbox" name="goals" value="skill"><span>專業技能精進</span></label>
+              <label class="check-btn"><input type="checkbox" name="goals" value="leadership"><span>領導與管理能力</span></label>
+              <label class="check-btn"><input type="checkbox" name="goals" value="entrepreneur"><span>創業 / 創新</span></label>
+              <label class="check-btn"><input type="checkbox" name="goals" value="balance"><span>身心平衡 / 興趣</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 6: 心理發展 ========== -->
+        <div class="form-step" data-step="6">
+          <div class="step-num">PART 06</div>
+          <h2>心理發展與自我認知</h2>
+          <p class="step-desc">關於自我效能、抗壓能力、情緒管理的主觀感受。</p>
+
+          <div class="field">
+            <label>21. 面對學業或生活壓力，我能較快調整狀態</label>
+            <select name="q21" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>22. 我對自己的優勢與不足有清晰認知</label>
+            <select name="q22" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>23. 我相信自己能達成設定的目標</label>
+            <select name="q23" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>24. 失敗或挫折後，我能從中總結並繼續行動</label>
+            <select name="q24" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>25. 我能保持規律作息與基本身體鍛煉</label>
+            <select name="q25" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ========== STEP 7: 人際溝通 ========== -->
+        <div class="form-step" data-step="7">
+          <div class="step-num">PART 07</div>
+          <h2>人際與溝通</h2>
+          <p class="step-desc">關於人際支持、跨文化溝通與社會資源的構建。</p>
+
+          <div class="field">
+            <label>26. 我與同學、舍友、家人保持良好關係</label>
+            <select name="q26" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>27. 我有 1 位以上可以信賴的師長或學業導師</label>
+            <select name="q27" required>
+              <option value="">請選擇</option>
+              <option value="1">沒有</option>
+              <option value="2">有但很少聯繫</option>
+              <option value="3">偶爾請教</option>
+              <option value="4">定期溝通</option>
+              <option value="5">建立了穩定的指導關係</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>28. 我能與不同背景的人有效溝通協作</label>
+            <select name="q28" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>29. 我會主動拓展校外人脈與行業資源</label>
+            <select name="q29" required>
+              <option value="">請選擇</option>
+              <option value="1">從不</option>
+              <option value="2">很少</option>
+              <option value="3">偶爾</option>
+              <option value="4">經常</option>
+              <option value="5">主動且系統地拓展</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>30. 衝突或意見不合時，我能理性表達並尋求共識</label>
+            <select name="q30" required>
+              <option value="">請選擇</option>
+              <option value="1">完全不符合</option>
+              <option value="2">較不符合</option>
+              <option value="3">一般</option>
+              <option value="4">較符合</option>
+              <option value="5">完全符合</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button type="button" id="prevBtn" class="btn-ghost-dark" disabled>← 上一步</button>
+          <button type="button" id="nextBtn" class="btn-purple">下一步 →</button>
+          <button type="button" id="submitBtn" class="btn-purple" style="display:none;">生成發展報告</button>
+        </div>
+      </form>
+
+      <!-- ========== Result ========== -->
+      <div id="result" class="result-panel" style="display:none;">
+        <div class="result-head">
+          <div class="eyebrow gold">YOUR DEVELOPMENT REPORT</div>
+          <h2>本科生綜合發展報告</h2>
+          <p>結果由你提供的回答綜合計算得出，僅供自我認知與規劃參考。</p>
+        </div>
+
+        <div class="score-card" id="scoreCard">
+          <div class="score-left">
+            <div class="score-num"><span id="totalScore">--</span><small>/ 100</small></div>
+            <div class="score-label" id="scoreLabel">--</div>
+          </div>
+          <div class="score-right">
+            <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
+            <div class="score-tier">
+              <span>0</span><span>40</span><span>60</span><span>75</span><span>90</span><span>100</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>📊 六大維度得分</h3>
+          <div id="radarWrap" style="margin:16px 0;text-align:center;">
+            <canvas id="radarCanvas" width="420" height="420"></canvas>
+          </div>
+          <div class="metric-grid">
+            <div class="metric">
+              <div class="metric-label">學業表現</div>
+              <div class="metric-value"><span id="dim1Val">--</span><small>/ 25</small></div>
+              <div class="metric-note" id="dim1Tag">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">綜合素質</div>
+              <div class="metric-value"><span id="dim2Val">--</span><small>/ 25</small></div>
+              <div class="metric-note" id="dim2Tag">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">實踐能力</div>
+              <div class="metric-value"><span id="dim3Val">--</span><small>/ 25</small></div>
+              <div class="metric-note" id="dim3Tag">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">職業規劃</div>
+              <div class="metric-value"><span id="dim4Val">--</span><small>/ 20</small></div>
+              <div class="metric-note" id="dim4Tag">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">心理發展</div>
+              <div class="metric-value"><span id="dim5Val">--</span><small>/ 25</small></div>
+              <div class="metric-note" id="dim5Tag">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">人際溝通</div>
+              <div class="metric-value"><span id="dim6Val">--</span><small>/ 25</small></div>
+              <div class="metric-note" id="dim6Tag">--</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>🧭 結果解讀</h3>
+          <p id="interpretation" style="font-size:14px;line-height:1.85;color:#555;margin:0;"></p>
+        </div>
+
+        <div class="result-section">
+          <h3>💡 個性化建議</h3>
+          <ul id="recommendations"></ul>
+        </div>
+
+        <div class="result-section">
+          <h3>🛣 階段性發展路線圖</h3>
+          <div class="roadmap" id="roadmap"></div>
+        </div>
+
+        <div class="result-section">
+          <h3>📚 評估依據</h3>
+          <ul>
+            <li>Astin, A. W. (1984). Student Involvement: A Developmental Theory for Higher Education.</li>
+            <li>Tinto, V. (1993). Leaving College: Rethinking the Causes and Cures of Student Attrition.</li>
+            <li>Chickering, A. W. & Reisser, L. (1993). Education and Identity (Seven Vectors of Development).</li>
+            <li>《高等學校學生發展核心素養框架》及《中國學生發展核心素養》研究報告。</li>
+            <li>OECD Future of Education and Skills 2030: Learning Compass Framework.</li>
+          </ul>
+        </div>
+
+        <div class="result-section disclaimer">
+          <strong>免責聲明　</strong>
+          本工具不構成升學、就業或心理諮詢方面的專業意見。如需深入規劃，請諮詢學校生涯發展中心、學業導師或專業心理顧問。
+        </div>
+
+        <div class="form-nav">
+          <button type="button" class="btn-ghost-dark" onclick="location.reload()">重新評估</button>
+          <button type="button" class="btn-purple" onclick="window.print()">打印 / 保存 PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/undergraduate-development.js"></script>
+</body>
+</html>
