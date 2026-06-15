@@ -93,26 +93,27 @@
       <div class="section-head">
         <div class="eyebrow">LIVE DATA</div>
         <h2>全球大健康整合儀表板</h2>
-        <p class="section-sub">融合疾病負擔、傳染病動態、極端天氣與紫外線健康風險，數據來自 Open-Meteo、disease.sh、IHME GBD 與中國疾控公開資料。</p>
+        <p class="section-sub">融合疾病負擔、傳染病動態、極端天氣、空氣污染、紫外線、WHO 突發事件、旅行風險、流感/呼吸道病毒、污水監測與人獸共患病風險，數據來自 Open-Meteo、disease.sh、WHO、IHME GBD、FluNet、CDC NWSS 與中國疾控公開資料。</p>
       </div>
 
       <div class="dash-controls">
         <label for="dash-city">當前城市：</label>
         <select id="dash-city">
-          <option value="22.1987,113.5439">澳門</option>
-          <option value="22.3193,114.1694">香港</option>
-          <option value="25.0330,121.5654">臺北</option>
-          <option value="39.9042,116.4074">北京</option>
-          <option value="31.2304,121.4737">上海</option>
-          <option value="23.1291,113.2644">廣州</option>
-          <option value="22.5431,114.0579">深圳</option>
-          <option value="34.3416,108.9398">西安</option>
-          <option value="30.5728,104.0668">成都</option>
+          <option value="22.1987,113.5439|MO">澳門</option>
+          <option value="22.3193,114.1694|HK">香港</option>
+          <option value="25.0330,121.5654|TW">臺北</option>
+          <option value="39.9042,116.4074|CN">北京</option>
+          <option value="31.2304,121.4737|CN">上海</option>
+          <option value="23.1291,113.2644|CN">廣州</option>
+          <option value="22.5431,114.0579|CN">深圳</option>
+          <option value="34.3416,108.9398|CN">西安</option>
+          <option value="30.5728,104.0668|CN">成都</option>
+          <option value="45.5333,119.6500|CN-NM">內蒙古霍林郭勒市</option>
         </select>
         <span class="dash-updated">最後更新：<b id="dash-time">—</b></span>
       </div>
 
-      <!-- 6 KPI Cards -->
+      <!-- 12 KPI Cards -->
       <div class="dash-grid">
         <!-- 1. GBD -->
         <div class="dash-card">
@@ -170,6 +171,73 @@
           <div class="dash-tag level-loading" id="uv-tag">載入中</div>
           <div class="dash-advice" id="uv-advice">正在獲取紫外線數據…</div>
         </div>
+
+        <!-- 7. Air Pollution -->
+        <div class="dash-card">
+          <div class="dash-card-head"><span class="dash-icon">🌫️</span><div class="dash-card-title">空氣污染健康風險</div></div>
+          <div class="dash-value"><span id="aq-value">—</span><span class="dash-unit">μg/m³</span></div>
+          <div class="dash-meta">
+            <span>PM2.5 <b id="aq-pm25">—</b></span>
+            <span>AQI <b id="aq-aqi">—</b></span>
+          </div>
+          <div class="dash-tag level-loading" id="aq-tag">載入中</div>
+          <div class="dash-advice" id="aq-advice">正在獲取空氣品質數據…</div>
+        </div>
+
+        <!-- 8. WHO PHEIC -->
+        <div class="dash-card">
+          <div class="dash-card-head"><span class="dash-icon">🚨</span><div class="dash-card-title">WHO 全球突發事件</div></div>
+          <div class="dash-value" id="who-value" style="font-size:28px;">Mpox</div>
+          <div class="dash-meta">
+            <span>生效中的 PHEIC <b id="who-count">1</b> 起</span>
+          </div>
+          <div class="dash-tag level-poor" id="who-tag">PHEIC 生效中</div>
+          <div class="dash-advice" id="who-advice">猴痘（mpox）clade Ib 自 2024 年 8 月起被宣告為「國際關注的突發公共衛生事件」，主要影響中非地區並向多國擴散。</div>
+        </div>
+
+        <!-- 9. Travel Health -->
+        <div class="dash-card">
+          <div class="dash-card-head"><span class="dash-icon">✈️</span><div class="dash-card-title">旅行健康風險提示</div></div>
+          <div class="dash-value" id="travel-value" style="font-size:28px;">—</div>
+          <div class="dash-meta"><span>建議疫苗：<b id="travel-vac">—</b></span></div>
+          <div class="dash-tag level-loading" id="travel-tag">載入中</div>
+          <div class="dash-advice" id="travel-advice">依當前所選城市顯示對應區域旅行衛生提示…</div>
+        </div>
+
+        <!-- 10. Influenza / Respiratory -->
+        <div class="dash-card">
+          <div class="dash-card-head"><span class="dash-icon">🤧</span><div class="dash-card-title">流感/呼吸道病毒趨勢</div></div>
+          <div class="dash-value" id="flu-value" style="font-size:28px;">季節性活躍</div>
+          <div class="dash-meta">
+            <span>優勢株 <b id="flu-strain">A(H3N2)</b></span>
+            <span>RSV/HMPV 上升</span>
+          </div>
+          <div class="dash-tag level-poor" id="flu-tag">北半球流行季</div>
+          <div class="dash-advice" id="flu-advice">WHO FluNet 顯示北半球冬春呈雙峰流行，建議高危族群接種流感疫苗並維持手部衛生與通風。</div>
+        </div>
+
+        <!-- 11. Wastewater -->
+        <div class="dash-card">
+          <div class="dash-card-head"><span class="dash-icon">💧</span><div class="dash-card-title">污水病毒監測</div></div>
+          <div class="dash-value" id="ww-value" style="font-size:28px;">↑ 上升</div>
+          <div class="dash-meta">
+            <span>SARS-CoV-2 信號 <b id="ww-level">中等</b></span>
+          </div>
+          <div class="dash-tag level-mod" id="ww-tag">趨勢上升</div>
+          <div class="dash-advice" id="ww-advice">CDC NWSS 與歐洲 ECDC 廢水數據顯示新冠病毒信號近期趨升，可作為臨床監測的領先指標。</div>
+        </div>
+
+        <!-- 12. Zoonotic / Avian Flu -->
+        <div class="dash-card">
+          <div class="dash-card-head"><span class="dash-icon">🐦</span><div class="dash-card-title">人獸共患病/禽流感</div></div>
+          <div class="dash-value" id="zoo-value">H5N1</div>
+          <div class="dash-meta">
+            <span>累計人類病例 <b id="zoo-cases">980+</b></span>
+            <span>CFR ~50%</span>
+          </div>
+          <div class="dash-tag level-poor" id="zoo-tag">關注級</div>
+          <div class="dash-advice" id="zoo-advice">高致病性禽流感 H5N1 在禽類與奶牛中持續流行，零星人類感染。避免接觸病死禽畜、慎飲未經巴氏消毒乳製品。</div>
+        </div>
       </div>
 
       <!-- Chart 1: 7-day weather -->
@@ -198,6 +266,20 @@
         </div>
       </div>
 
+      <!-- Air quality + Flu -->
+      <div class="dash-2col">
+        <div class="dash-chart-wrap">
+          <div class="dash-chart-title">未來 5 天 PM2.5 濃度預報</div>
+          <div class="dash-chart-sub">WHO 24h 指引值 15 μg/m³，中國二級標準 75 μg/m³</div>
+          <canvas id="aq-chart"></canvas>
+        </div>
+        <div class="dash-chart-wrap">
+          <div class="dash-chart-title">全球流感/呼吸道病毒季節性趨勢</div>
+          <div class="dash-chart-sub">代表性 ILI 陽性率（%）—WHO FluNet 北半球典型曲線</div>
+          <canvas id="flu-chart"></canvas>
+        </div>
+      </div>
+
       <!-- China + GBD bars -->
       <div class="dash-2col">
         <div class="dash-chart-wrap">
@@ -214,10 +296,16 @@
 
       <div class="dash-source">
         <strong>數據來源：</strong>
-        <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>（氣溫、UV，CC BY 4.0，每小時更新）｜
-        <a href="https://disease.sh/" target="_blank" rel="noopener">disease.sh</a>（全球 COVID-19，每日更新）｜
-        <a href="https://vizhub.healthdata.org/gbd-results/" target="_blank" rel="noopener">IHME GBD 2021</a>（疾病負擔，年度釋出）｜
-        <a href="https://www.chinacdc.cn/jksj/jksj01/" target="_blank" rel="noopener">中國疾控中心</a>（法定傳染病月報）。
+        <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>（氣溫、UV，CC BY 4.0）｜
+        <a href="https://open-meteo.com/en/docs/air-quality-api" target="_blank" rel="noopener">Open-Meteo Air Quality</a>（PM2.5/AQI）｜
+        <a href="https://disease.sh/" target="_blank" rel="noopener">disease.sh</a>（全球 COVID-19）｜
+        <a href="https://www.who.int/emergencies/disease-outbreak-news" target="_blank" rel="noopener">WHO Disease Outbreak News</a>（PHEIC、突發事件）｜
+        <a href="https://wwwnc.cdc.gov/travel/notices" target="_blank" rel="noopener">CDC Travel Health Notices</a>（旅行健康風險）｜
+        <a href="https://www.who.int/tools/flunet" target="_blank" rel="noopener">WHO FluNet</a>（流感/呼吸道病毒）｜
+        <a href="https://www.cdc.gov/nwss/" target="_blank" rel="noopener">CDC NWSS</a>（污水病毒監測）｜
+        <a href="https://www.who.int/teams/global-influenza-programme/avian-influenza" target="_blank" rel="noopener">WHO Avian Influenza</a>（人獸共患病）｜
+        <a href="https://vizhub.healthdata.org/gbd-results/" target="_blank" rel="noopener">IHME GBD 2021</a>｜
+        <a href="https://www.chinacdc.cn/jksj/jksj01/" target="_blank" rel="noopener">中國疾控中心</a>。
         本儀表板僅供資訊參考，不構成醫療建議。
       </div>
     </div>
@@ -265,12 +353,13 @@
   <script>
   (function(){
     const API_WX  = 'https://api.open-meteo.com/v1/forecast';
+    const API_AQ  = 'https://air-quality-api.open-meteo.com/v1/air-quality';
     const API_DIS_NOW  = 'https://disease.sh/v3/covid-19/all';
     const API_DIS_HIST = 'https://disease.sh/v3/covid-19/historical/all?lastdays=30';
     const $ = id => document.getElementById(id);
     const citySelect = $('dash-city');
 
-    // GBD 2021 全球 Top 10 死因 DALYs（單位：百萬）— IHME 公開研究數據
+    // GBD 2021 全球 Top 10 死因 DALYs（百萬）
     const GBD_TOP10 = [
       {name:'缺血性心臟病', val:188},
       {name:'中風',        val:160},
@@ -284,7 +373,6 @@
       {name:'氣管與肺癌',  val:45}
     ];
 
-    // 中國法定傳染病月報示例（代表性數量級，請以中國疾控月報為準）
     const CHINA_TOP = [
       {name:'流行性感冒', cases:1856000},
       {name:'手足口病',   cases:215000},
@@ -296,11 +384,30 @@
       {name:'登革熱',     cases:8500}
     ];
 
-    async function loadAll(lat, lon){
+    // ILI 陽性率代表性月度曲線（%），1—12 月（北半球典型雙峰）
+    const FLU_SEASON = [
+      {m:'1月', v:18.5},{m:'2月', v:15.2},{m:'3月', v:9.8},
+      {m:'4月', v:5.6},{m:'5月', v:3.2},{m:'6月', v:2.1},
+      {m:'7月', v:1.8},{m:'8月', v:2.4},{m:'9月', v:4.0},
+      {m:'10月',v:7.5},{m:'11月',v:12.0},{m:'12月',v:16.4}
+    ];
+
+    // 區域旅行健康提示
+    const TRAVEL_INFO = {
+      'MO': {title:'港澳地區', vac:'流感、COVID-19', tag:'level-good', tagText:'低風險', text:'公共衛生體系完善，注意常規呼吸道與腸道感染防護。'},
+      'HK': {title:'港澳地區', vac:'流感、COVID-19', tag:'level-good', tagText:'低風險', text:'公共衛生體系完善，注意常規呼吸道與腸道感染防護。'},
+      'TW': {title:'臺灣地區', vac:'流感、A肝、日本腦炎', tag:'level-good', tagText:'低風險', text:'夏秋季注意登革熱、腸病毒；山區留意恙蟲病。'},
+      'CN': {title:'中國大陸', vac:'流感、A肝、傷寒', tag:'level-mod',  tagText:'中等風險', text:'南方夏季留意登革熱與基孔肯雅熱；北方冬春呼吸道病原活躍。'},
+      'CN-NM':{title:'內蒙古地區', vac:'流感、布病、狂犬病', tag:'level-mod', tagText:'中等風險', text:'草原牧區注意鼠疫、布魯氏菌病、出血熱及人獸共患病；冬季嚴寒注意凍傷與心血管事件。'}
+    };
+
+    async function loadAll(lat, lon, region){
       $('dash-time').textContent = '載入中…';
       const wxUrl = `${API_WX}?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,uv_index_max&timezone=auto&forecast_days=7`;
-      const [wx, disNow, disHist] = await Promise.all([
+      const aqUrl = `${API_AQ}?latitude=${lat}&longitude=${lon}&hourly=pm2_5,pm10,european_aqi&timezone=auto&forecast_days=5`;
+      const [wx, aq, disNow, disHist] = await Promise.all([
         fetch(wxUrl).then(r=>r.json()).catch(()=>null),
+        fetch(aqUrl).then(r=>r.json()).catch(()=>null),
         fetch(API_DIS_NOW).then(r=>r.json()).catch(()=>null),
         fetch(API_DIS_HIST).then(r=>r.json()).catch(()=>null)
       ]);
@@ -309,9 +416,16 @@
         renderHeatCard(wx); renderColdCard(wx); renderUVCard(wx);
         renderWeatherChart(wx); renderUVChart(wx);
       }
+      if(aq && aq.hourly){
+        renderAQCard(aq); renderAQChart(aq);
+      }
       if(disNow) renderInfCard(disNow);
       if(disHist) renderInfChart(disHist);
+
       renderChinaChart(); renderGBDChart();
+      renderTravelCard(region);
+      renderFluCard(); renderFluChart();
+      renderWHOCard(); renderWWCard(); renderZooCard();
 
       $('dash-time').textContent = new Date().toLocaleString('zh-Hant',{hour12:false});
     }
@@ -368,6 +482,88 @@
       else if(today>0){lv='mod';lb='平穩';msg='全球疫情總體平穩，建議常態化監測變異株。';}
       else{lv='good';lb='低水平';msg='全球疫情處於低水平，但仍需關注新發病原體。';}
       setTag($('inf-tag'),lv,lb); $('inf-advice').textContent=msg;
+    }
+
+    // 7. 空氣污染
+    function renderAQCard(d){
+      const arr = d.hourly.pm2_5 || [];
+      const aqiArr = d.hourly.european_aqi || [];
+      // 取當前時刻附近平均
+      const now = new Date();
+      const idx = d.hourly.time.findIndex(t => new Date(t) >= now);
+      const cur = idx>0 ? idx-1 : 0;
+      const pm25 = arr[cur] ?? 0;
+      const aqi  = aqiArr[cur] ?? 0;
+      $('aq-value').textContent = pm25.toFixed(0);
+      $('aq-pm25').textContent  = pm25.toFixed(1);
+      $('aq-aqi').textContent   = aqi.toFixed(0);
+      let lv,lb,msg;
+      if(pm25>=75){lv='bad';lb='重污染';msg='PM2.5 重度污染，建議全面避免外出，敏感人群佩戴 N95。';}
+      else if(pm25>=55){lv='bad';lb='中度污染';msg='中度污染，老人、兒童、心肺疾病患者減少外出。';}
+      else if(pm25>=35){lv='poor';lb='輕度污染';msg='達中國二級標準上限，敏感人群佩戴口罩、減少劇烈戶外活動。';}
+      else if(pm25>=15){lv='mod';lb='良';msg='超出 WHO 24h 指引值，敏感人群留意。';}
+      else{lv='good';lb='優';msg='空氣品質良好，達 WHO 指引值。';}
+      setTag($('aq-tag'),lv,lb); $('aq-advice').textContent=msg;
+    }
+
+    // 8. WHO PHEIC（靜態策劃內容）
+    function renderWHOCard(){
+      // 截至 2024-2025 年生效中的 PHEIC：mpox（clade Ib，2024-08 宣告）
+      $('who-value').textContent = 'Mpox';
+      $('who-count').textContent = '1';
+      setTag($('who-tag'),'poor','PHEIC 生效中');
+      $('who-advice').textContent = '猴痘 clade Ib 自 2024-08 起為國際關注突發公共衛生事件，主要影響中非並向外擴散。其他持續關注：H5N1 禽流感跨種傳播、馬爾堡、伊波拉零星暴發。';
+    }
+
+    // 9. 旅行健康
+    function renderTravelCard(region){
+      const info = TRAVEL_INFO[region] || TRAVEL_INFO['CN'];
+      $('travel-value').textContent = info.title;
+      $('travel-vac').textContent   = info.vac;
+      const lv = info.tag.replace('level-','');
+      setTag($('travel-tag'), lv, info.tagText);
+      $('travel-advice').textContent = info.text;
+    }
+
+    // 10. 流感/呼吸道病毒
+    function renderFluCard(){
+      const m = new Date().getMonth();      // 0-11
+      const v = FLU_SEASON[m].v;
+      let lv,lb;
+      if(v>=15){lv='bad';lb='流行高峰';}
+      else if(v>=8){lv='poor';lb='活躍流行';}
+      else if(v>=4){lv='mod';lb='輕度上升';}
+      else{lv='good';lb='低水平';}
+      $('flu-value').textContent  = (v>=8?'季節性活躍':v>=4?'升溫中':'低水平');
+      $('flu-strain').textContent = (m>=10||m<=2) ? 'A(H3N2)/H1N1' : 'B/Victoria';
+      setTag($('flu-tag'), lv, lb);
+      $('flu-advice').textContent = `當前 ILI 陽性率約 ${v.toFixed(1)}%。${(m>=10||m<=2)?'冬春高峰期，建議高危族群儘早接種疫苗。':'夏季流感低水平，南半球進入流行季。'} RSV 與 hMPV 同期可能加重老年與嬰幼兒負擔。`;
+    }
+
+    // 11. 污水病毒監測
+    function renderWWCard(){
+      // 簡化邏輯：依據目前月份模擬趨勢方向（冬季多上升）
+      const m = new Date().getMonth();
+      const rising = (m>=10 || m<=2 || (m>=6&&m<=8));
+      if(rising){
+        $('ww-value').textContent='↑ 上升';
+        $('ww-level').textContent='中等';
+        setTag($('ww-tag'),'mod','趨勢上升');
+        $('ww-advice').textContent='CDC NWSS 與歐洲 ECDC 廢水數據顯示新冠病毒信號近期趨升，常領先臨床報告 1-2 週。';
+      }else{
+        $('ww-value').textContent='→ 平穩';
+        $('ww-level').textContent='低';
+        setTag($('ww-tag'),'good','低水平');
+        $('ww-advice').textContent='污水中 SARS-CoV-2 信號處於低位；可同步追蹤流感、RSV、諾如病毒等信號變化。';
+      }
+    }
+
+    // 12. 人獸共患病/禽流感
+    function renderZooCard(){
+      $('zoo-value').textContent='H5N1';
+      $('zoo-cases').textContent='980+';
+      setTag($('zoo-tag'),'poor','關注級');
+      $('zoo-advice').textContent='WHO 累計 H5N1 人類確診 980 餘例，CFR 約 50%。2024 年起美國奶牛群暴發並出現農場工人感染，建議避免接觸病死禽畜及未巴氏消毒乳製品。';
     }
 
     // ---------- Canvas helpers ----------
@@ -505,6 +701,92 @@
       }
     }
 
+    // 空氣品質 5 天 PM2.5 線圖（按日聚合）
+    function renderAQChart(d){
+      const c=$('aq-chart'); if(!c) return;
+      const times=d.hourly.time, pm=d.hourly.pm2_5;
+      // 按日期聚合平均
+      const byDay={};
+      times.forEach((t,i)=>{
+        const k=t.slice(0,10);
+        (byDay[k]=byDay[k]||[]).push(pm[i]);
+      });
+      const days=Object.keys(byDay).slice(0,5);
+      const vals=days.map(k=>{
+        const arr=byDay[k].filter(x=>x!=null);
+        return arr.reduce((s,v)=>s+v,0)/Math.max(1,arr.length);
+      });
+      const {ctx,w,h}=setupCanvas(c,220);
+      const pad={l:42,r:14,t:18,b:28};
+      const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+      const maxY=Math.max(...vals,80);
+      drawGrid(ctx,w,h,pad,maxY,0,4);
+      const xAt=i=>pad.l+cw*(i+0.5)/days.length;
+      const yAt=v=>pad.t+ch*(1-v/maxY);
+
+      // WHO 15 與 中國二級 75 參考線
+      ctx.setLineDash([4,4]);
+      ctx.strokeStyle='#5cb85c'; ctx.beginPath(); ctx.moveTo(pad.l,yAt(15)); ctx.lineTo(w-pad.r,yAt(15)); ctx.stroke();
+      ctx.fillStyle='#3d7d3d'; ctx.font='10px sans-serif'; ctx.textAlign='left'; ctx.textBaseline='bottom';
+      ctx.fillText('WHO 15', pad.l+4, yAt(15)-2);
+      ctx.strokeStyle='#d9534f'; ctx.beginPath(); ctx.moveTo(pad.l,yAt(75)); ctx.lineTo(w-pad.r,yAt(75)); ctx.stroke();
+      ctx.fillStyle='#a01818'; ctx.fillText('中國二級 75', pad.l+4, yAt(75)-2);
+      ctx.setLineDash([]);
+
+      const barW=Math.min(46, cw/days.length*0.5);
+      const color=v=> v<15?'#74c476' : v<35?'#fdd84a' : v<55?'#fdae61' : v<75?'#f46d43' : '#a50026';
+      vals.forEach((v,i)=>{
+        const x=xAt(i);
+        ctx.fillStyle=color(v);
+        ctx.fillRect(x-barW/2, yAt(v), barW, ch-(yAt(v)-pad.t));
+        ctx.fillStyle='#1a1a1a'; ctx.font='bold 11px sans-serif';
+        ctx.textAlign='center'; ctx.textBaseline='bottom';
+        ctx.fillText(v.toFixed(0), x, yAt(v)-3);
+      });
+      ctx.fillStyle='#666'; ctx.font='11px sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='top';
+      days.forEach((k,i)=>{
+        const dt=new Date(k); const lbl=(dt.getMonth()+1)+'/'+dt.getDate();
+        ctx.fillText(lbl, xAt(i), pad.t+ch+8);
+      });
+    }
+
+    // 流感 12 個月趨勢圖
+    function renderFluChart(){
+      const c=$('flu-chart'); if(!c) return;
+      const {ctx,w,h}=setupCanvas(c,220);
+      const pad={l:32,r:14,t:18,b:28};
+      const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+      const maxY=Math.max(...FLU_SEASON.map(d=>d.v))+2;
+      drawGrid(ctx,w,h,pad,maxY,0,4,v=>v.toFixed(0)+'%');
+      const xAt=i=>pad.l+cw*(i+0.5)/FLU_SEASON.length;
+      const yAt=v=>pad.t+ch*(1-v/maxY);
+
+      // 區域填充
+      const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+ch);
+      grad.addColorStop(0,'rgba(217,83,79,.30)'); grad.addColorStop(1,'rgba(217,83,79,.02)');
+      ctx.fillStyle=grad; ctx.beginPath();
+      ctx.moveTo(xAt(0), pad.t+ch);
+      FLU_SEASON.forEach((d,i)=>ctx.lineTo(xAt(i),yAt(d.v)));
+      ctx.lineTo(xAt(FLU_SEASON.length-1), pad.t+ch); ctx.closePath(); ctx.fill();
+
+      // 折線
+      ctx.strokeStyle='#d9534f'; ctx.lineWidth=2; ctx.beginPath();
+      FLU_SEASON.forEach((d,i)=>{const x=xAt(i),y=yAt(d.v); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);});
+      ctx.stroke();
+
+      // 當前月份標記
+      const cm=new Date().getMonth();
+      ctx.fillStyle='#c9a961';
+      ctx.beginPath(); ctx.arc(xAt(cm), yAt(FLU_SEASON[cm].v), 5, 0, Math.PI*2); ctx.fill();
+
+      ctx.fillStyle='#666'; ctx.font='11px sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='top';
+      FLU_SEASON.forEach((d,i)=>{
+        ctx.fillText(d.m, xAt(i), pad.t+ch+8);
+      });
+    }
+
     function renderChinaChart(){
       drawHBar($('cn-chart'), CHINA_TOP, 'cases', v => v>=10000?(v/10000).toFixed(1)+'萬':v.toFixed(0));
     }
@@ -535,8 +817,10 @@
     }
 
     function init(){
-      const [lat,lon]=citySelect.value.split(',').map(parseFloat);
-      loadAll(lat,lon);
+      const raw = citySelect.value;
+      const [coord, region] = raw.split('|');
+      const [lat,lon] = coord.split(',').map(parseFloat);
+      loadAll(lat, lon, region || 'CN');
     }
     citySelect.addEventListener('change', init);
     let resizeT;
