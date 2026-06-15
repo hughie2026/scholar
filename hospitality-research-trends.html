@@ -9,8 +9,8 @@
 
   <style>
     /* ===== Hero ===== */
-    .tool-hero { min-height: 540px; position: relative; overflow: hidden; }
-    .tool-hero .hero-lead { max-width: 820px; }
+    .tool-hero { min-height: 520px; position: relative; overflow: hidden; }
+    .tool-hero .hero-lead { max-width: 760px; }
     .hero-disciplines {
       display: flex;
       flex-wrap: wrap;
@@ -33,27 +33,27 @@
     /* ===== Section ===== */
     .trend-section {
       background: linear-gradient(180deg, #f7f5ef 0%, #f1ede2 100%);
-      padding: 90px 0 100px;
+      padding: 80px 0 100px;
     }
-    .trend-shell {
-      display: grid;
-      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.65fr);
-      gap: 30px;
-      align-items: start;
+    .tool-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
     }
 
-    /* ===== Cards ===== */
+    /* ===== Cards (shared) ===== */
     .panel,
-    .result-panel {
+    .result-panel,
+    .settings-panel {
       background: #ffffff;
       border: 1px solid rgba(16, 34, 53, 0.06);
-      border-radius: 24px;
-      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.08);
-      padding: 30px;
+      border-radius: 26px;
+      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.07);
+      padding: 38px 42px;
     }
-    .panel { position: sticky; top: 24px; }
     .panel h2,
-    .result-panel h2 {
+    .result-panel h2,
+    .settings-panel h2 {
       color: #102235;
       font-size: 30px;
       line-height: 1.15;
@@ -61,10 +61,73 @@
       margin: 8px 0 14px;
     }
     .panel p,
-    .result-panel p { color: #5f6b75; line-height: 1.75; margin: 0; }
+    .result-panel p,
+    .settings-panel p {
+      color: #5f6b75;
+      line-height: 1.75;
+      margin: 0;
+    }
+
+    /* ===== Settings Header ===== */
+    .settings-header { margin-bottom: 8px; max-width: 760px; }
+
+    /* ===== Step Blocks ===== */
+    .step-block {
+      margin-top: 28px;
+      padding-top: 28px;
+      border-top: 1px dashed rgba(16, 34, 53, 0.12);
+    }
+    .step-block.first {
+      margin-top: 32px;
+      padding-top: 0;
+      border-top: 0;
+    }
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .step-num {
+      width: 34px; height: 34px;
+      display: grid; place-items: center;
+      background: #102235;
+      color: #ffffff;
+      border-radius: 11px;
+      font-family: "Encode Sans", "Open Sans", sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+    }
+    .step-header h3 {
+      margin: 0;
+      font-size: 19px;
+      color: #102235;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+    .step-header h3 small {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #7d8790;
+      margin-top: 3px;
+      letter-spacing: 0.02em;
+    }
+    .step-tag {
+      margin-left: auto;
+      font-size: 11px;
+      padding: 5px 11px;
+      background: rgba(201, 163, 90, 0.16);
+      color: #8a6816;
+      border-radius: 999px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
 
     /* ===== Form Controls ===== */
-    .control-group { margin-top: 22px; }
     .control-group label {
       display: block;
       font-family: "Encode Sans", "Open Sans", sans-serif;
@@ -88,7 +151,7 @@
       outline: none;
       transition: all 0.2s ease;
     }
-    .control-group textarea { min-height: 86px; resize: vertical; line-height: 1.65; }
+    .control-group textarea { min-height: 52px; resize: vertical; line-height: 1.65; }
     .control-group select:focus,
     .control-group input:focus,
     .control-group textarea:focus {
@@ -96,57 +159,74 @@
       background: #ffffff;
       box-shadow: 0 0 0 4px rgba(201, 163, 90, 0.16);
     }
-    .hint { color: #7d8790; font-size: 13px; line-height: 1.6; margin-top: 8px; }
+    .hint {
+      color: #7d8790;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
 
-    /* ===== Branch Tabs ===== */
+    /* ===== Param Grid ===== */
+    .param-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.6fr;
+      gap: 18px;
+    }
+
+    /* ===== Primary Branch Tabs ===== */
     .branch-tabs {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 6px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
     }
     .branch-tab {
       display: flex;
-      gap: 12px;
-      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
       border: 1px solid rgba(16, 34, 53, 0.1);
       background: #fbfaf7;
-      border-radius: 16px;
-      padding: 12px 14px;
+      border-radius: 18px;
+      padding: 18px 16px;
       cursor: pointer;
       text-align: left;
       transition: all 0.22s ease;
       position: relative;
+      min-height: 130px;
     }
     .branch-tab .icon {
-      width: 36px; height: 36px;
+      width: 40px; height: 40px;
       display: grid; place-items: center;
       background: #ffffff;
       border: 1px solid rgba(16, 34, 53, 0.08);
-      border-radius: 11px;
-      font-size: 18px;
+      border-radius: 12px;
+      font-size: 19px;
       flex-shrink: 0;
       transition: all 0.22s ease;
     }
     .branch-tab .label {
-      font-weight: 800; color: #102235;
-      font-size: 13.5px; line-height: 1.25;
+      font-weight: 800;
+      color: #102235;
+      font-size: 14px;
+      line-height: 1.3;
     }
     .branch-tab .label small {
       display: block;
-      font-size: 11px; font-weight: 600;
+      font-size: 11px;
+      font-weight: 600;
       color: #7d8790;
-      margin-top: 2px;
+      margin-top: 4px;
       letter-spacing: 0.04em;
     }
     .branch-tab:hover {
-      border-color: rgba(201, 163, 90, 0.6);
-      transform: translateY(-1px);
+      border-color: rgba(201, 163, 90, 0.55);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
     }
     .branch-tab.active {
       background: linear-gradient(180deg, #ffffff 0%, #fbf4e4 100%);
       border-color: #c9a35a;
-      box-shadow: 0 8px 24px rgba(201, 163, 90, 0.2);
+      box-shadow: 0 10px 28px rgba(201, 163, 90, 0.22);
     }
     .branch-tab.active .icon {
       background: #c9a35a;
@@ -154,12 +234,73 @@
       color: #ffffff;
     }
 
-    /* ===== Actions ===== */
+    /* ===== Sub-branch Chips ===== */
+    .sub-branch-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      min-height: 44px;
+      align-items: flex-start;
+      padding: 4px 0;
+    }
+    .sub-chip {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      border: 1px solid rgba(16, 34, 53, 0.12);
+      background: #fbfaf7;
+      color: #102235;
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: inherit;
+    }
+    .sub-chip small {
+      font-size: 11px;
+      font-weight: 600;
+      color: #9aa3ac;
+      letter-spacing: 0.04em;
+    }
+    .sub-chip:hover {
+      border-color: #c9a35a;
+      background: #ffffff;
+      transform: translateY(-1px);
+    }
+    .sub-chip.active {
+      background: #102235;
+      color: #ffffff;
+      border-color: #102235;
+      box-shadow: 0 8px 18px rgba(16, 34, 53, 0.18);
+    }
+    .sub-chip.active small { color: rgba(255, 255, 255, 0.6); }
+    .sub-chip.active::before {
+      content: '✓';
+      font-size: 11px;
+      color: #c9a35a;
+      font-weight: 800;
+    }
+    .empty-hint-light {
+      color: #9aa3ac;
+      font-size: 13.5px;
+      padding: 10px 0;
+    }
+
+    /* ===== Settings Footer ===== */
+    .settings-footer {
+      margin-top: 32px;
+      padding-top: 26px;
+      border-top: 1px dashed rgba(16, 34, 53, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
     .actions {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 26px;
     }
     .btn-reset {
       border: 1px solid rgba(16, 34, 53, 0.16);
@@ -178,7 +319,6 @@
     /* ===== Status ===== */
     .status-box {
       display: none;
-      margin-top: 18px;
       border-radius: 14px;
       padding: 13px 16px;
       background: #fbfaf7;
@@ -199,12 +339,15 @@
       border-color: rgba(154, 41, 41, 0.25);
     }
 
+    /* ===== Result Panel ===== */
+    .result-header { margin-bottom: 28px; }
+
     /* ===== Metrics ===== */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
-      margin: 24px 0 28px;
+      margin-bottom: 36px;
     }
     .metric {
       background: #fbfaf7;
@@ -247,11 +390,24 @@
       letter-spacing: 0;
     }
 
+    /* ===== Results Grid (main + aside) ===== */
+    .results-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: 28px;
+    }
+    .results-main,
+    .results-aside {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      min-width: 0;
+    }
+
     /* ===== Result Blocks ===== */
-    .result-block { margin-top: 32px; }
     .result-block h3 {
       color: #102235;
-      font-size: 21px;
+      font-size: 20px;
       margin: 0 0 16px;
       letter-spacing: -0.02em;
       display: flex;
@@ -261,7 +417,7 @@
     .result-block h3::before {
       content: '';
       display: inline-block;
-      width: 4px; height: 20px;
+      width: 4px; height: 18px;
       background: #c9a35a;
       border-radius: 2px;
     }
@@ -400,17 +556,19 @@
       border: 1px solid rgba(16, 34, 53, 0.08);
       border-radius: 18px;
       padding: 18px 20px;
+    }
+    .branch-card-head {
       display: flex;
       align-items: center;
       gap: 14px;
     }
     .branch-card .icon {
-      width: 44px; height: 44px;
+      width: 40px; height: 40px;
       display: grid; place-items: center;
       background: #fbfaf7;
       border: 1px solid rgba(16, 34, 53, 0.06);
-      border-radius: 12px;
-      font-size: 20px;
+      border-radius: 11px;
+      font-size: 18px;
       flex-shrink: 0;
     }
     .branch-card-body { flex: 1; min-width: 0; }
@@ -430,7 +588,7 @@
       height: 6px;
       background: #f1ede2;
       border-radius: 999px;
-      margin-top: 10px;
+      margin-top: 12px;
       overflow: hidden;
     }
     .branch-bar-fill {
@@ -467,15 +625,15 @@
     .idea-card h4 {
       margin: 0 0 8px;
       color: #ffffff;
-      font-size: 17px;
+      font-size: 16px;
       line-height: 1.4;
       position: relative;
     }
     .idea-card p {
       margin: 0;
       color: rgba(255, 255, 255, 0.78);
-      line-height: 1.75;
-      font-size: 13.5px;
+      line-height: 1.7;
+      font-size: 13px;
       position: relative;
     }
 
@@ -507,7 +665,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ===== Empty state ===== */
     .empty-hint {
       color: #9aa3ac;
       font-size: 14px;
@@ -546,17 +703,23 @@
     .info-card p { color: #5f6b75; line-height: 1.7; margin: 0; }
 
     /* ===== Responsive ===== */
-    @media (max-width: 1080px) {
-      .trend-shell { grid-template-columns: 1fr; }
-      .panel { position: static; }
+    @media (max-width: 1180px) {
+      .branch-tabs { grid-template-columns: repeat(3, 1fr); }
+      .results-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .panel, .result-panel, .settings-panel { padding: 28px 26px; }
       .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+      .param-grid { grid-template-columns: 1fr 1fr; }
       .method-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 680px) {
+      .branch-tabs { grid-template-columns: repeat(2, 1fr); }
+      .param-grid { grid-template-columns: 1fr; }
       .dashboard-grid { grid-template-columns: 1fr; }
       .method-grid { grid-template-columns: 1fr; }
-      .branch-tabs { grid-template-columns: 1fr; }
-      .panel, .result-panel { padding: 22px; }
+      .panel, .result-panel, .settings-panel { padding: 24px 20px; }
+      .step-header h3 { font-size: 17px; }
     }
   </style>
 </head>
@@ -595,7 +758,7 @@
         <div class="hero-eyebrow">Multi-discipline · Research Trends · Real-time Retrieval</div>
         <h1>學術熱點<br><span class="hero-highlight">推薦器</span></h1>
         <p class="hero-lead">
-          基於公開學術資料庫的即時檢索，跨六大學科分支掃描近期研究主題、高頻關鍵詞與代表性文獻，
+          基於公開學術資料庫的即時檢索，覆蓋六大一級學科及其三十項二級分支，掃描近期研究主題、高頻關鍵詞與代表性文獻，
           幫助研究者快速形成選題靈感與文獻追蹤線索。
         </p>
         <div class="hero-disciplines">
@@ -616,108 +779,139 @@
 
   <!-- Tool -->
   <main id="trendTool" class="trend-section">
-    <div class="container">
-      <div class="trend-shell">
+    <div class="container tool-grid">
 
-        <aside class="panel">
+      <!-- ====== Settings Panel ====== -->
+      <section class="settings-panel">
+        <div class="settings-header">
           <div class="eyebrow">DISCOVERY SETTINGS</div>
-          <h2>選擇學科分支。</h2>
-          <p>系統會根據分支關鍵詞即時檢索近年文獻，並用主題、引用與時間綜合計算熱點分數。</p>
+          <h2>三步完成檢索設定。</h2>
+          <p>系統會根據所選學科分支即時檢索近年文獻，並用主題、引用與時間綜合計算熱點分數。多個二級分支會合併檢索。</p>
+        </div>
 
-          <div class="control-group">
-            <label>學科分支</label>
-            <div id="branchTabs" class="branch-tabs"></div>
+        <div class="step-block first">
+          <div class="step-header">
+            <span class="step-num">01</span>
+            <h3>選擇一級學科<small>Primary Discipline</small></h3>
           </div>
+          <div id="branchTabs" class="branch-tabs"></div>
+        </div>
 
-          <div class="control-group">
-            <label for="yearRange">檢索時間範圍</label>
-            <select id="yearRange">
-              <option value="1">近 1 年</option>
-              <option value="2" selected>近 2 年</option>
-              <option value="3">近 3 年</option>
-              <option value="5">近 5 年</option>
-            </select>
+        <div class="step-block">
+          <div class="step-header">
+            <span class="step-num">02</span>
+            <h3>選擇二級分支<small>Sub-discipline</small></h3>
+            <span class="step-tag">可多選</span>
           </div>
-
-          <div class="control-group">
-            <label for="sortMode">文獻排序方式</label>
-            <select id="sortMode">
-              <option value="relevance" selected>綜合熱度：近期 + 引用 + 關鍵詞</option>
-              <option value="date">最新發表優先</option>
-              <option value="citation">被引次數優先</option>
-            </select>
+          <div id="subBranchTabs" class="sub-branch-tabs">
+            <div class="empty-hint-light">請先在上方選擇一級學科，二級分支會在此展開。</div>
           </div>
+        </div>
 
-          <div class="control-group">
-            <label for="customQuery">自定義補充關鍵詞（選填）</label>
-            <textarea id="customQuery" placeholder="例：AI service robot · sustainability · customer experience"></textarea>
-            <div class="hint">英文關鍵詞通常能獲得更穩定的檢索結果。</div>
+        <div class="step-block">
+          <div class="step-header">
+            <span class="step-num">03</span>
+            <h3>檢索參數<small>Retrieval Parameters</small></h3>
           </div>
+          <div class="param-grid">
+            <div class="control-group">
+              <label for="yearRange">時間範圍</label>
+              <select id="yearRange">
+                <option value="1">近 1 年</option>
+                <option value="2" selected>近 2 年</option>
+                <option value="3">近 3 年</option>
+                <option value="5">近 5 年</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="sortMode">排序方式</label>
+              <select id="sortMode">
+                <option value="relevance" selected>綜合熱度</option>
+                <option value="date">最新發表優先</option>
+                <option value="citation">被引次數優先</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="customQuery">補充關鍵詞（選填）</label>
+              <textarea id="customQuery" placeholder="例：AI service robot · sustainability · customer experience"></textarea>
+            </div>
+          </div>
+          <div class="hint">英文關鍵詞通常能獲得更穩定的檢索結果。已選二級分支將與補充關鍵詞合併匹配。</div>
+        </div>
 
+        <div class="settings-footer">
           <div class="actions">
             <button id="runBtn" class="btn-gold" type="button">檢索熱點</button>
             <button id="allBtn" class="btn-reset" type="button">分析全部分支</button>
           </div>
-
           <div id="statusBox" class="status-box"></div>
-        </aside>
+        </div>
+      </section>
 
-        <section class="result-panel">
+      <!-- ====== Result Panel ====== -->
+      <section class="result-panel">
+        <div class="result-header">
           <div class="eyebrow">REAL-TIME RESULTS</div>
           <h2 id="resultTitle">等待檢索。</h2>
           <p id="resultLead">
-            請選擇左側學科分支並點擊「檢索熱點」。系統會給出熱點主題、研究選題建議與代表性文獻。
+            完成上方三個步驟後點擊「檢索熱點」。系統會給出熱點主題、研究選題建議與代表性文獻。
           </p>
+        </div>
 
-          <div class="dashboard-grid">
-            <div class="metric">
-              <div class="metric-label">Retrieved Works</div>
-              <div id="metricWorks" class="metric-value">—</div>
+        <div class="dashboard-grid">
+          <div class="metric">
+            <div class="metric-label">Retrieved Works</div>
+            <div id="metricWorks" class="metric-value">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Hotspots</div>
+            <div id="metricHotspots" class="metric-value">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Median Year</div>
+            <div id="metricLatestYear" class="metric-value">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Top Branch</div>
+            <div id="metricTopBranch" class="metric-value">—</div>
+          </div>
+        </div>
+
+        <div class="results-grid">
+          <div class="results-main">
+            <div class="result-block">
+              <h3>推薦學術熱點</h3>
+              <div id="hotspotList" class="hotspot-list">
+                <div class="empty-hint">熱點將會出現在這裡。</div>
+              </div>
             </div>
-            <div class="metric">
-              <div class="metric-label">Hotspots</div>
-              <div id="metricHotspots" class="metric-value">—</div>
-            </div>
-            <div class="metric">
-              <div class="metric-label">Median Year</div>
-              <div id="metricLatestYear" class="metric-value">—</div>
-            </div>
-            <div class="metric">
-              <div class="metric-label">Top Branch</div>
-              <div id="metricTopBranch" class="metric-value">—</div>
+
+            <div class="result-block">
+              <h3>代表性近期文獻</h3>
+              <div id="paperList" class="paper-list">
+                <div class="empty-hint">文獻列表將會出現在這裡。</div>
+              </div>
             </div>
           </div>
 
-          <div class="result-block">
-            <h3>推薦學術熱點</h3>
-            <div id="hotspotList" class="hotspot-list">
-              <div class="empty-hint">熱點將會出現在這裡。</div>
+          <aside class="results-aside">
+            <div class="result-block">
+              <h3>可延伸的研究選題</h3>
+              <div id="ideaList" class="idea-list">
+                <div class="empty-hint">研究選題建議將會出現在這裡。</div>
+              </div>
             </div>
-          </div>
 
-          <div class="result-block">
-            <h3>可延伸的研究選題</h3>
-            <div id="ideaList" class="idea-list">
-              <div class="empty-hint">研究選題建議將會出現在這裡。</div>
+            <div class="result-block">
+              <h3>分支熱度概覽</h3>
+              <div id="branchSummary" class="branch-list">
+                <div class="empty-hint">點擊「分析全部分支」查看跨學科比較。</div>
+              </div>
             </div>
-          </div>
+          </aside>
+        </div>
+      </section>
 
-          <div class="result-block">
-            <h3>代表性近期文獻</h3>
-            <div id="paperList" class="paper-list">
-              <div class="empty-hint">文獻列表將會出現在這裡。</div>
-            </div>
-          </div>
-
-          <div class="result-block">
-            <h3>分支熱度概覽</h3>
-            <div id="branchSummary" class="branch-list">
-              <div class="empty-hint">點擊「分析全部分支」即可查看跨學科熱度比較。</div>
-            </div>
-          </div>
-        </section>
-
-      </div>
     </div>
   </main>
 
@@ -734,7 +928,7 @@
         <div class="info-card">
           <div class="value-num">01</div>
           <h4>即時檢索</h4>
-          <p>調用 OpenAlex Works API 查詢分支關鍵詞，限定近年發表，提取標題、年份、引用、主題與摘要等元數據。</p>
+          <p>調用 OpenAlex Works API 查詢一級學科及二級分支關鍵詞，限定近年發表，提取標題、年份、引用、主題與摘要等元數據。</p>
         </div>
 
         <div class="info-card">
@@ -796,6 +990,138 @@
       </div>
     </div>
   </footer>
+
+  <!-- Sub-branch UI controller (additive, does not modify main JS) -->
+  <script>
+    (function () {
+      const SUB_BRANCHES = {
+        '公共衛生':       [
+          { zh: '流行病學',     en: 'Epidemiology' },
+          { zh: '環境衛生',     en: 'Environmental Health' },
+          { zh: '全球衛生',     en: 'Global Health' },
+          { zh: '衛生政策',     en: 'Health Policy & Systems' },
+          { zh: '傳染病防治',   en: 'Infectious Disease Control' }
+        ],
+        '健康管理':       [
+          { zh: '慢性病管理',   en: 'Chronic Disease Management' },
+          { zh: '心理健康',     en: 'Mental Health' },
+          { zh: '健康促進',     en: 'Health Promotion' },
+          { zh: '醫療服務管理', en: 'Healthcare Services Management' },
+          { zh: '老年健康',     en: 'Geriatric Health' }
+        ],
+        '款待科學':       [
+          { zh: '酒店管理',     en: 'Hotel Management' },
+          { zh: '餐飲管理',     en: 'F&B Management' },
+          { zh: '顧客體驗',     en: 'Customer Experience' },
+          { zh: '智慧款待',     en: 'Smart Hospitality' },
+          { zh: '人力資源',     en: 'Hospitality HR' }
+        ],
+        '會展管理':       [
+          { zh: '會議管理',     en: 'Meeting Management' },
+          { zh: '獎勵旅遊',     en: 'Incentive Travel' },
+          { zh: '展覽管理',     en: 'Exhibition Management' },
+          { zh: '節慶活動',     en: 'Festival Events' },
+          { zh: '大型賽事',     en: 'Mega Events' }
+        ],
+        '食品與營養':     [
+          { zh: '臨床營養',     en: 'Clinical Nutrition' },
+          { zh: '食品安全',     en: 'Food Safety' },
+          { zh: '功能食品',     en: 'Functional Foods' },
+          { zh: '飲食行為',     en: 'Dietary Behavior' },
+          { zh: '食品科技',     en: 'Food Technology' }
+        ],
+        '旅遊科學':       [
+          { zh: '可持續旅遊',   en: 'Sustainable Tourism' },
+          { zh: '智慧旅遊',     en: 'Smart Tourism' },
+          { zh: '目的地管理',   en: 'Destination Management' },
+          { zh: '旅遊行為',     en: 'Tourist Behavior' },
+          { zh: '文化遺產旅遊', en: 'Heritage Tourism' }
+        ]
+      };
+
+      window.SUB_BRANCHES = SUB_BRANCHES;
+
+      const branchTabs   = document.getElementById('branchTabs');
+      const subContainer = document.getElementById('subBranchTabs');
+      if (!branchTabs || !subContainer) return;
+
+      function pickKey(text) {
+        if (!text) return null;
+        const t = text.replace(/\s+/g, '');
+        return Object.keys(SUB_BRANCHES).find(k => t.includes(k) || k.includes(t));
+      }
+
+      function readPrimary(tab) {
+        const labelEl = tab.querySelector('.label');
+        if (labelEl) {
+          const first = labelEl.childNodes[0];
+          if (first && first.nodeType === Node.TEXT_NODE) return first.textContent.trim();
+          return labelEl.textContent.trim();
+        }
+        return tab.textContent.trim();
+      }
+
+      function render(primaryKey) {
+        if (!primaryKey || !SUB_BRANCHES[primaryKey]) {
+          subContainer.innerHTML = '<div class="empty-hint-light">請先在上方選擇一級學科，二級分支會在此展開。</div>';
+          subContainer.dataset.primary = '';
+          return;
+        }
+        if (subContainer.dataset.primary === primaryKey) return; // unchanged
+        subContainer.dataset.primary = primaryKey;
+        subContainer.innerHTML = SUB_BRANCHES[primaryKey].map(s =>
+          `<button type="button" class="sub-chip" data-sub-zh="${s.zh}" data-sub-en="${s.en}">
+             ${s.zh}<small>${s.en}</small>
+           </button>`
+        ).join('');
+      }
+
+      // Click delegation: when user clicks a primary tab
+      branchTabs.addEventListener('click', (e) => {
+        const tab = e.target.closest('.branch-tab');
+        if (!tab) return;
+        const key = pickKey(readPrimary(tab));
+        if (key) render(key);
+      });
+
+      // Mutation observer: catches programmatic .active toggling by the main JS
+      const classObserver = new MutationObserver((mutations) => {
+        for (const m of mutations) {
+          if (m.attributeName === 'class' && m.target.classList.contains('active')) {
+            const key = pickKey(readPrimary(m.target));
+            if (key) render(key);
+          }
+        }
+      });
+      const childObserver = new MutationObserver(() => {
+        branchTabs.querySelectorAll('.branch-tab').forEach(tab => {
+          classObserver.observe(tab, { attributes: true, attributeFilter: ['class'] });
+        });
+        // If a tab is already active on first render, sync sub-branches
+        const active = branchTabs.querySelector('.branch-tab.active');
+        if (active) {
+          const key = pickKey(readPrimary(active));
+          if (key) render(key);
+        }
+      });
+      childObserver.observe(branchTabs, { childList: true, subtree: false });
+
+      // Toggle sub-chip selection
+      subContainer.addEventListener('click', (e) => {
+        const chip = e.target.closest('.sub-chip');
+        if (chip) chip.classList.toggle('active');
+      });
+
+      // Public helpers for the main retrieval JS to consume
+      window.getSelectedSubBranches = function () {
+        return Array.from(subContainer.querySelectorAll('.sub-chip.active'))
+          .map(c => ({ zh: c.dataset.subZh, en: c.dataset.subEn }));
+      };
+      window.clearSubBranchSelection = function () {
+        subContainer.querySelectorAll('.sub-chip.active').forEach(c => c.classList.remove('active'));
+      };
+    })();
+  </script>
 
   <script src="assets/js/hospitality-research-trends.js"></script>
 </body>
