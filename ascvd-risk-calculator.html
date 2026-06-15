@@ -3,443 +3,285 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASCVD 風險計算器 | Hughie's Online Lab</title>
+  <title>ASCVD 風險計算器 · Hughie's Online Lab</title>
   <link rel="stylesheet" href="assets/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <!-- Tool-specific styles -->
   <style>
-    .tool-hero { min-height: 520px; }
-    .tool-hero .hero-lead { max-width: 760px; }
+    .primary-nav a.active{color:#c9a961;}
 
-    .tool-section {
-      background: #f7f5ef;
-      padding: 96px 0 110px;
-      position: relative;
-    }
-    .tool-section::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(16,34,53,0.12), transparent);
-    }
+    /* Page hero (對齊 about.html) */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:720px;}
+    .page-hero .hero-actions{margin-top:26px;display:flex;flex-wrap:wrap;gap:12px;}
 
-    .tool-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.3fr) minmax(330px, 0.7fr);
-      gap: 36px;
-      align-items: start;
-    }
+    /* 統一區段 */
+    .tool-section{padding:70px 0;}
+    .tool-section + .tool-section{border-top:1px solid #ece5d3;}
+    .section-light-bg{background:#faf7f0;}
 
-    .tool-card,
-    .result-card,
-    .info-card {
-      background: #ffffff;
-      border: 1px solid rgba(20, 32, 44, 0.08);
-      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
-      border-radius: 22px;
+    /* 兩欄佈局 */
+    .tool-layout{
+      display:grid;
+      grid-template-columns:1fr 1.3fr;
+      gap:60px;
+      align-items:start;
     }
+    @media(max-width:960px){.tool-layout{grid-template-columns:1fr;gap:30px;}}
 
-    .tool-card { padding: 40px 40px 36px; }
+    .tool-intro h2{font-size:32px;color:#1a1a1a;margin:8px 0 18px;line-height:1.25;}
+    .tool-intro p{color:#555;line-height:1.85;margin:0 0 14px;}
 
-    .tool-intro {
-      margin-bottom: 30px;
-      border-bottom: 1px solid rgba(20, 32, 44, 0.08);
-      padding-bottom: 26px;
-    }
-    .tool-intro .eyebrow {
-      color: #c9a35a;
-      font-family: "Encode Sans", "Open Sans", sans-serif;
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-    .tool-intro h2 {
-      margin: 10px 0 14px;
-      font-size: clamp(28px, 4vw, 42px);
-      color: #102235;
-      letter-spacing: -0.04em;
-      line-height: 1.15;
-    }
-    .tool-intro p {
-      color: #5f6b75;
-      line-height: 1.8;
-      margin: 0;
-      max-width: 56ch;
+    /* 表單卡片 */
+    .tool-card{
+      background:#fff;
+      border:1px solid #ece5d3;
+      border-top:3px solid #c9a961;
+      padding:36px;
     }
 
-    .ascvd-form { display: grid; gap: 30px; }
+    .ascvd-form{display:grid;gap:32px;}
 
     /* 表單分組 */
-    .form-section { display: grid; gap: 16px; }
-    .form-section-head {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 2px;
+    .form-section{display:grid;gap:16px;}
+    .form-section-head{
+      display:flex;align-items:baseline;gap:12px;
+      padding-bottom:10px;border-bottom:1px solid #ece5d3;
     }
-    .form-section-head .num {
-      width: 26px; height: 26px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      background: rgba(201,163,90,0.14);
-      color: #c9a35a;
-      font-family: "Encode Sans", "Open Sans", sans-serif;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
+    .form-section-head .num{
+      color:#c9a961;font-weight:700;
+      font-size:13px;letter-spacing:1.5px;
+      font-family:"Encode Sans","Open Sans",sans-serif;
     }
-    .form-section-head h3 {
-      margin: 0;
-      font-size: 15px;
-      color: #102235;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      font-family: "Encode Sans", "Open Sans", sans-serif;
-      font-weight: 800;
-    }
-    .form-section-head .rule {
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, rgba(16,34,53,0.16), transparent);
+    .form-section-head h3{
+      margin:0;font-size:17px;color:#1a1a1a;font-weight:600;
     }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
     }
+    .form-group{display:flex;flex-direction:column;gap:8px;}
+    .form-group.full{grid-column:1 / -1;}
 
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-group.full { grid-column: 1 / -1; }
-
-    .form-group label {
-      font-family: "Encode Sans", "Open Sans", sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      color: #102235;
-      letter-spacing: 0.04em;
+    .form-group label{
+      font-size:13px;color:#1a1a1a;font-weight:600;
+      letter-spacing:0.3px;
     }
-
-    .form-hint { color: #7d8790; font-size: 12.5px; line-height: 1.55; }
+    .form-hint{color:#888;font-size:12.5px;line-height:1.6;}
 
     .ascvd-form input,
-    .ascvd-form select {
-      width: 100%;
-      border: 1px solid rgba(16, 34, 53, 0.16);
-      border-radius: 14px;
-      padding: 14px 16px;
-      font: inherit;
-      color: #102235;
-      background: #fbfaf7;
-      outline: none;
-      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    .ascvd-form select{
+      width:100%;
+      border:1px solid #ece5d3;
+      border-radius:0;
+      padding:12px 14px;
+      font:inherit;
+      color:#1a1a1a;
+      background:#fff;
+      outline:none;
+      transition:border-color .2s ease;
     }
-    .ascvd-form input::placeholder { color: #aab1b8; }
+    .ascvd-form input::placeholder{color:#bbb;}
     .ascvd-form input:hover,
-    .ascvd-form select:hover { border-color: rgba(16, 34, 53, 0.28); }
+    .ascvd-form select:hover{border-color:#d6cfb8;}
     .ascvd-form input:focus,
-    .ascvd-form select:focus {
-      border-color: #c9a35a;
-      box-shadow: 0 0 0 4px rgba(201, 163, 90, 0.16);
-      background: #ffffff;
+    .ascvd-form select:focus{
+      border-color:#c9a961;
+      box-shadow:inset 0 -2px 0 #c9a961;
     }
     .ascvd-form input.invalid,
-    .ascvd-form select.invalid {
-      border-color: #c77d50;
-      box-shadow: 0 0 0 4px rgba(199, 125, 80, 0.14);
+    .ascvd-form select.invalid{
+      border-color:#a64242;
+      box-shadow:inset 0 -2px 0 #a64242;
     }
 
-    .input-wrap { position: relative; }
-    .input-wrap .unit {
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 12px;
-      color: #9aa3ac;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      pointer-events: none;
+    .input-wrap{position:relative;}
+    .input-wrap .unit{
+      position:absolute;right:14px;top:50%;
+      transform:translateY(-50%);
+      font-size:12px;color:#999;font-weight:700;
+      letter-spacing:1px;pointer-events:none;
     }
-    .input-wrap input { padding-right: 56px; }
+    .input-wrap input{padding-right:60px;}
 
-    .radio-row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+    .radio-row{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
     }
-    .choice { position: relative; }
-    .choice input { position: absolute; opacity: 0; pointer-events: none; }
-    .choice span {
-      display: block;
-      border: 1px solid rgba(16, 34, 53, 0.14);
-      border-radius: 14px;
-      padding: 13px 14px;
-      color: #334155;
-      background: #fbfaf7;
-      cursor: pointer;
-      transition: all .2s ease;
-      text-align: center;
-      font-weight: 700;
+    .choice{position:relative;}
+    .choice input{position:absolute;opacity:0;pointer-events:none;}
+    .choice span{
+      display:block;
+      border:1px solid #ece5d3;
+      padding:11px 14px;
+      color:#555;background:#fff;
+      cursor:pointer;text-align:center;
+      font-size:14px;font-weight:600;
+      transition:all .2s ease;
     }
-    .choice span:hover { border-color: rgba(16,34,53,0.32); }
-    .choice input:checked + span {
-      border-color: #c9a35a;
-      background: rgba(201, 163, 90, 0.12);
-      color: #102235;
-      box-shadow: inset 0 0 0 1px rgba(201, 163, 90, 0.3);
+    .choice span:hover{border-color:#d6cfb8;}
+    .choice input:checked + span{
+      border-color:#c9a961;
+      color:#1a1a1a;
+      background:#faf7f0;
+      box-shadow:inset 0 -2px 0 #c9a961;
     }
 
-    .form-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 6px;
-      padding-top: 22px;
-      border-top: 1px solid rgba(20, 32, 44, 0.08);
+    .form-actions{
+      display:flex;flex-wrap:wrap;gap:12px;
+      padding-top:22px;border-top:1px solid #ece5d3;
     }
-    .form-actions .btn-gold { padding: 14px 26px; }
-    .btn-reset {
-      border: 1px solid rgba(16, 34, 53, 0.16);
-      background: transparent;
-      color: #102235;
-      border-radius: 999px;
-      padding: 13px 22px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all .2s ease;
+    .btn-reset{
+      border:1px solid #ece5d3;background:transparent;
+      color:#1a1a1a;padding:12px 22px;
+      font-weight:700;font-size:13px;letter-spacing:1px;
+      text-transform:uppercase;cursor:pointer;
+      transition:all .2s ease;
     }
-    .btn-reset:hover { background: rgba(16, 34, 53, 0.06); }
+    .btn-reset:hover{background:#faf7f0;border-color:#c9a961;color:#c9a961;}
 
-    /* Result */
-    .result-card {
-      padding: 30px 30px 28px;
-      position: sticky;
-      top: 24px;
-      display: grid;
-      gap: 18px;
+    /* 結果卡 */
+    .result-card{
+      background:#fff;
+      border:1px solid #ece5d3;
+      border-top:3px solid #c9a961;
+      padding:32px;
+      position:sticky;top:24px;
+      display:grid;gap:18px;
     }
-    .result-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+    .result-head{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;padding-bottom:14px;border-bottom:1px solid #ece5d3;
     }
-    .result-eyebrow {
-      font-family: "Encode Sans", "Open Sans", sans-serif;
-      color: #c9a35a;
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
+    .result-eyebrow{
+      color:#c9a961;font-weight:700;
+      font-size:13px;letter-spacing:1.5px;
     }
-    .result-tag {
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      color: #7d8790;
-      font-weight: 800;
-      text-transform: uppercase;
+    .result-tag{
+      font-size:12px;letter-spacing:1.5px;color:#999;
+      font-weight:700;
     }
 
-    .risk-number {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      color: #102235;
-      margin: -4px 0 -4px;
+    .risk-number{
+      display:flex;align-items:baseline;gap:6px;color:#1a1a1a;
     }
-    .risk-number strong {
-      font-family: "Encode Sans", "Open Sans", sans-serif;
-      font-size: clamp(56px, 8vw, 86px);
-      line-height: 1;
-      letter-spacing: -0.06em;
+    .risk-number strong{
+      font-family:"Encode Sans","Open Sans",sans-serif;
+      font-size:64px;line-height:1;font-weight:700;letter-spacing:-2px;
     }
-    .risk-number span { font-size: 24px; font-weight: 800; }
+    .risk-number span{font-size:22px;font-weight:700;color:#888;}
 
-    .risk-category {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      align-self: flex-start;
-      border-radius: 999px;
-      padding: 8px 14px 8px 12px;
-      font-size: 13px;
-      font-weight: 800;
-      color: #102235;
-      background: #f1eadc;
-      letter-spacing: 0.02em;
+    .risk-category{
+      display:inline-flex;align-items:center;gap:8px;
+      align-self:flex-start;
+      padding:7px 13px;
+      font-size:13px;font-weight:700;
+      color:#1a1a1a;background:#faf7f0;
+      border:1px solid #ece5d3;
+      letter-spacing:0.5px;
     }
-    .risk-category::before {
-      content: "";
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #c9a35a;
+    .risk-category::before{
+      content:"";width:7px;height:7px;background:#c9a961;
     }
-    .risk-category.is-low      { background: #e8f1e6; }
-    .risk-category.is-low::before      { background: #6ea366; }
-    .risk-category.is-borderline { background: #f5ecd5; }
-    .risk-category.is-borderline::before { background: #d7bb70; }
-    .risk-category.is-intermediate { background: #fbe5d2; }
-    .risk-category.is-intermediate::before { background: #c77d50; }
-    .risk-category.is-high     { background: #f3dada; }
-    .risk-category.is-high::before     { background: #a64242; }
+    .risk-category.is-low{background:#eef3ea;border-color:#d6e2cd;}
+    .risk-category.is-low::before{background:#6ea366;}
+    .risk-category.is-borderline{background:#f6efd9;border-color:#e6dab1;}
+    .risk-category.is-borderline::before{background:#d7bb70;}
+    .risk-category.is-intermediate{background:#fbe9d6;border-color:#eac9a8;}
+    .risk-category.is-intermediate::before{background:#c77d50;}
+    .risk-category.is-high{background:#f3dada;border-color:#e3bcbc;}
+    .risk-category.is-high::before{background:#a64242;}
 
-    .risk-meter-wrap { display: grid; gap: 8px; }
-    .risk-meter {
-      width: 100%;
-      height: 12px;
-      background: #eee9df;
-      border-radius: 999px;
-      overflow: hidden;
-      position: relative;
+    .risk-meter-wrap{display:grid;gap:10px;}
+    .risk-meter{
+      width:100%;height:8px;background:#faf7f0;
+      border:1px solid #ece5d3;
+      overflow:hidden;position:relative;
     }
-    .risk-meter-fill {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #8fbf8f, #d7bb70, #c77d50, #a64242);
-      border-radius: 999px;
-      transition: width .6s cubic-bezier(.2,.7,.2,1);
+    .risk-meter-fill{
+      width:0%;height:100%;
+      background:linear-gradient(90deg,#8fbf8f,#d7bb70,#c77d50,#a64242);
+      transition:width .6s cubic-bezier(.2,.7,.2,1);
     }
-    .risk-meter-ticks {
-      position: relative;
-      height: 14px;
-      font-family: "Encode Sans", "Open Sans", sans-serif;
-      font-size: 10.5px;
-      font-weight: 800;
-      color: #9aa3ac;
-      letter-spacing: 0.06em;
+    .risk-meter-ticks{
+      position:relative;height:14px;
+      font-family:"Encode Sans","Open Sans",sans-serif;
+      font-size:10.5px;font-weight:700;color:#999;
+      letter-spacing:1px;
     }
-    .risk-meter-ticks span {
-      position: absolute;
-      transform: translateX(-50%);
-      top: 0;
-    }
-    .risk-meter-ticks span::before {
-      content: "";
-      display: block;
-      width: 1px; height: 5px;
-      background: rgba(16,34,53,0.18);
-      margin: 0 auto 3px;
+    .risk-meter-ticks span{position:absolute;transform:translateX(-50%);top:0;}
+    .risk-meter-ticks span::before{
+      content:"";display:block;width:1px;height:5px;
+      background:#ece5d3;margin:0 auto 3px;
     }
 
-    .result-text { color: #5f6b75; line-height: 1.75; margin: 0; }
+    .result-text{color:#555;line-height:1.85;margin:0;font-size:14px;}
 
-    .result-note {
-      background: #fbfaf7;
-      border: 1px solid rgba(16, 34, 53, 0.08);
-      border-radius: 16px;
-      padding: 14px 16px;
-      color: #5f6b75;
-      line-height: 1.7;
-      font-size: 13.5px;
+    .result-note{
+      background:#faf7f0;border:1px solid #ece5d3;
+      padding:14px 16px;color:#555;line-height:1.75;font-size:13.5px;
     }
-    .result-note strong { color: #102235; }
+    .result-note strong{color:#1a1a1a;}
 
-    .status-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 16px;
-      padding-top: 6px;
-      border-top: 1px dashed rgba(16,34,53,0.12);
-      margin-top: 4px;
+    .status-list{
+      display:grid;grid-template-columns:1fr 1fr;
+      gap:0 24px;padding-top:14px;
+      border-top:1px solid #ece5d3;
     }
-    .status-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 8px 0;
-      font-size: 13px;
-      color: #5f6b75;
-      border-bottom: 1px solid rgba(16,34,53,0.06);
+    .status-item{
+      display:flex;justify-content:space-between;gap:10px;
+      padding:8px 0;font-size:13px;color:#555;
+      border-bottom:1px dashed #ece5d3;
     }
-    .status-item .k { color: #7d8790; }
-    .status-item strong { color: #102235; text-align: right; font-weight: 800; }
+    .status-item .k{color:#888;}
+    .status-item strong{color:#1a1a1a;text-align:right;font-weight:700;}
 
-    .warning-box {
-      display: none;
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: #fff7e6;
-      color: #8a5a11;
-      border: 1px solid rgba(201, 163, 90, 0.28);
-      line-height: 1.65;
-      font-size: 14px;
+    .warning-box{
+      display:none;
+      padding:14px 16px;
+      background:#fdf6e3;
+      color:#8a5a11;
+      border:1px solid #e6dab1;
+      line-height:1.7;font-size:13.5px;
     }
-    .warning-box.show { display: block; }
+    .warning-box.show{display:block;}
 
-    /* Method */
-    .method-section { background: #ffffff; padding: 96px 0; }
-    .method-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-top: 12px;
-    }
-    .info-card {
-      padding: 30px 28px 28px;
-      position: relative;
-      overflow: hidden;
-      transition: transform .25s ease, box-shadow .25s ease;
-    }
-    .info-card::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 28px; right: 28px;
-      height: 3px;
-      background: linear-gradient(90deg, #c9a35a, transparent);
-      border-radius: 0 0 3px 3px;
-    }
-    .info-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.1);
-    }
-    .info-card .value-num {
-      color: #c9a35a;
-      font-family: "Encode Sans", "Open Sans", sans-serif;
-      font-weight: 800;
-      font-size: 32px;
-      letter-spacing: -0.02em;
-      line-height: 1;
-    }
-    .info-card h4 {
-      color: #102235;
-      margin: 14px 0 10px;
-      font-size: 20px;
-      letter-spacing: -0.01em;
-    }
-    .info-card p { margin: 0; color: #5f6b75; line-height: 1.75; }
+    /* Method 區（對齊 pillar-grid） */
+    .method-head{margin-bottom:30px;}
+    .method-head h2{font-size:32px;color:#1a1a1a;margin:8px 0 8px;}
+    .method-head p{color:#555;max-width:680px;line-height:1.75;}
 
-    @media (max-width: 960px) {
-      .tool-layout,
-      .method-grid { grid-template-columns: 1fr; }
-      .result-card { position: static; }
-      .tool-card { padding: 32px 28px; }
+    .pillar-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:24px;
     }
+    .pillar{
+      background:#fff;border:1px solid #ece5d3;
+      border-top:3px solid #c9a961;padding:28px;
+    }
+    .pillar .num{
+      font-size:13px;color:#c9a961;
+      font-weight:700;letter-spacing:1.5px;
+    }
+    .pillar h4{font-size:17px;color:#1a1a1a;margin:8px 0 10px;}
+    .pillar p{font-size:14px;color:#555;line-height:1.75;margin:0;}
 
-    @media (max-width: 640px) {
-      .form-grid,
-      .radio-row,
-      .status-list { grid-template-columns: 1fr; }
-      .tool-card { padding: 26px 22px; }
-      .result-card { padding: 26px 22px; }
+    @media(max-width:640px){
+      .page-hero h1{font-size:36px;}
+      .form-grid,.radio-row,.status-list{grid-template-columns:1fr;}
+      .tool-card{padding:28px 22px;}
+      .result-card{padding:26px 22px;position:static;}
     }
   </style>
 </head>
 <body>
 
-  <!-- Utility Bar -->
   <div class="utility-bar">
-    <div class="container utility-inner">
-      <span>HUGHIE'S ONLINE LAB</span>
-    </div>
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
   </div>
 
-  <!-- Main Header -->
   <header class="main-header">
     <div class="container header-inner">
       <a href="index.html" class="brand">
@@ -450,28 +292,26 @@
         </div>
       </a>
       <nav class="primary-nav">
-        <a href="index.html#modules">Tools</a>
-        <a href="index.html#about">About</a>
-        <a href="#contact">Contact</a>
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
       </nav>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="hero tool-hero">
-    <div class="hero-bg"></div>
-    <div class="container hero-inner">
-      <div class="hero-content">
-        <div class="hero-eyebrow">Cardiovascular · Risk Estimation · Browser-based</div>
-        <h1>ASCVD 風險<br><span class="hero-highlight">計算器</span></h1>
-        <p class="hero-lead">
-          依據 2013 ACC/AHA Pooled Cohort Equations，估算 40–79 歲成年人未來 10 年發生
-          動脈粥樣硬化性心血管疾病事件的風險。所有資料只在你的瀏覽器中計算，不會上傳。
-        </p>
-        <div class="hero-actions">
-          <a href="#calculator" class="btn-gold">Start Assessment</a>
-          <a href="#method" class="btn-ghost">Read Method →</a>
-        </div>
+  <!-- Page Hero -->
+  <section class="page-hero">
+    <div class="container">
+      <div class="eyebrow">CARDIOVASCULAR · RISK ESTIMATION</div>
+      <h1>ASCVD 風險計算器</h1>
+      <p class="lead">
+        依據 2013 ACC/AHA Pooled Cohort Equations，估算 40–79 歲成年人未來 10 年發生
+        動脈粥樣硬化性心血管疾病（ASCVD）事件的風險。所有資料只在你的瀏覽器中計算，不會上傳。
+      </p>
+      <div class="hero-actions">
+        <a href="#calculator" class="btn-gold">Start Assessment</a>
+        <a href="#method" class="btn-ghost">Read Method →</a>
       </div>
     </div>
   </section>
@@ -481,24 +321,28 @@
     <div class="container">
       <div class="tool-layout">
 
-        <section class="tool-card">
-          <div class="tool-intro">
-            <div class="eyebrow">10-YEAR ASCVD RISK</div>
-            <h2>輸入你的基本風險因子。</h2>
-            <p>
-              請使用最近一次可靠的血脂與血壓數值。本工具僅供健康教育與自我瞭解，
-              不能替代醫師診斷、用藥建議或個人化臨床決策。
-            </p>
-          </div>
+        <!-- Left: intro -->
+        <div class="tool-intro">
+          <div class="eyebrow">10-YEAR ASCVD RISK</div>
+          <h2>輸入你的基本風險因子</h2>
+          <p>
+            請使用最近一次可靠的血脂與血壓數值。本工具僅供健康教育與自我瞭解之用，
+            不能替代醫師診斷、用藥建議或個人化臨床決策。
+          </p>
+          <p>
+            計算過程完全在前端完成，頁面不會儲存或傳送任何輸入內容。
+          </p>
+        </div>
 
+        <!-- Right: form card -->
+        <section class="tool-card">
           <form id="ascvdForm" class="ascvd-form" novalidate>
 
-            <!-- Section 01 -->
+            <!-- 01 Baseline -->
             <div class="form-section">
               <div class="form-section-head">
                 <span class="num">01</span>
                 <h3>Baseline</h3>
-                <span class="rule"></span>
               </div>
 
               <div class="form-grid">
@@ -551,12 +395,11 @@
               </div>
             </div>
 
-            <!-- Section 02 -->
+            <!-- 02 Lipids -->
             <div class="form-section">
               <div class="form-section-head">
                 <span class="num">02</span>
                 <h3>Lipids</h3>
-                <span class="rule"></span>
               </div>
 
               <div class="form-grid">
@@ -580,12 +423,11 @@
               </div>
             </div>
 
-            <!-- Section 03 -->
+            <!-- 03 Blood Pressure -->
             <div class="form-section">
               <div class="form-section-head">
                 <span class="num">03</span>
                 <h3>Blood Pressure</h3>
-                <span class="rule"></span>
               </div>
 
               <div class="form-grid">
@@ -609,12 +451,11 @@
               </div>
             </div>
 
-            <!-- Section 04 -->
+            <!-- 04 Other Risk Factors -->
             <div class="form-section">
               <div class="form-section-head">
                 <span class="num">04</span>
                 <h3>Other Risk Factors</h3>
-                <span class="rule"></span>
               </div>
 
               <div class="form-grid">
@@ -647,9 +488,29 @@
           </form>
         </section>
 
+      </div>
+    </div>
+  </main>
+
+  <!-- Result -->
+  <section class="tool-section section-light-bg">
+    <div class="container">
+      <div class="tool-layout">
+        <div class="tool-intro">
+          <div class="eyebrow">RESULT</div>
+          <h2>你的估算結果</h2>
+          <p>
+            數字本身不會給出答案，它只是一個用來開啟對話的起點。把它放在你完整的健康背景之中，
+            和你的醫師一起判讀。
+          </p>
+          <p>
+            如果你出現胸痛、呼吸困難、單側肢體無力、語言不清等急症表現，請立即尋求急救，不要依賴本工具的估算。
+          </p>
+        </div>
+
         <aside class="result-card" aria-live="polite">
           <div class="result-head">
-            <div class="result-eyebrow">Your Estimated Risk</div>
+            <div class="result-eyebrow">YOUR ESTIMATED RISK</div>
             <div class="result-tag">10-YR</div>
           </div>
 
@@ -680,63 +541,53 @@
 
           <div class="result-note">
             <strong>重要提示：</strong>
-            ASCVD 風險估算是臨床討論的起點，不是診斷或處方。若你有胸痛、呼吸困難、單側肢體無力、
-            語言不清等急症表現，請立即尋求急救。
+            ASCVD 風險估算是臨床討論的起點，不是診斷或處方。本工具不收集、不儲存、不上傳任何個人資料。
           </div>
 
           <div id="inputEcho" class="status-list"></div>
         </aside>
-
       </div>
     </div>
-  </main>
+  </section>
 
   <!-- Method -->
-  <section id="method" class="method-section">
+  <section id="method" class="tool-section">
     <div class="container">
-      <div class="section-head">
+      <div class="method-head">
         <div class="eyebrow">METHOD</div>
-        <h2>計算方法與使用限制。</h2>
-        <p class="section-sub">
-          這個工具以公開發表的 Pooled Cohort Equations 為基礎，計算過程完全在前端完成。
+        <h2>計算方法與使用限制</h2>
+        <p>
+          這個工具以公開發表的 Pooled Cohort Equations 為基礎，計算過程完全在前端完成，
+          不向任何伺服器傳送資料。
         </p>
       </div>
 
-      <div class="method-grid">
-        <div class="info-card">
-          <div class="value-num">01</div>
+      <div class="pillar-grid">
+        <div class="pillar">
+          <div class="num">01</div>
           <h4>估算對象</h4>
           <p>適用於 40–79 歲、沒有已知臨床 ASCVD 的成年人，用於估算 10 年內首次 ASCVD 事件風險。</p>
         </div>
-
-        <div class="info-card">
-          <div class="value-num">02</div>
+        <div class="pillar">
+          <div class="num">02</div>
           <h4>輸入因子</h4>
           <p>模型使用年齡、性別、族群、總膽固醇、HDL-C、收縮壓、降壓藥、糖尿病與目前吸菸狀態。</p>
         </div>
-
-        <div class="info-card">
-          <div class="value-num">03</div>
+        <div class="pillar">
+          <div class="num">03</div>
           <h4>隱私優先</h4>
-          <p>所有計算均在使用者瀏覽器內完成；本頁沒有資料庫，也不會將個人健康資料傳送到伺服器。</p>
+          <p>所有計算均在使用者瀏覽器內完成，本頁沒有資料庫，也不會將個人健康資料傳送到伺服器。</p>
+        </div>
+        <div class="pillar">
+          <div class="num">04</div>
+          <h4>謙遜邊界</h4>
+          <p>結果僅作資訊參考與學習交流之用，不構成醫療建議；個人化決策仍應由臨床醫師判斷。</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Mission Banner -->
-  <section class="mission-banner">
-    <div class="container mission-inner">
-      <div class="mission-quote">"</div>
-      <p class="mission-text">
-        Numbers do not replace judgment — they begin a better conversation.
-      </p>
-      <div class="mission-by">— HUGHIE'S ONLINE LAB</div>
-    </div>
-  </section>
-
-  <!-- Contact / Footer -->
-  <footer id="contact" class="footer">
+  <footer class="footer">
     <div class="container footer-top">
       <div class="footer-brand">
         <div class="brand">
@@ -748,23 +599,17 @@
         </div>
         <p>An open research toolkit for everyone.</p>
       </div>
-
       <div class="footer-contact">
-        <h5>Contact</h5>
-        <div class="contact-item">
-          <div class="contact-label">EMAIL</div>
-          <a href="mailto:hughietao@utm.edu.mo">hughietao@utm.edu.mo</a>
-        </div>
-        <div class="contact-item">
-          <div class="contact-label">OFFICE</div>
-          <p>中國澳門特別行政區氹仔徐日昇寅公馬路<br>澳門旅遊大學　耀東樓 508C 辦公室</p>
-        </div>
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
       </div>
     </div>
     <div class="footer-bottom">
       <div class="container footer-bottom-inner">
         <span>© 2025 Hughie's Online Lab</span>
-        <span>All tools are for informational purposes only and do not constitute medical advice.</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
       </div>
     </div>
   </footer>
