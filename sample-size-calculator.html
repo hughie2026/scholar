@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sample Size & Power Calculator · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+
+    /* Breadcrumb */
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+
+    /* Meta pills */
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{
+      background:#fff;border:1px solid #ece5d3;
+      padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;
+    }
+
+    /* Calculator Section */
+    .assessment-section{padding:70px 0;background:#fff;}
+    .assessment-section .narrow{max-width:840px;margin:0 auto;}
+
+    /* Progress */
+    .progress-wrap{margin-bottom:36px;}
+    .progress-bar{height:3px;background:#ece5d3;overflow:hidden;}
+    .progress-fill{height:100%;background:#c9a961;width:25%;transition:width .4s ease;}
+    .progress-steps{display:flex;justify-content:space-between;margin-top:16px;gap:8px;flex-wrap:wrap;}
+    .progress-steps .step{font-size:11px;letter-spacing:1.2px;color:#bbb;font-weight:600;text-transform:uppercase;}
+    .progress-steps .step b{display:block;font-size:14px;color:#ccc;margin-bottom:3px;font-weight:700;}
+    .progress-steps .step.active{color:#1a1a1a;}
+    .progress-steps .step.active b{color:#c9a961;}
+    .progress-steps .step.done{color:#555;}
+    .progress-steps .step.done b{color:#c9a961;}
+
+    /* Form Step Card */
+    .form-step{display:none;background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:42px 38px;}
+    .form-step.active{display:block;}
+    .step-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
+    .form-step h2{font-size:28px;color:#1a1a1a;margin:0 0 10px;line-height:1.3;}
+    .step-desc{font-size:14px;color:#888;margin:0 0 32px;line-height:1.75;}
+
+    /* Fields */
+    .field{margin-bottom:24px;}
+    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:600px){.field-row{grid-template-columns:1fr;gap:0;}}
+
+    .field input[type="number"],
+    .field input[type="text"],
+    .field select{
+      width:100%;padding:12px 14px;font-size:14px;
+      border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+      font-family:inherit;outline:none;transition:.2s;border-radius:0;
+    }
+    .field input:focus, .field select:focus{border-color:#c9a961;}
+    .hint{font-size:12px;color:#888;margin-top:6px;line-height:1.6;letter-spacing:.2px;}
+    .hint code{background:#faf7f0;padding:1px 6px;border:1px solid #ece5d3;font-size:11px;color:#c9a961;}
+
+    /* Big radio cards (for goal & test type) */
+    .radio-row{display:flex;gap:12px;flex-wrap:wrap;}
+    .radio-btn{flex:1;min-width:160px;cursor:pointer;}
+    .radio-btn input{display:none;}
+    .radio-btn span{
+      display:block;text-align:center;padding:14px 18px;
+      border:1px solid #ece5d3;background:#fff;color:#555;
+      font-size:14px;transition:.2s;line-height:1.5;
+    }
+    .radio-btn span small{display:block;font-size:11px;letter-spacing:.6px;color:#aaa;margin-top:4px;font-weight:400;}
+    .radio-btn:hover span{border-color:#d4c5a0;}
+    .radio-btn input:checked + span{
+      border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;
+    }
+    .radio-btn input:checked + span small{color:#b8985a;}
+
+    .test-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    @media(max-width:600px){.test-grid{grid-template-columns:1fr;}}
+    .test-grid .radio-btn{min-width:auto;}
+
+    /* Form Navigation */
+    .form-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;}
+    .btn-purple, .btn-ghost-dark{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;
+      font-weight:700;padding:14px 28px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .btn-ghost-dark:disabled{opacity:.35;cursor:not-allowed;}
+    .btn-ghost-dark:disabled:hover{background:transparent;color:#1a1a1a;}
+
+    /* Conditional field blocks */
+    .cond{display:none;}
+    .cond.active{display:block;}
+
+    /* Result Panel */
+    .result-panel{background:transparent;}
+    .result-head{text-align:center;padding:0 0 36px;margin-bottom:30px;border-bottom:1px solid #ece5d3;}
+    .result-head h2{font-size:36px;color:#1a1a1a;margin:10px 0 14px;line-height:1.2;}
+    .result-head p{color:#555;font-size:15px;line-height:1.7;max-width:560px;margin:0 auto;}
+
+    .score-card{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:36px;display:grid;grid-template-columns:auto 1fr;gap:42px;
+      align-items:center;margin-bottom:24px;
+    }
+    @media(max-width:680px){.score-card{grid-template-columns:1fr;gap:24px;}}
+    .score-left{text-align:left;}
+    .score-num{font-family:'Encode Sans',sans-serif;font-size:64px;color:#c9a961;font-weight:700;line-height:1;}
+    .score-num small{font-size:18px;color:#888;font-weight:400;margin-left:4px;}
+    .score-label{font-size:12px;letter-spacing:1.8px;color:#1a1a1a;margin-top:10px;font-weight:700;text-transform:uppercase;}
+    .score-bar{height:8px;background:#ece5d3;overflow:hidden;}
+    .score-fill{height:100%;background:#c9a961;width:0;transition:width .9s ease;}
+    .score-tier{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#888;letter-spacing:.5px;}
+
+    .result-section{
+      background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:28px 32px;margin-bottom:20px;
+    }
+    .result-section h3{font-size:18px;color:#1a1a1a;margin:0 0 18px;font-weight:700;}
+    .result-section ul{padding-left:20px;line-height:1.95;color:#555;font-size:14px;margin:0;}
+    .result-section li{margin-bottom:6px;}
+    .result-section li em{color:#888;}
+
+    .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;}
+    .metric{background:#faf7f0;border:1px solid #ece5d3;padding:20px 16px;text-align:center;}
+    .metric-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:10px;text-transform:uppercase;}
+    .metric-value{font-family:'Encode Sans',sans-serif;font-size:28px;color:#1a1a1a;font-weight:700;line-height:1;}
+    .metric-value small{font-size:13px;color:#888;font-weight:400;margin-left:2px;}
+    .metric-note{font-size:12px;color:#888;margin-top:8px;letter-spacing:.3px;}
+
+    .formula-box{
+      background:#faf7f0;border:1px solid #ece5d3;padding:18px 20px;
+      font-family:'Encode Sans',monospace;font-size:13px;color:#1a1a1a;
+      line-height:1.9;letter-spacing:.3px;overflow-x:auto;
+    }
+    .formula-box .lab{color:#c9a961;font-weight:700;letter-spacing:1px;}
+
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    .eyebrow.gold{color:#c9a961;}
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Sample Size & Power Calculator</span>
+      </div>
+      <div class="eyebrow gold">STATISTICS · POWER ANALYSIS</div>
+      <h1>Sample Size & Power Calculator</h1>
+      <p class="lead">
+        本工具基於 Cohen 的效應量框架及常用統計檢定的漸進近似公式，
+        可在「求樣本量」與「求檢定力」兩種模式下，
+        為均數比較、比例比較與相關係數等檢定提供研究設計階段的快速估算。
+        全部計算在本地完成，結果僅供參考。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">⚡ 即時計算</span>
+        <span class="pill">📐 5 種檢定類型</span>
+        <span class="pill">🔁 雙向求解</span>
+        <span class="pill">🔒 本地計算</span>
+        <span class="pill">📖 基於 Cohen / Fisher Z</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="assessment-section">
+    <div class="container narrow">
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps">
+          <span class="step active" data-step="1"><b>01</b> 計算目標</span>
+          <span class="step" data-step="2"><b>02</b> 檢定類型</span>
+          <span class="step" data-step="3"><b>03</b> 統計參數</span>
+          <span class="step" data-step="4"><b>04</b> 效應量</span>
+        </div>
+      </div>
+
+      <form id="calcForm" class="assessment-form" autocomplete="off">
+
+        <!-- ========== STEP 1: 計算目標 ========== -->
+        <div class="form-step active" data-step="1">
+          <div class="step-num">PART 01</div>
+          <h2>選擇計算目標</h2>
+          <p class="step-desc">先確定你想求解的是「樣本量」還是「檢定力」，後續所需的輸入會隨之調整。</p>
+
+          <div class="field">
+            <label>計算模式</label>
+            <div class="radio-row">
+              <label class="radio-btn">
+                <input type="radio" name="mode" value="size" checked>
+                <span>求樣本量<small>已知 α、效應量、檢定力</small></span>
+              </label>
+              <label class="radio-btn">
+                <input type="radio" name="mode" value="power">
+                <span>求檢定力<small>已知 α、效應量、樣本量</small></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 2: 檢定類型 ========== -->
+        <div class="form-step" data-step="2">
+          <div class="step-num">PART 02</div>
+          <h2>選擇檢定類型</h2>
+          <p class="step-desc">不同的研究設計對應不同的統計模型，請選擇與你研究最匹配的一種。</p>
+
+          <div class="field">
+            <label>統計檢定</label>
+            <div class="radio-row test-grid">
+              <label class="radio-btn">
+                <input type="radio" name="test" value="2mean" checked>
+                <span>雙樣本均數比較<small>INDEPENDENT t-TEST</small></span>
+              </label>
+              <label class="radio-btn">
+                <input type="radio" name="test" value="1mean">
+                <span>單樣本 / 配對均數<small>ONE-SAMPLE t-TEST</small></span>
+              </label>
+              <label class="radio-btn">
+                <input type="radio" name="test" value="2prop">
+                <span>雙樣本比例比較<small>TWO PROPORTIONS z-TEST</small></span>
+              </label>
+              <label class="radio-btn">
+                <input type="radio" name="test" value="1prop">
+                <span>單樣本比例<small>ONE PROPORTION z-TEST</small></span>
+              </label>
+              <label class="radio-btn">
+                <input type="radio" name="test" value="corr">
+                <span>Pearson 相關係數<small>CORRELATION</small></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 3: 統計參數 ========== -->
+        <div class="form-step" data-step="3">
+          <div class="step-num">PART 03</div>
+          <h2>統計檢定參數</h2>
+          <p class="step-desc">設定第一型錯誤、檢定方向、以及（依模式）檢定力或樣本量。</p>
+
+          <div class="field-row">
+            <div class="field">
+              <label>顯著水準 α</label>
+              <input type="number" name="alpha" step="0.001" min="0.0001" max="0.5" value="0.05" required>
+              <div class="hint">常用值：<code>0.05</code> / <code>0.01</code> / <code>0.001</code></div>
+            </div>
+            <div class="field">
+              <label>檢定方向</label>
+              <div class="radio-row">
+                <label class="radio-btn"><input type="radio" name="sided" value="2" checked><span>雙側</span></label>
+                <label class="radio-btn"><input type="radio" name="sided" value="1"><span>單側</span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- size 模式：要求輸入 power -->
+          <div class="cond active" data-cond="size">
+            <div class="field">
+              <label>目標檢定力 1 − β</label>
+              <input type="number" name="power" step="0.01" min="0.01" max="0.999" value="0.80">
+              <div class="hint">常用值：<code>0.80</code>（標準）/ <code>0.90</code>（嚴謹）</div>
+            </div>
+          </div>
+
+          <!-- power 模式：要求輸入 n（不同檢定類型欄位略有差異） -->
+          <div class="cond" data-cond="power">
+            <div class="cond active" data-cond-test="2mean,2prop">
+              <div class="field">
+                <label>第一組樣本量 n₁</label>
+                <input type="number" name="n1" min="2" step="1" value="30">
+                <div class="hint">第二組樣本量由分組比例 k 決定。</div>
+              </div>
+            </div>
+            <div class="cond" data-cond-test="1mean,1prop,corr">
+              <div class="field">
+                <label>樣本量 n</label>
+                <input type="number" name="n" min="2" step="1" value="30">
+              </div>
+            </div>
+          </div>
+
+          <!-- 兩組設計：分組比例 -->
+          <div class="cond active" data-cond-test="2mean,2prop">
+            <div class="field">
+              <label>分組比例 k = n₂ / n₁</label>
+              <input type="number" name="k" step="0.1" min="0.1" max="10" value="1">
+              <div class="hint">等比例設計填 <code>1</code>。例如想讓對照組是試驗組的 2 倍，填 <code>2</code>。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 4: 效應量 ========== -->
+        <div class="form-step" data-step="4">
+          <div class="step-num">PART 04</div>
+          <h2>效應量參數</h2>
+          <p class="step-desc">效應量決定了你希望偵測的差異大小，是樣本量計算最關鍵的輸入。</p>
+
+          <!-- 2mean / 1mean: Cohen's d -->
+          <div class="cond active" data-cond-test="2mean,1mean">
+            <div class="field">
+              <label>Cohen's d（標準化均數差）</label>
+              <input type="number" name="d" step="0.01" min="0.01" value="0.5">
+              <div class="hint">
+                Cohen 基準：<code>0.2</code> 小 / <code>0.5</code> 中 / <code>0.8</code> 大；
+                d = |μ₁ − μ₂| ⁄ σ。
+              </div>
+            </div>
+          </div>
+
+          <!-- 2prop: p1 & p2 -->
+          <div class="cond" data-cond-test="2prop">
+            <div class="field-row">
+              <div class="field">
+                <label>第一組比例 p₁</label>
+                <input type="number" name="p1" step="0.01" min="0.001" max="0.999" value="0.30">
+                <div class="hint">介於 0 與 1 之間，例如 <code>0.30</code> 表示 30%。</div>
+              </div>
+              <div class="field">
+                <label>第二組比例 p₂</label>
+                <input type="number" name="p2" step="0.01" min="0.001" max="0.999" value="0.50">
+                <div class="hint">兩組比例不能相等。</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1prop: p0 & p1 -->
+          <div class="cond" data-cond-test="1prop">
+            <div class="field-row">
+              <div class="field">
+                <label>原假設比例 p₀</label>
+                <input type="number" name="p0" step="0.01" min="0.001" max="0.999" value="0.50">
+                <div class="hint">基準值或理論值。</div>
+              </div>
+              <div class="field">
+                <label>替代假設比例 p₁</label>
+                <input type="number" name="p1s" step="0.01" min="0.001" max="0.999" value="0.65">
+                <div class="hint">期望或預估值。</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- corr: r -->
+          <div class="cond" data-cond-test="corr">
+            <div class="field">
+              <label>預期相關係數 r</label>
+              <input type="number" name="r" step="0.01" min="-0.999" max="0.999" value="0.30">
+              <div class="hint">
+                Cohen 基準：<code>0.10</code> 小 / <code>0.30</code> 中 / <code>0.50</code> 大；
+                採 Fisher Z 變換計算。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button type="button" id="prevBtn" class="btn-ghost-dark" disabled>← 上一步</button>
+          <button type="button" id="nextBtn" class="btn-purple">下一步 →</button>
+          <button type="button" id="submitBtn" class="btn-purple" style="display:none;">查看結果</button>
+        </div>
+      </form>
+
+      <!-- ========== Result ========== -->
+      <div id="result" class="result-panel" style="display:none;">
+        <div class="result-head">
+          <div class="eyebrow gold">YOUR RESULTS</div>
+          <h2 id="resultTitle">計算結果</h2>
+          <p id="resultSubtitle">下列數值由你提供的輸入透過漸進近似公式得出。</p>
+        </div>
+
+        <div class="score-card" id="scoreCard">
+          <div class="score-left">
+            <div class="score-num"><span id="primaryValue">--</span><small id="primaryUnit"></small></div>
+            <div class="score-label" id="primaryLabel">--</div>
+          </div>
+          <div class="score-right">
+            <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
+            <div class="score-tier">
+              <span>0</span><span>0.5</span><span>0.8</span><span>0.9</span><span>1.0</span>
+            </div>
+            <div class="hint" id="scoreHint" style="margin-top:10px;"></div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>📊 關鍵指標</h3>
+          <div class="metric-grid" id="metricGrid"></div>
+        </div>
+
+        <div class="result-section">
+          <h3>📈 檢定力曲線</h3>
+          <p class="step-desc" style="margin:0 0 14px;">下圖顯示在當前效應量與顯著水準下，檢定力如何隨樣本量變化。金點為當前設計位置。</p>
+          <div id="chartWrap" style="text-align:center;"></div>
+        </div>
+
+        <div class="result-section">
+          <h3>🧭 結果解讀</h3>
+          <p id="interpretation" style="font-size:14px;line-height:1.85;color:#555;margin:0 0 16px;"></p>
+          <div class="formula-box" id="formulaBox"></div>
+        </div>
+
+        <div class="result-section">
+          <h3>💡 建議</h3>
+          <ul id="recommendations"></ul>
+        </div>
+
+        <div class="result-section">
+          <h3>📚 計算依據</h3>
+          <ul>
+            <li>Cohen, J. (1988). <em>Statistical Power Analysis for the Behavioral Sciences</em> (2nd ed.). Lawrence Erlbaum.</li>
+            <li>Fleiss, J. L., Levin, B., & Paik, M. C. (2003). <em>Statistical Methods for Rates and Proportions</em>.</li>
+            <li>Fisher, R. A. (1921). On the "probable error" of a coefficient of correlation deduced from a small sample.</li>
+            <li>Faul, F., Erdfelder, E., Lang, A.-G., & Buchner, A. (2007). G*Power 3. <em>Behavior Research Methods</em>.</li>
+          </ul>
+        </div>
+
+        <div class="result-section disclaimer">
+          <strong>免責聲明　</strong>
+          本工具採用大樣本漸進常態近似（含 Fisher Z 變換）進行計算，並未使用精確的 t 或非中心分佈，
+          當樣本量極小（n &lt; 10）時建議搭配 G*Power 或 R 的 <code>pwr</code> 套件進行核對。
+          結果不構成研究設計或統計分析的最終建議。
+        </div>
+
+        <div class="form-nav">
+          <button type="button" class="btn-ghost-dark" id="restartBtn">重新計算</button>
+          <button type="button" class="btn-purple" onclick="window.print()">打印 / 保存 PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/sample-size-calculator.js"></script>
+</body>
+</html>
