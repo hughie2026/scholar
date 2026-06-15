@@ -1,1034 +1,546 @@
-/*
-  Hospitality Research Trends Recommender
-  款待學科學術熱點推薦器
+/* =========================================================
+ * 學術熱點推薦器
+ * 多學科支援：公共衛生 / 健康管理 / 款待科學 /
+ *           會展管理 / 食品與營養 / 旅遊科學
+ * 資料源：OpenAlex Works API（免費、無需 key，使用 mailto polite pool）
+ * ========================================================= */
 
-  Data source:
-  - OpenAlex Works API
+// ====== 內建 API 設定（不需用戶輸入）======
+// OpenAlex 免費使用，僅需提供聯絡郵箱進入 polite pool 以獲得更穩定的速率
+const OPENALEX_MAILTO = 'hughietao@utm.edu.mo';
+// 若未來要改用付費或私有 endpoint，可在此填寫；留空即使用公開 API
+const OPENALEX_API_KEY = '';
+const OPENALEX_BASE = 'https://api.openalex.org/works';
 
-  Notes:
-  - 本工具會在瀏覽器中即時檢索 OpenAlex 公開學術資料。
-  - 不需要後端也可以運行。
-  - 正式部署時，如果你有 OpenAlex API key，建議用後端代理隱藏 key。
-*/
-
-(function () {
-  "use strict";
-
-  const OPENALEX_BASE = "https://api.openalex.org/works";
-
-  /*
-    可選：
-    如果你申請了 OpenAlex API key，可以填在這裡。
-    但如果網站公開部署，前端 JS 裡的 key 會被看到。
-    更正式的做法是用 Cloudflare Worker / Vercel Function / Netlify Function 做後端代理。
-  */
-  const OPENALEX_API_KEY = "";
-
-  /*
-    OpenAlex 建議加 mailto，方便進入 polite pool。
-    可以改成你的郵箱。
-  */
-  const CONTACT_EMAIL = "hughietao@utm.edu.mo";
-
-  const DEFAULT_PER_PAGE = 25;
-
-  const branches = [
-    {
-      id: "hospitality-general",
-      title: "款待管理總覽",
-      subtitle: "Hospitality Management",
-      query: "hospitality management hotel restaurant tourism service experience",
-      short: "總覽"
-    },
-    {
-      id: "hotel",
-      title: "酒店與住宿管理",
-      subtitle: "Hotel & Lodging",
-      query: "hotel management lodging accommodation hospitality revenue management hotel performance",
-      short: "酒店"
-    },
-    {
-      id: "tourism",
-      title: "旅遊與目的地管理",
-      subtitle: "Tourism & Destination",
-      query: "tourism destination management tourist behavior smart tourism destination image",
-      short: "旅遊"
-    },
-    {
-      id: "foodservice",
-      title: "餐飲與食品服務",
-      subtitle: "Restaurant & Foodservice",
-      query: "restaurant foodservice dining hospitality food waste food tourism service quality",
-      short: "餐飲"
-    },
-    {
-      id: "mice-events",
-      title: "會展、節事與事件管理",
-      subtitle: "MICE & Events",
-      query: "MICE event management convention exhibition festival tourism hospitality",
-      short: "會展"
-    },
-    {
-      id: "digital-ai",
-      title: "數字化、AI 與智慧服務",
-      subtitle: "Digitalization & AI",
-      query: "artificial intelligence hospitality tourism smart hotel service robot digital transformation ChatGPT",
-      short: "AI"
-    },
-    {
-      id: "sustainability",
-      title: "可持續款待與 ESG",
-      subtitle: "Sustainability & ESG",
-      query: "sustainable hospitality sustainable tourism ESG climate change carbon green hotel circular economy",
-      short: "ESG"
-    },
-    {
-      id: "consumer",
-      title: "消費者行為與體驗",
-      subtitle: "Consumer Behavior",
-      query: "hospitality consumer behavior tourist experience customer experience satisfaction loyalty online reviews",
-      short: "體驗"
-    },
-    {
-      id: "hrm",
-      title: "人力資源與員工福祉",
-      subtitle: "HRM & Well-being",
-      query: "hospitality human resource employee wellbeing burnout turnover labor shortage emotional labor",
-      short: "人力"
-    },
-    {
-      id: "revenue",
-      title: "收益管理與需求預測",
-      subtitle: "Revenue Management",
-      query: "hospitality revenue management dynamic pricing demand forecasting hotel occupancy pricing",
-      short: "收益"
-    }
-  ];
-
-  const hotspotTerms = [
-    {
-      id: "generative-ai",
-      label: "生成式 AI 與智能服務",
-      terms: [
-        "generative ai",
-        "chatgpt",
-        "large language model",
-        "artificial intelligence",
-        "machine learning",
-        "service robot",
-        "robot",
-        "automation",
-        "smart hotel",
-        "smart tourism",
-        "digital transformation"
-      ],
-      why: "聚焦 AI、服務機器人與智能化工具如何改變款待服務、顧客互動與營運效率。"
-    },
-    {
-      id: "sustainability-esg",
-      label: "可持續發展與 ESG",
-      terms: [
-        "sustainability",
-        "sustainable",
-        "ESG",
-        "carbon",
-        "climate change",
-        "green",
-        "net zero",
-        "circular economy",
-        "corporate social responsibility",
-        "food waste"
-      ],
-      why: "關注低碳、綠色酒店、食品浪費、ESG 治理與負責任旅遊。"
-    },
-    {
-      id: "customer-experience",
-      label: "顧客體驗與幸福感",
-      terms: [
-        "customer experience",
-        "tourist experience",
-        "memorable tourism",
-        "experience economy",
-        "well-being",
-        "wellbeing",
-        "emotion",
-        "satisfaction",
-        "loyalty",
-        "value co-creation"
-      ],
-      why: "探索體驗品質、情緒、滿意度、忠誠度與主觀幸福感之間的關係。"
-    },
-    {
-      id: "online-reviews",
-      label: "線上評論、社交媒體與 eWOM",
-      terms: [
-        "online review",
-        "user-generated content",
-        "social media",
-        "eWOM",
-        "electronic word of mouth",
-        "sentiment analysis",
-        "influencer",
-        "platform",
-        "rating"
-      ],
-      why: "使用平台資料、評論文本與社交媒體內容理解消費者決策與品牌聲譽。"
-    },
-    {
-      id: "employee-wellbeing",
-      label: "員工福祉、短缺與組織韌性",
-      terms: [
-        "employee wellbeing",
-        "employee well-being",
-        "burnout",
-        "turnover",
-        "labor shortage",
-        "human resource",
-        "workforce",
-        "emotional labor",
-        "organizational resilience",
-        "job satisfaction"
-      ],
-      why: "聚焦款待業人力短缺、工作壓力、離職傾向與服務組織韌性。"
-    },
-    {
-      id: "risk-resilience",
-      label: "危機、風險與韌性",
-      terms: [
-        "risk perception",
-        "crisis",
-        "resilience",
-        "pandemic",
-        "safety",
-        "security",
-        "recovery",
-        "uncertainty",
-        "disaster"
-      ],
-      why: "討論疫情後復甦、風險感知、安全信任與目的地 / 企業韌性。"
-    },
-    {
-      id: "destination-management",
-      label: "目的地治理與智慧目的地",
-      terms: [
-        "destination image",
-        "destination management",
-        "smart destination",
-        "place attachment",
-        "overtourism",
-        "resident attitude",
-        "destination competitiveness",
-        "tourism governance"
-      ],
-      why: "面向旅遊目的地品牌、智慧治理、過度旅遊與居民態度。"
-    },
-    {
-      id: "food-and-restaurant",
-      label: "餐飲創新與食品系統",
-      terms: [
-        "food waste",
-        "plant-based",
-        "local food",
-        "food tourism",
-        "restaurant technology",
-        "delivery",
-        "menu",
-        "dining experience",
-        "food safety"
-      ],
-      why: "涵蓋餐飲技術、外送、地方食物、食品安全與可持續餐飲。"
-    },
-    {
-      id: "events-mice",
-      label: "會展、節事與體驗設計",
-      terms: [
-        "MICE",
-        "event management",
-        "event legacy",
-        "mega event",
-        "festival",
-        "conference",
-        "exhibition",
-        "event experience",
-        "event tourism"
-      ],
-      why: "關注會展活動、節事體驗、事件遺產與旅遊帶動效應。"
-    },
-    {
-      id: "revenue-demand",
-      label: "收益管理、定價與需求預測",
-      terms: [
-        "revenue management",
-        "dynamic pricing",
-        "demand forecasting",
-        "occupancy",
-        "pricing",
-        "hotel performance",
-        "RevPAR",
-        "forecasting",
-        "booking"
-      ],
-      why: "聚焦酒店價格策略、需求波動、收益管理與營運績效。"
-    }
-  ];
-
-  const state = {
-    selectedBranchId: "hospitality-general",
-    lastWorks: [],
-    lastHotspots: [],
-    lastBranchSummaries: []
-  };
-
-  const branchTabsEl = document.getElementById("branchTabs");
-  const runBtn = document.getElementById("runBtn");
-  const allBtn = document.getElementById("allBtn");
-  const statusBox = document.getElementById("statusBox");
-
-  const resultTitle = document.getElementById("resultTitle");
-  const resultLead = document.getElementById("resultLead");
-
-  const metricWorks = document.getElementById("metricWorks");
-  const metricHotspots = document.getElementById("metricHotspots");
-  const metricLatestYear = document.getElementById("metricLatestYear");
-  const metricTopBranch = document.getElementById("metricTopBranch");
-
-  const hotspotList = document.getElementById("hotspotList");
-  const paperList = document.getElementById("paperList");
-  const branchSummary = document.getElementById("branchSummary");
-  const ideaList = document.getElementById("ideaList");
-
-  const yearRangeEl = document.getElementById("yearRange");
-  const sortModeEl = document.getElementById("sortMode");
-  const customQueryEl = document.getElementById("customQuery");
-  const apiKeyInputEl = document.getElementById("apiKeyInput");
-
-  function init() {
-    if (!branchTabsEl || !runBtn || !allBtn) {
-      console.warn("Hospitality trends page elements not found.");
-      return;
-    }
-
-    renderBranchTabs();
-    restoreApiKey();
-    renderEmptyState();
-
-    runBtn.addEventListener("click", runSelectedBranch);
-    allBtn.addEventListener("click", runAllBranches);
-
-    if (apiKeyInputEl) {
-      apiKeyInputEl.addEventListener("change", function () {
-        const value = apiKeyInputEl.value.trim();
-
-        if (value) {
-          localStorage.setItem("openalex_api_key", value);
-        } else {
-          localStorage.removeItem("openalex_api_key");
-        }
-      });
-    }
+// ====== 學科分支定義 ======
+const BRANCHES = {
+  publicHealth: {
+    id: 'publicHealth',
+    name: '公共衛生',
+    nameEn: 'Public Health',
+    icon: '🏥',
+    keywords: [
+      'public health', 'epidemiology', 'health policy',
+      'health equity', 'disease prevention', 'global health',
+      'health communication', 'health behavior intervention'
+    ]
+  },
+  healthMgmt: {
+    id: 'healthMgmt',
+    name: '健康管理',
+    nameEn: 'Health Management',
+    icon: '💊',
+    keywords: [
+      'health management', 'wellness program', 'chronic disease management',
+      'preventive healthcare', 'health informatics', 'patient experience',
+      'digital health', 'mHealth'
+    ]
+  },
+  hospitality: {
+    id: 'hospitality',
+    name: '款待科學',
+    nameEn: 'Hospitality Science',
+    icon: '🏨',
+    keywords: [
+      'hospitality management', 'hotel industry', 'guest experience',
+      'service quality', 'hospitality marketing', 'lodging',
+      'hospitality technology', 'restaurant management'
+    ]
+  },
+  mice: {
+    id: 'mice',
+    name: '會展管理',
+    nameEn: 'MICE / Event Management',
+    icon: '🎪',
+    keywords: [
+      'MICE industry', 'event management', 'convention tourism',
+      'exhibition management', 'business events', 'meetings industry',
+      'festival management', 'trade show'
+    ]
+  },
+  foodNutrition: {
+    id: 'foodNutrition',
+    name: '食品與營養科學',
+    nameEn: 'Food & Nutrition Science',
+    icon: '🥗',
+    keywords: [
+      'food science', 'nutrition', 'dietary intake',
+      'food safety', 'functional food', 'nutraceutical',
+      'food technology', 'sustainable diet'
+    ]
+  },
+  tourism: {
+    id: 'tourism',
+    name: '旅遊科學',
+    nameEn: 'Tourism Science',
+    icon: '✈️',
+    keywords: [
+      'tourism management', 'tourist behavior', 'destination management',
+      'sustainable tourism', 'travel experience', 'cultural tourism',
+      'smart tourism', 'tourism marketing'
+    ]
   }
+};
 
-  function restoreApiKey() {
-    if (!apiKeyInputEl) return;
+// ====== 停用詞（用於補充關鍵詞抽取，目前已用 OpenAlex topics，故僅作備援）======
+const STOPWORDS = new Set([
+  'the','a','an','and','or','of','in','on','at','to','for','with','by','from','as',
+  'is','are','was','were','be','been','being','this','that','these','those','it','its',
+  'study','research','analysis','approach','based','using','use','used','case','effect',
+  'effects','impact','role','among','between','during','after','before','through','via',
+  'we','our','their','they','can','may','also','more','most','than','such','into','one',
+  'two','three','new','findings','results','paper','review','article','data'
+]);
 
-    const stored = localStorage.getItem("openalex_api_key");
+// ====== 狀態 ======
+const state = {
+  selectedBranch: 'hospitality',
+  lastResult: null
+};
 
-    if (stored) {
-      apiKeyInputEl.value = stored;
-    }
-  }
+// ====== DOM 引用 ======
+const $ = (id) => document.getElementById(id);
+const els = {
+  branchTabs: $('branchTabs'),
+  yearRange: $('yearRange'),
+  sortMode: $('sortMode'),
+  customQuery: $('customQuery'),
+  runBtn: $('runBtn'),
+  allBtn: $('allBtn'),
+  statusBox: $('statusBox'),
+  resultTitle: $('resultTitle'),
+  resultLead: $('resultLead'),
+  metricWorks: $('metricWorks'),
+  metricHotspots: $('metricHotspots'),
+  metricLatestYear: $('metricLatestYear'),
+  metricTopBranch: $('metricTopBranch'),
+  hotspotList: $('hotspotList'),
+  ideaList: $('ideaList'),
+  paperList: $('paperList'),
+  branchSummary: $('branchSummary')
+};
 
-  function renderBranchTabs() {
-    branchTabsEl.innerHTML = branches.map(function (branch) {
-      const active = branch.id === state.selectedBranchId ? "active" : "";
+// ====== 初始化 ======
+function init() {
+  renderBranchTabs();
+  els.runBtn.addEventListener('click', () => runSingle());
+  els.allBtn.addEventListener('click', () => runAll());
+}
 
-      return `
-        <button class="branch-tab ${active}" type="button" data-branch="${escapeHtml(branch.id)}">
-          ${escapeHtml(branch.title)}
-          <span>${escapeHtml(branch.subtitle)}</span>
-        </button>
-      `;
-    }).join("");
-
-    branchTabsEl.querySelectorAll(".branch-tab").forEach(function (button) {
-      button.addEventListener("click", function () {
-        state.selectedBranchId = button.dataset.branch;
-        renderBranchTabs();
-      });
+function renderBranchTabs() {
+  els.branchTabs.innerHTML = Object.values(BRANCHES).map(b => `
+    <button class="branch-tab ${b.id === state.selectedBranch ? 'active' : ''}"
+            data-id="${b.id}" type="button">
+      <span class="icon">${b.icon}</span>
+      <span class="label">
+        ${b.name}
+        <small>${b.nameEn}</small>
+      </span>
+    </button>
+  `).join('');
+  els.branchTabs.querySelectorAll('.branch-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.selectedBranch = btn.dataset.id;
+      els.branchTabs.querySelectorAll('.branch-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
     });
+  });
+}
+
+// ====== 狀態提示 ======
+function setStatus(msg, type = '') {
+  els.statusBox.className = 'status-box show ' + type;
+  els.statusBox.textContent = msg;
+}
+function clearStatus() {
+  els.statusBox.className = 'status-box';
+  els.statusBox.textContent = '';
+}
+function setLoading(loading) {
+  els.runBtn.disabled = loading;
+  els.allBtn.disabled = loading;
+  els.runBtn.textContent = loading ? '檢索中…' : '檢索熱點';
+}
+
+// ====== Skeleton ======
+function showSkeletons() {
+  const skel = (lines = 3) => `
+    <div class="skeleton-card">
+      ${Array.from({ length: lines }, (_, i) =>
+        `<div class="skeleton skeleton-line ${i === lines - 1 ? 'w-50' : i === 0 ? 'w-30' : 'w-80'}"></div>`
+      ).join('')}
+    </div>`;
+  els.hotspotList.innerHTML = skel(3) + skel(3) + skel(3);
+  els.paperList.innerHTML = skel(4) + skel(4);
+  els.ideaList.innerHTML = skel(2) + skel(2);
+}
+
+// ====== OpenAlex 檢索 ======
+async function fetchWorks(branch, years, sortMode, customExtra = '') {
+  // 構造 search query：分支關鍵詞 OR 連接，並可附加自定義詞
+  const baseTerms = branch.keywords.map(k => `"${k}"`).join(' OR ');
+  const extraTerms = customExtra
+    .split(/[\s,;，；]+/)
+    .filter(Boolean)
+    .map(w => `"${w}"`)
+    .join(' OR ');
+  const searchQuery = extraTerms ? `(${baseTerms}) AND (${extraTerms})` : baseTerms;
+
+  const fromYear = new Date().getFullYear() - parseInt(years, 10);
+  const sortParam = sortMode === 'date'
+    ? 'publication_date:desc'
+    : sortMode === 'citation'
+      ? 'cited_by_count:desc'
+      : 'relevance_score:desc';
+
+  const params = new URLSearchParams({
+    search: searchQuery,
+    filter: `from_publication_date:${fromYear}-01-01,is_paratext:false,type:article`,
+    sort: sortParam,
+    'per-page': '40',
+    mailto: OPENALEX_MAILTO
+  });
+  const url = `${OPENALEX_BASE}?${params.toString()}`;
+
+  const headers = { 'Accept': 'application/json' };
+  if (OPENALEX_API_KEY) headers['Authorization'] = `Bearer ${OPENALEX_API_KEY}`;
+
+  const res = await fetch(url, { headers });
+  if (!res.ok) throw new Error(`OpenAlex 檢索失敗（HTTP ${res.status}）`);
+  const data = await res.json();
+  return data.results || [];
+}
+
+// ====== Abstract 還原 ======
+function rebuildAbstract(invertedIndex) {
+  if (!invertedIndex) return '';
+  const arr = [];
+  for (const [word, positions] of Object.entries(invertedIndex)) {
+    positions.forEach(pos => arr.push([pos, word]));
   }
+  arr.sort((a, b) => a[0] - b[0]);
+  let txt = arr.map(p => p[1]).join(' ');
+  if (txt.length > 280) txt = txt.slice(0, 280) + '…';
+  return txt;
+}
 
-  async function runSelectedBranch() {
-    const branch = branches.find(function (item) {
-      return item.id === state.selectedBranchId;
-    });
+// ====== 熱點抽取 ======
+function extractHotspots(works) {
+  const topicMap = new Map(); // key -> { name, count, citations, latestYear, weighted }
 
-    if (!branch) return;
+  const currentYear = new Date().getFullYear();
+  works.forEach(w => {
+    const year = w.publication_year || currentYear;
+    const recency = Math.max(0.4, 1 - (currentYear - year) * 0.15);
+    const cited = w.cited_by_count || 0;
+    const citationBoost = 1 + Math.log10(1 + cited) * 0.3;
 
-    setLoading(`正在檢索「${branch.title}」近年文獻……`);
-
-    try {
-      const works = await fetchWorksForBranch(branch);
-      const enrichedWorks = enrichWorks(works, branch);
-      const hotspots = rankHotspots(enrichedWorks);
-      const ideas = generateIdeas(hotspots, branch);
-      const summary = summarizeBranch(branch, enrichedWorks, hotspots);
-
-      state.lastWorks = enrichedWorks;
-      state.lastHotspots = hotspots;
-      state.lastBranchSummaries = [summary];
-
-      renderResults({
-        title: branch.title,
-        lead: `以下結果基於「${branch.title}」分支的即時檢索。熱點分數由關鍵詞命中、發表時間與引用情況共同估算。`,
-        works: enrichedWorks,
-        hotspots: hotspots,
-        ideas: ideas,
-        branchSummaries: [summary]
-      });
-
-      setStatus(`已完成檢索：共獲取 ${enrichedWorks.length} 條相關文獻記錄。`, "normal");
-    } catch (error) {
-      console.error(error);
-      setStatus(getFriendlyError(error), "warning");
-    }
-  }
-
-  async function runAllBranches() {
-    setLoading("正在逐一檢索全部款待學科分支……");
-
-    const allWorks = [];
-    const summaries = [];
-
-    try {
-      for (const branch of branches) {
-        setLoading(`正在檢索：${branch.title}……`);
-
-        const works = await fetchWorksForBranch(branch);
-        const enrichedWorks = enrichWorks(works, branch);
-        const hotspots = rankHotspots(enrichedWorks);
-        const summary = summarizeBranch(branch, enrichedWorks, hotspots);
-
-        allWorks.push(...enrichedWorks);
-        summaries.push(summary);
-
-        await sleep(180);
-      }
-
-      const dedupedWorks = dedupeWorks(allWorks);
-      const hotspots = rankHotspots(dedupedWorks);
-
-      const topBranch = summaries
-        .slice()
-        .sort(function (a, b) {
-          return b.totalScore - a.totalScore;
-        })[0];
-
-      const ideas = generateIdeas(hotspots, {
-        title: "款待學科整體",
-        short: topBranch ? topBranch.branchShort : "總覽"
-      });
-
-      state.lastWorks = dedupedWorks;
-      state.lastHotspots = hotspots;
-      state.lastBranchSummaries = summaries;
-
-      renderResults({
-        title: "款待學科整體熱點掃描",
-        lead: "以下結果綜合酒店、旅遊、餐飲、會展、AI、ESG、消費者行為、人力資源與收益管理等分支生成。",
-        works: dedupedWorks,
-        hotspots: hotspots,
-        ideas: ideas,
-        branchSummaries: summaries
-      });
-
-      setStatus(`全部分支檢索完成：去重後共 ${dedupedWorks.length} 條文獻記錄。`, "normal");
-    } catch (error) {
-      console.error(error);
-      setStatus(getFriendlyError(error), "warning");
-    }
-  }
-
-  async function fetchWorksForBranch(branch) {
-    const years = Number(yearRangeEl.value || 2);
-    const currentYear = new Date().getFullYear();
-    const fromYear = currentYear - years + 1;
-
-    const fromDate = `${fromYear}-01-01`;
-    const toDate = todayDateString();
-
-    const customQuery = customQueryEl ? customQueryEl.value.trim() : "";
-    const query = customQuery ? `${branch.query} ${customQuery}` : branch.query;
-
-    const params = new URLSearchParams();
-
-    params.set("search", query);
-    params.set("per_page", String(DEFAULT_PER_PAGE));
-
-    params.set("filter", [
-      `from_publication_date:${fromDate}`,
-      `to_publication_date:${toDate}`,
-      "type:article",
-      "is_retracted:false"
-    ].join(","));
-
-    params.set("select", [
-      "id",
-      "display_name",
-      "publication_year",
-      "publication_date",
-      "doi",
-      "cited_by_count",
-      "primary_location",
-      "authorships",
-      "topics",
-      "keywords",
-      "abstract_inverted_index"
-    ].join(","));
-
-    const sortMode = sortModeEl ? sortModeEl.value : "relevance";
-
-    if (sortMode === "date") {
-      params.set("sort", "publication_date:desc");
-    } else if (sortMode === "citation") {
-      params.set("sort", "cited_by_count:desc");
-    } else {
-      params.set("sort", "cited_by_count:desc");
-    }
-
-    const userKey = apiKeyInputEl ? apiKeyInputEl.value.trim() : "";
-    const key = userKey || OPENALEX_API_KEY;
-
-    if (key) {
-      params.set("api_key", key);
-    } else if (CONTACT_EMAIL) {
-      params.set("mailto", CONTACT_EMAIL);
-    }
-
-    const url = `${OPENALEX_BASE}?${params.toString()}`;
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`OpenAlex request failed: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    return Array.isArray(data.results) ? data.results : [];
-  }
-
-  function enrichWorks(works, branch) {
-    return works.map(function (work) {
-      const title = work.display_name || "Untitled work";
-      const abstractText = abstractFromInvertedIndex(work.abstract_inverted_index);
-      const topics = Array.isArray(work.topics) ? work.topics : [];
-      const keywords = Array.isArray(work.keywords) ? work.keywords : [];
-      const sourceName = getSourceName(work);
-      const authors = getAuthors(work);
-
-      const link = work.doi
-        ? `https://doi.org/${String(work.doi).replace(/^https:\/\/doi.org\//, "")}`
-        : work.id;
-
-      const searchableText = [
-        title,
-        abstractText,
-        topics.map(function (item) {
-          return item.display_name || "";
-        }).join(" "),
-        keywords.map(function (item) {
-          return item.display_name || item.keyword || "";
-        }).join(" ")
-      ].join(" ").toLowerCase();
-
-      return {
-        id: work.id,
-        title: title,
-        abstractText: abstractText,
-        year: work.publication_year || "",
-        date: work.publication_date || "",
-        citations: Number(work.cited_by_count || 0),
-        topics: topics,
-        keywords: keywords,
-        sourceName: sourceName,
-        authors: authors,
-        link: link,
-        branchId: branch.id,
-        branchTitle: branch.title,
-        branchShort: branch.short,
-        searchableText: searchableText,
-        relevanceScore: calculateWorkScore(work, searchableText)
+    // 主來源：OpenAlex topics
+    const topics = (w.topics || []).slice(0, 3);
+    topics.forEach((t, idx) => {
+      if (!t || !t.display_name) return;
+      const key = t.display_name.toLowerCase();
+      const slot = topicMap.get(key) || {
+        name: t.display_name,
+        field: t.field?.display_name || '',
+        count: 0, citations: 0, latestYear: 0, weighted: 0
       };
-    }).sort(function (a, b) {
-      const sortMode = sortModeEl ? sortModeEl.value : "relevance";
+      slot.count += 1;
+      slot.citations += cited;
+      slot.latestYear = Math.max(slot.latestYear, year);
+      const positionWeight = 1 - idx * 0.18;
+      slot.weighted += recency * citationBoost * positionWeight;
+      topicMap.set(key, slot);
+    });
+  });
 
-      if (sortMode === "date") {
-        return String(b.date).localeCompare(String(a.date));
-      }
+  const all = [...topicMap.values()];
+  if (all.length === 0) return [];
+  const max = Math.max(...all.map(t => t.weighted), 1);
+  return all
+    .map(t => ({ ...t, score: Math.round((t.weighted / max) * 100) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8);
+}
 
-      if (sortMode === "citation") {
-        return b.citations - a.citations;
-      }
+// ====== 研究選題生成 ======
+function generateIdeas(branch, hotspots) {
+  if (hotspots.length === 0) return [];
+  const ideas = [];
+  const top = hotspots.slice(0, 5);
 
-      return b.relevanceScore - a.relevanceScore;
+  if (top[0] && top[1]) {
+    ideas.push({
+      title: `${top[0].name} 與 ${top[1].name} 的交互作用`,
+      desc: `在「${branch.name}」情境下，探究 ${top[0].name} 對 ${top[1].name} 的影響機制，可採用問卷調查、實驗法或文本挖掘進行驗證。`
     });
   }
-
-  function calculateWorkScore(work, text) {
-    const currentYear = new Date().getFullYear();
-    const year = Number(work.publication_year || currentYear);
-
-    const recency = Math.max(0, 6 - Math.max(0, currentYear - year));
-    const citationScore = Math.log1p(Number(work.cited_by_count || 0));
-
-    let keywordScore = 0;
-
-    hotspotTerms.forEach(function (hotspot) {
-      hotspot.terms.forEach(function (term) {
-        if (text.includes(term.toLowerCase())) {
-          keywordScore += 1.8;
-        }
-      });
-    });
-
-    return recency * 2 + citationScore * 1.4 + keywordScore;
-  }
-
-  function rankHotspots(works) {
-    const ranked = hotspotTerms.map(function (hotspot) {
-      let score = 0;
-      let matchedWorks = 0;
-      let citationSum = 0;
-      let latestYear = 0;
-
-      const matchedTerms = new Set();
-      const examplePapers = [];
-
-      works.forEach(function (work) {
-        let localHits = 0;
-
-        hotspot.terms.forEach(function (term) {
-          const normalized = term.toLowerCase();
-
-          if (work.searchableText.includes(normalized)) {
-            localHits += 1;
-            matchedTerms.add(term);
-          }
-        });
-
-        if (localHits > 0) {
-          matchedWorks += 1;
-          citationSum += work.citations;
-          latestYear = Math.max(latestYear, Number(work.year || 0));
-
-          const currentYear = new Date().getFullYear();
-          const recencyBoost = Math.max(
-            0,
-            5 - Math.max(0, currentYear - Number(work.year || currentYear))
-          );
-
-          score += localHits * 8 + Math.log1p(work.citations) * 1.2 + recencyBoost;
-
-          if (examplePapers.length < 3) {
-            examplePapers.push(work);
-          }
-        }
-      });
-
-      return {
-        id: hotspot.id,
-        label: hotspot.label,
-        why: hotspot.why,
-        score: Number(score.toFixed(1)),
-        matchedWorks: matchedWorks,
-        citationSum: citationSum,
-        latestYear: latestYear || "—",
-        matchedTerms: Array.from(matchedTerms).slice(0, 8),
-        examplePapers: examplePapers
-      };
-    });
-
-    return ranked
-      .filter(function (item) {
-        return item.score > 0 && item.matchedWorks > 0;
-      })
-      .sort(function (a, b) {
-        return b.score - a.score;
-      })
-      .slice(0, 8);
-  }
-
-  function summarizeBranch(branch, works, hotspots) {
-    const totalScore = hotspots.reduce(function (sum, item) {
-      return sum + item.score;
-    }, 0);
-
-    const topHotspot = hotspots[0];
-
-    return {
-      branchId: branch.id,
-      branchTitle: branch.title,
-      branchShort: branch.short,
-      worksCount: works.length,
-      totalScore: Number(totalScore.toFixed(1)),
-      topHotspot: topHotspot ? topHotspot.label : "暫無明顯熱點",
-      latestYear: getLatestYear(works)
-    };
-  }
-
-  function generateIdeas(hotspots, branch) {
-    if (!hotspots.length) {
-      return [
-        {
-          title: "暫無足夠資料生成選題",
-          text: "可以擴大檢索年限、切換其他分支，或加入更寬泛的英文關鍵詞後重新檢索。"
-        }
-      ];
-    }
-
-    return hotspots.slice(0, 4).map(function (hotspot, index) {
-      const questionTemplates = [
-        `在${branch.title}中，${hotspot.label}如何改變顧客體驗與服務品質？`,
-        `${hotspot.label}是否會重塑${branch.title}的營運績效、組織能力與競爭優勢？`,
-        `不同文化、世代或市場情境下，消費者如何感知${hotspot.label}相關創新？`,
-        `${hotspot.label}如何與可持續發展、數字化轉型或員工福祉形成交叉研究機會？`
-      ];
-
-      return {
-        title: `選題建議 ${index + 1}：${hotspot.label}`,
-        text: questionTemplates[index % questionTemplates.length]
-      };
+  if (top[0]) {
+    ideas.push({
+      title: `${top[0].name} 的系統性綜述與元分析`,
+      desc: `針對近 5 年內 ${top[0].name} 的相關研究進行系統性回顧，整合不同情境下的效應量，識別研究缺口。`
     });
   }
-
-  function renderResults(payload) {
-    resultTitle.textContent = payload.title;
-    resultLead.textContent = payload.lead;
-
-    metricWorks.textContent = String(payload.works.length);
-    metricHotspots.textContent = String(payload.hotspots.length);
-    metricLatestYear.textContent = String(getLatestYear(payload.works) || "—");
-    metricTopBranch.textContent = getTopBranchLabel(payload.branchSummaries);
-
-    renderHotspots(payload.hotspots);
-    renderIdeas(payload.ideas);
-    renderPapers(payload.works.slice(0, 10));
-    renderBranchSummary(payload.branchSummaries);
+  if (top[2]) {
+    ideas.push({
+      title: `${top[2].name} 在 ${branch.name} 中的本土化應用`,
+      desc: `結合區域脈絡（如大灣區、東南亞），探索 ${top[2].name} 的落地路徑、影響因素與實證效果。`
+    });
   }
-
-  function renderHotspots(hotspots) {
-    if (!hotspots.length) {
-      hotspotList.innerHTML = emptyCard(
-        "暫無明顯熱點",
-        "請嘗試擴大時間範圍，或加入更寬泛的英文關鍵詞。"
-      );
-      return;
-    }
-
-    hotspotList.innerHTML = hotspots.map(function (hotspot) {
-      const terms = hotspot.matchedTerms.length
-        ? hotspot.matchedTerms.map(function (term) {
-            return `<span class="tag">${escapeHtml(term)}</span>`;
-          }).join("")
-        : `<span class="tag">No keyword listed</span>`;
-
-      const examples = hotspot.examplePapers.map(function (paper) {
-        return `<span class="tag">${escapeHtml(String(paper.year || "—"))} · ${escapeHtml(truncate(paper.title, 46))}</span>`;
-      }).join("");
-
-      return `
-        <article class="hotspot-card">
-          <div class="hotspot-top">
-            <div>
-              <h4>${escapeHtml(hotspot.label)}</h4>
-              <p>${escapeHtml(hotspot.why)}</p>
-            </div>
-            <span class="score-pill">Score ${escapeHtml(String(hotspot.score))}</span>
-          </div>
-
-          <div class="tag-row">
-            <span class="tag">${hotspot.matchedWorks} 篇命中文獻</span>
-            <span class="tag">${hotspot.latestYear} 最新年份</span>
-            <span class="tag">${hotspot.citationSum} 總引用</span>
-          </div>
-
-          <div class="tag-row">${terms}</div>
-          <div class="tag-row">${examples}</div>
-        </article>
-      `;
-    }).join("");
+  if (top[3] && top[4]) {
+    ideas.push({
+      title: `跨主題整合：${top[3].name} × ${top[4].name}`,
+      desc: `從多理論視角審視兩個熱點的協同效應，建構整合性概念框架，並提出可檢驗的命題。`
+    });
   }
+  if (top[0]) {
+    ideas.push({
+      title: `${top[0].name} 的方法論創新`,
+      desc: `將機器學習、社會網絡分析或縱向追蹤方法引入 ${top[0].name} 研究，補足傳統橫斷面設計的不足。`
+    });
+  }
+  return ideas.slice(0, 5);
+}
 
-  function renderIdeas(ideas) {
-    ideaList.innerHTML = ideas.map(function (idea) {
-      return `
-        <div class="idea-box">
-          <h4>${escapeHtml(idea.title)}</h4>
-          <p>${escapeHtml(idea.text)}</p>
+// ====== 渲染 ======
+function renderHotspots(hotspots, branch) {
+  if (hotspots.length === 0) {
+    els.hotspotList.innerHTML = `<div class="empty-hint">未檢索到足夠資料以生成熱點，建議放寬時間範圍。</div>`;
+    return;
+  }
+  els.hotspotList.innerHTML = hotspots.map((h, i) => `
+    <div class="hotspot-card fade-in">
+      <div class="hotspot-rank">${String(i + 1).padStart(2, '0')}</div>
+      <div class="hotspot-body">
+        <h4>${escapeHtml(h.name)}</h4>
+        <p>${branch.name}領域中該主題出現於 <strong>${h.count}</strong> 篇近期文獻，累計被引 <strong>${h.citations}</strong> 次，最新年份 ${h.latestYear || '—'}。</p>
+        <div class="hotspot-meta">
+          <span class="score-pill">熱度 ${h.score}</span>
+          ${h.field ? `<span class="tag">${escapeHtml(h.field)}</span>` : ''}
+          <span class="tag">${h.count} 篇</span>
         </div>
-      `;
-    }).join("");
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPapers(works, sortMode) {
+  if (works.length === 0) {
+    els.paperList.innerHTML = `<div class="empty-hint">未檢索到符合條件的文獻。</div>`;
+    return;
   }
+  // 取前 10 篇展示
+  const top = works.slice(0, 10);
+  els.paperList.innerHTML = top.map(w => {
+    const authors = (w.authorships || []).slice(0, 3)
+      .map(a => a.author?.display_name).filter(Boolean).join(', ');
+    const venue = w.primary_location?.source?.display_name || w.host_venue?.display_name || '';
+    const abstract = rebuildAbstract(w.abstract_inverted_index);
+    const url = w.doi ? `https://doi.org/${w.doi.replace('https://doi.org/','')}` : (w.id || '#');
+    const tags = (w.topics || []).slice(0, 3).map(t => t.display_name).filter(Boolean);
 
-  function renderPapers(works) {
-    if (!works.length) {
-      paperList.innerHTML = emptyCard(
-        "暫無文獻",
-        "請修改關鍵詞或擴大檢索年份後重試。"
-      );
-      return;
-    }
-
-    paperList.innerHTML = works.map(function (paper) {
-      const abstractText = paper.abstractText
-        ? truncate(paper.abstractText, 280)
-        : "OpenAlex 暫未提供該文獻摘要。";
-
-      const topicTags = paper.topics
-        .slice(0, 3)
-        .map(function (topic) {
-          return `<span class="tag">${escapeHtml(topic.display_name || "Topic")}</span>`;
-        }).join("");
-
-      return `
-        <article class="paper-card">
-          <h4>
-            <a href="${escapeAttr(paper.link)}" target="_blank" rel="noopener noreferrer">
-              ${escapeHtml(paper.title)}
-            </a>
-          </h4>
-
-          <div class="paper-meta">
-            <span>${escapeHtml(String(paper.year || "—"))}</span>
-            <span>·</span>
-            <span>${escapeHtml(paper.sourceName || "Unknown source")}</span>
-            <span>·</span>
-            <span>${escapeHtml(String(paper.citations))} citations</span>
-            <span>·</span>
-            <span>${escapeHtml(paper.branchShort)}</span>
-          </div>
-
-          <p>${escapeHtml(abstractText)}</p>
-
-          <div class="tag-row">${topicTags}</div>
-        </article>
-      `;
-    }).join("");
-  }
-
-  function renderBranchSummary(summaries) {
-    if (!summaries.length) {
-      branchSummary.innerHTML = emptyCard(
-        "暫無分支概覽",
-        "完成檢索後會在此顯示不同學科分支的熱度比較。"
-      );
-      return;
-    }
-
-    const sorted = summaries.slice().sort(function (a, b) {
-      return b.totalScore - a.totalScore;
-    });
-
-    branchSummary.innerHTML = sorted.map(function (summary) {
-      return `
-        <article class="branch-card">
-          <div class="hotspot-top">
-            <div>
-              <h4>${escapeHtml(summary.branchTitle)}</h4>
-              <p>最突出熱點：${escapeHtml(summary.topHotspot)}</p>
-            </div>
-            <span class="score-pill">Score ${escapeHtml(String(summary.totalScore))}</span>
-          </div>
-
-          <div class="tag-row">
-            <span class="tag">${summary.worksCount} 篇文獻</span>
-            <span class="tag">${summary.latestYear || "—"} 最新年份</span>
-          </div>
-        </article>
-      `;
-    }).join("");
-  }
-
-  function renderEmptyState() {
-    metricWorks.textContent = "—";
-    metricHotspots.textContent = "—";
-    metricLatestYear.textContent = "—";
-    metricTopBranch.textContent = "—";
-
-    hotspotList.innerHTML = emptyCard(
-      "等待檢索",
-      "選擇分支後點擊「檢索熱點」。"
-    );
-
-    ideaList.innerHTML = emptyCard(
-      "等待生成",
-      "完成檢索後會自動生成研究選題建議。"
-    );
-
-    paperList.innerHTML = emptyCard(
-      "等待文獻",
-      "代表性文獻將在此顯示。"
-    );
-
-    branchSummary.innerHTML = emptyCard(
-      "等待分析",
-      "點擊「分析全部分支」可生成分支熱度概覽。"
-    );
-  }
-
-  function emptyCard(title, text) {
     return `
-      <article class="paper-card">
-        <h4>${escapeHtml(title)}</h4>
-        <p>${escapeHtml(text)}</p>
-      </article>
+      <div class="paper-card fade-in">
+        <div class="paper-meta">
+          <span>${w.publication_year || '—'}</span>
+          ${venue ? `<span>${escapeHtml(venue)}</span>` : ''}
+          <span>${w.cited_by_count || 0} citations</span>
+        </div>
+        <h4><a href="${url}" target="_blank" rel="noopener">${escapeHtml(w.title || '(no title)')}</a></h4>
+        ${authors ? `<p class="paper-authors">${escapeHtml(authors)}${(w.authorships || []).length > 3 ? ' et al.' : ''}</p>` : ''}
+        ${abstract ? `<p>${escapeHtml(abstract)}</p>` : ''}
+        ${tags.length ? `<div class="hotspot-meta">${tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+      </div>
     `;
+  }).join('');
+}
+
+function renderIdeas(ideas) {
+  if (ideas.length === 0) {
+    els.ideaList.innerHTML = `<div class="empty-hint">尚無研究選題建議。</div>`;
+    return;
   }
+  els.ideaList.innerHTML = ideas.map((idea, i) => `
+    <div class="idea-card fade-in">
+      <div class="idea-num">IDEA ${String(i + 1).padStart(2, '0')}</div>
+      <h4>${escapeHtml(idea.title)}</h4>
+      <p>${escapeHtml(idea.desc)}</p>
+    </div>
+  `).join('');
+}
 
-  function setLoading(message) {
-    runBtn.disabled = true;
-    allBtn.disabled = true;
-
-    statusBox.textContent = message;
-    statusBox.className = "status-box show";
+function renderBranchSummary(summary) {
+  if (!summary || summary.length === 0) {
+    els.branchSummary.innerHTML = `<div class="empty-hint">點擊「分析全部分支」即可查看跨學科熱度比較。</div>`;
+    return;
   }
+  const max = Math.max(...summary.map(s => s.score), 1);
+  els.branchSummary.innerHTML = summary
+    .sort((a, b) => b.score - a.score)
+    .map(s => {
+      const pct = Math.round((s.score / max) * 100);
+      return `
+        <div class="branch-card fade-in">
+          <div class="icon">${s.icon}</div>
+          <div class="branch-card-body">
+            <h4>${s.name} <span class="tag" style="margin-left:6px;">${s.works} 篇</span></h4>
+            <p>Top hotspot: ${escapeHtml(s.topHotspot || '—')}</p>
+            <div class="branch-bar"><div class="branch-bar-fill" style="width:${pct}%"></div></div>
+          </div>
+        </div>`;
+    }).join('');
+}
 
-  function setStatus(message, type) {
-    runBtn.disabled = false;
-    allBtn.disabled = false;
+function updateMetrics({ works, hotspots, medianYear, topBranch }) {
+  els.metricWorks.textContent = works ?? '—';
+  els.metricHotspots.textContent = hotspots ?? '—';
+  els.metricLatestYear.textContent = medianYear ?? '—';
+  els.metricTopBranch.innerHTML = topBranch
+    ? `<span style="font-size:18px;">${topBranch}</span>`
+    : '—';
+}
 
-    statusBox.textContent = message;
-    statusBox.className = type === "warning"
-      ? "status-box show warning"
-      : "status-box show";
-  }
+// ====== 入口：單分支 ======
+async function runSingle() {
+  const branch = BRANCHES[state.selectedBranch];
+  if (!branch) return;
+  const years = els.yearRange.value;
+  const sortMode = els.sortMode.value;
+  const customExtra = els.customQuery.value.trim();
 
-  function getFriendlyError(error) {
-    const message = String(error && error.message ? error.message : error);
+  setLoading(true);
+  setStatus(`正在檢索 ${branch.name}（${branch.nameEn}）近 ${years} 年的文獻…`);
+  showSkeletons();
 
-    if (message.includes("401") || message.includes("403")) {
-      return "OpenAlex 拒絕了本次請求。請檢查 API key，或改用後端代理轉發請求。";
+  try {
+    const works = await fetchWorks(branch, years, sortMode, customExtra);
+    if (works.length === 0) {
+      setStatus('未檢索到任何文獻，建議拉長時間範圍或調整關鍵詞。', 'warning');
+      els.resultTitle.textContent = '無結果。';
+      els.resultLead.textContent = '可嘗試切換到其他分支或放寬時間範圍。';
+      updateMetrics({ works: 0, hotspots: 0, medianYear: '—', topBranch: branch.icon + ' ' + branch.name });
+      els.hotspotList.innerHTML = `<div class="empty-hint">無熱點可推薦。</div>`;
+      els.paperList.innerHTML = `<div class="empty-hint">無文獻可顯示。</div>`;
+      els.ideaList.innerHTML = `<div class="empty-hint">無研究選題建議。</div>`;
+      return;
     }
 
-    if (message.includes("429")) {
-      return "請求過於頻繁。請稍後再試，或減少一次性檢索的分支數量。";
-    }
+    const hotspots = extractHotspots(works);
+    const ideas = generateIdeas(branch, hotspots);
+    const years_arr = works.map(w => w.publication_year).filter(Boolean).sort();
+    const medianYear = years_arr[Math.floor(years_arr.length / 2)] || '—';
 
-    return "即時檢索失敗。可能是網路、API key、瀏覽器 CORS 或 OpenAlex 服務限制導致。";
+    els.resultTitle.textContent = `${branch.name}學術熱點。`;
+    els.resultLead.textContent = `共檢索到 ${works.length} 篇文獻，識別出 ${hotspots.length} 個熱點主題，下方列出排名前 ${Math.min(10, works.length)} 篇代表性文獻。`;
+    updateMetrics({
+      works: works.length,
+      hotspots: hotspots.length,
+      medianYear,
+      topBranch: branch.icon + ' ' + branch.name
+    });
+
+    renderHotspots(hotspots, branch);
+    renderIdeas(ideas);
+    renderPapers(works, sortMode);
+    state.lastResult = { branch, works, hotspots };
+    clearStatus();
+  } catch (err) {
+    console.error(err);
+    setStatus('檢索失敗：' + err.message + '。請稍後再試，或檢查網路。', 'error');
+    els.hotspotList.innerHTML = `<div class="empty-hint">檢索異常，請稍後再試。</div>`;
+    els.paperList.innerHTML = '';
+    els.ideaList.innerHTML = '';
+  } finally {
+    setLoading(false);
   }
+}
 
-  function abstractFromInvertedIndex(index) {
-    if (!index || typeof index !== "object") return "";
+// ====== 入口：分析全部分支 ======
+async function runAll() {
+  const years = els.yearRange.value;
+  const sortMode = els.sortMode.value;
+  const customExtra = els.customQuery.value.trim();
 
-    const words = [];
+  setLoading(true);
+  els.allBtn.textContent = '分析中…';
+  showSkeletons();
+  els.branchSummary.innerHTML = '';
 
-    Object.keys(index).forEach(function (word) {
-      const positions = index[word];
+  const summary = [];
+  let totalWorks = 0;
+  let allHotspotCount = 0;
+  let bestBranch = null;
+  let bestScore = -1;
 
-      if (Array.isArray(positions)) {
-        positions.forEach(function (position) {
-          words[position] = word;
-        });
+  try {
+    for (const branch of Object.values(BRANCHES)) {
+      setStatus(`正在分析：${branch.name} (${branch.nameEn})…`);
+      try {
+        const works = await fetchWorks(branch, years, sortMode, customExtra);
+        const hotspots = extractHotspots(works);
+        totalWorks += works.length;
+        allHotspotCount += hotspots.length;
+        const branchScore = hotspots.reduce((s, h) => s + h.score, 0);
+        const item = {
+          ...branch,
+          works: works.length,
+          hotspotCount: hotspots.length,
+          score: branchScore,
+          topHotspot: hotspots[0]?.name || '—'
+        };
+        summary.push(item);
+        if (branchScore > bestScore) {
+          bestScore = branchScore;
+          bestBranch = branch;
+        }
+        // 漸進渲染
+        renderBranchSummary([...summary]);
+      } catch (e) {
+        console.warn(`${branch.name} 檢索失敗`, e);
+        summary.push({ ...branch, works: 0, hotspotCount: 0, score: 0, topHotspot: '檢索失敗' });
+        renderBranchSummary([...summary]);
       }
-    });
-
-    return words.filter(Boolean).join(" ");
-  }
-
-  function getSourceName(work) {
-    const location = work.primary_location;
-
-    if (
-      location &&
-      location.source &&
-      location.source.display_name
-    ) {
-      return location.source.display_name;
+      // 速率友好
+      await new Promise(r => setTimeout(r, 350));
     }
 
-    return "Unknown source";
+    // 拿表現最強分支去填充上方主結果區
+    if (bestBranch) {
+      const top = summary.find(s => s.id === bestBranch.id);
+      els.resultTitle.textContent = `跨學科熱度排行。`;
+      els.resultLead.textContent = `已遍歷 6 個分支，當前最活躍的是「${top.name}」，下面同步展示其代表熱點與選題建議。`;
+      updateMetrics({
+        works: totalWorks,
+        hotspots: allHotspotCount,
+        medianYear: new Date().getFullYear(),
+        topBranch: bestBranch.icon + ' ' + bestBranch.name
+      });
+      // 重新拉一次 best branch 來填熱點與文獻
+      const works = await fetchWorks(bestBranch, years, sortMode, customExtra);
+      const hotspots = extractHotspots(works);
+      const ideas = generateIdeas(bestBranch, hotspots);
+      renderHotspots(hotspots, bestBranch);
+      renderIdeas(ideas);
+      renderPapers(works, sortMode);
+    }
+
+    clearStatus();
+  } catch (err) {
+    console.error(err);
+    setStatus('全分支分析失敗：' + err.message, 'error');
+  } finally {
+    setLoading(false);
+    els.allBtn.textContent = '分析全部分支';
   }
+}
 
-  function getAuthors(work) {
-    if (!Array.isArray(work.authorships)) return [];
+// ====== 工具：HTML escape ======
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[m]));
+}
 
-    return work.authorships
-      .slice(0, 4)
-      .map(function (item) {
-        return item.author && item.author.display_name
-          ? item.author.display_name
-          : "";
-      })
-      .filter(Boolean);
-  }
-
-  function getLatestYear(works) {
-    return works.reduce(function (latest, work) {
-      return Math.max(latest, Number(work.year || 0));
-    }, 0);
-  }
-
-  function getTopBranchLabel(summaries) {
-    if (!summaries || !summaries.length) return "—";
-
-    const top = summaries.slice().sort(function (a, b) {
-      return b.totalScore - a.totalScore;
-    })[0];
-
-    return top ? top.branchShort : "—";
-  }
-
-  function dedupeWorks(works) {
-    const map = new Map();
-
-    works.forEach(function (work) {
-      const key = work.id || work.title;
-
-      if (!map.has(key)) {
-        map.set(key, work);
-      }
-    });
-
-    return Array.from(map.values()).sort(function (a, b) {
-      return b.relevanceScore - a.relevanceScore;
-    });
-  }
-
-  function todayDateString() {
-    const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, "0");
-    const dd = String(now.getDate()).padStart(2, "0");
-
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  function sleep(ms) {
-    return new Promise(function (resolve) {
-      window.setTimeout(resolve, ms);
-    });
-  }
-
-  function truncate(text, length) {
-    if (!text) return "";
-
-    return text.length > length
-      ? `${text.slice(0, length)}…`
-      : text;
-  }
-
-  function escapeHtml(value) {
-    return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function escapeAttr(value) {
-    return escapeHtml(value).replaceAll("`", "&#096;");
-  }
-
-  init();
-})();
+// 啟動
+document.addEventListener('DOMContentLoaded', init);
