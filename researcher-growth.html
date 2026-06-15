@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Researcher Growth Roadmap · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+
+    /* Breadcrumb */
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+
+    /* Meta pills */
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{
+      background:#fff;border:1px solid #ece5d3;
+      padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;
+    }
+    .eyebrow.gold{color:#c9a961;}
+
+    /* Roadmap Section */
+    .roadmap-section{padding:70px 0;background:#fff;}
+    .roadmap-section .narrow{max-width:980px;margin:0 auto;}
+
+    /* Stage Timeline */
+    .timeline-wrap{margin-bottom:42px;}
+    .timeline-bar{height:3px;background:#ece5d3;overflow:hidden;}
+    .timeline-fill{height:100%;background:#c9a961;width:20%;transition:width .5s ease;}
+    .timeline-steps{display:flex;justify-content:space-between;margin-top:18px;gap:8px;flex-wrap:wrap;}
+    .timeline-steps .step{
+      flex:1;min-width:120px;cursor:pointer;text-align:left;
+      font-size:11px;letter-spacing:1.2px;color:#bbb;font-weight:600;
+      text-transform:uppercase;transition:.2s;padding:6px 4px;
+      border-top:2px solid transparent;
+    }
+    .timeline-steps .step b{display:block;font-size:14px;color:#ccc;margin-bottom:3px;font-weight:700;}
+    .timeline-steps .step span.t-period{display:block;color:#bbb;font-size:10px;letter-spacing:.5px;margin-top:4px;text-transform:none;}
+    .timeline-steps .step:hover{color:#555;}
+    .timeline-steps .step:hover b{color:#888;}
+    .timeline-steps .step.active{color:#1a1a1a;border-top-color:#c9a961;}
+    .timeline-steps .step.active b{color:#c9a961;}
+    .timeline-steps .step.done{color:#555;}
+    .timeline-steps .step.done b{color:#c9a961;}
+
+    /* Stage Card */
+    .stage-card{
+      background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:42px 38px;margin-bottom:24px;
+    }
+    .stage-tag{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
+    .stage-card h2{font-size:32px;color:#1a1a1a;margin:0 0 6px;line-height:1.25;}
+    .stage-en{font-size:14px;color:#888;margin-bottom:6px;letter-spacing:1px;}
+    .stage-period{display:inline-block;font-size:12px;letter-spacing:1.2px;color:#888;background:#faf7f0;border:1px solid #ece5d3;padding:5px 12px;margin-bottom:22px;}
+    .stage-position{font-size:15px;color:#555;line-height:1.85;margin:0 0 30px;padding:18px 22px;background:#faf7f0;border-left:2px solid #c9a961;}
+
+    /* Three column highlights */
+    .three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:30px;}
+    @media(max-width:760px){.three-col{grid-template-columns:1fr;}}
+    .three-col .col{
+      background:#fff;border:1px solid #ece5d3;padding:22px 20px;
+    }
+    .three-col .col-title{
+      font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;
+      text-transform:uppercase;margin-bottom:14px;
+    }
+    .three-col ul{margin:0;padding-left:18px;font-size:13.5px;color:#555;line-height:1.85;}
+    .three-col li{margin-bottom:6px;}
+
+    /* Task Checklist */
+    .section-block{margin-bottom:36px;}
+    .section-h{
+      display:flex;align-items:baseline;justify-content:space-between;
+      margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid #ece5d3;
+    }
+    .section-h h3{font-size:18px;color:#1a1a1a;margin:0;font-weight:700;}
+    .section-h .count{font-size:12px;color:#888;letter-spacing:1px;}
+
+    .task-list{list-style:none;padding:0;margin:0;}
+    .task-list li{
+      display:flex;align-items:flex-start;gap:14px;
+      padding:14px 16px;border:1px solid #ece5d3;background:#fff;
+      margin-bottom:8px;cursor:pointer;transition:.2s;
+    }
+    .task-list li:hover{border-color:#d4c5a0;background:#fdfbf5;}
+    .task-list li.checked{background:#faf7f0;border-color:#e3d6b0;}
+    .task-list li.checked .task-text{color:#888;text-decoration:line-through;}
+    .task-checkbox{
+      flex-shrink:0;width:18px;height:18px;border:1.5px solid #c9a961;
+      background:#fff;display:flex;align-items:center;justify-content:center;
+      margin-top:2px;transition:.2s;
+    }
+    .task-list li.checked .task-checkbox{background:#c9a961;}
+    .task-checkbox::after{
+      content:'';display:none;width:5px;height:9px;
+      border:solid #fff;border-width:0 2px 2px 0;
+      transform:rotate(45deg) translate(-1px,-1px);
+    }
+    .task-list li.checked .task-checkbox::after{display:block;}
+    .task-text{font-size:14px;color:#1a1a1a;line-height:1.6;flex:1;}
+
+    /* Ability Radar */
+    .radar-block{
+      display:grid;grid-template-columns:auto 1fr;gap:36px;align-items:center;
+      background:#faf7f0;border:1px solid #ece5d3;padding:30px;margin-bottom:36px;
+    }
+    @media(max-width:760px){.radar-block{grid-template-columns:1fr;}}
+    .radar-svg{width:280px;height:280px;display:block;margin:0 auto;}
+    .radar-legend{font-size:13px;color:#555;line-height:1.85;}
+    .radar-legend .legend-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+    .legend-dot{width:14px;height:3px;display:inline-block;}
+    .legend-dot.cur{background:#c9a961;}
+    .legend-dot.tar{background:#1a1a1a;}
+    .radar-legend .ability-tip{margin-top:14px;font-size:12.5px;color:#888;line-height:1.7;}
+
+    /* Action / Resource lists */
+    .gold-list{padding-left:0;list-style:none;margin:0;}
+    .gold-list li{
+      position:relative;padding:10px 0 10px 30px;border-bottom:1px dashed #ece5d3;
+      font-size:14px;color:#555;line-height:1.75;
+    }
+    .gold-list li:last-child{border-bottom:0;}
+    .gold-list li::before{
+      content:'›';position:absolute;left:8px;top:9px;
+      color:#c9a961;font-size:18px;font-weight:700;
+    }
+    .gold-list li strong{color:#1a1a1a;font-weight:600;}
+
+    /* Stage Nav */
+    .stage-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;}
+    .btn-purple, .btn-ghost-dark{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;
+      font-weight:700;padding:14px 28px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .btn-ghost-dark:disabled{opacity:.35;cursor:not-allowed;}
+    .btn-ghost-dark:disabled:hover{background:transparent;color:#1a1a1a;}
+
+    /* Overall Progress */
+    .overall-card{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:30px 32px;margin-bottom:30px;
+      display:grid;grid-template-columns:auto 1fr;gap:36px;align-items:center;
+    }
+    @media(max-width:680px){.overall-card{grid-template-columns:1fr;gap:18px;}}
+    .overall-num{font-family:'Encode Sans',sans-serif;font-size:54px;color:#c9a961;font-weight:700;line-height:1;}
+    .overall-num small{font-size:16px;color:#888;font-weight:400;margin-left:4px;}
+    .overall-label{font-size:11px;letter-spacing:1.8px;color:#1a1a1a;margin-top:8px;font-weight:700;text-transform:uppercase;}
+    .overall-bar{height:6px;background:#ece5d3;overflow:hidden;}
+    .overall-fill{height:100%;background:#c9a961;width:0;transition:width .9s ease;}
+    .overall-tier{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#888;letter-spacing:.5px;}
+
+    /* Toolbox section */
+    .toolbox-section{padding:70px 0;background:#faf7f0;border-top:1px solid #ece5d3;}
+    .toolbox-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:36px;}
+    @media(max-width:760px){.toolbox-grid{grid-template-columns:1fr;}}
+    .tool-card{
+      background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:30px 28px;
+    }
+    .tool-card h3{font-size:18px;color:#1a1a1a;margin:0 0 6px;}
+    .tool-card .tool-sub{font-size:12px;color:#c9a961;letter-spacing:1.5px;font-weight:700;text-transform:uppercase;margin-bottom:16px;}
+    .tool-card ol, .tool-card ul{padding-left:20px;margin:0;color:#555;font-size:14px;line-height:1.85;}
+    .tool-card li{margin-bottom:6px;}
+    .tool-card li b{color:#1a1a1a;}
+    .tool-card pre{
+      background:#faf7f0;border:1px solid #ece5d3;padding:16px;
+      font-family:'Open Sans',monospace;font-size:13px;color:#555;
+      line-height:1.7;white-space:pre-wrap;margin:0;
+    }
+
+    /* Closing principles */
+    .principles-section{padding:70px 0;background:#fff;}
+    .principles-section .narrow{max-width:840px;margin:0 auto;}
+    .principles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:32px;}
+    @media(max-width:760px){.principles-grid{grid-template-columns:1fr;}}
+    .principle{
+      background:#fff;border:1px solid #ece5d3;padding:24px 22px;
+    }
+    .principle .p-num{font-family:'Encode Sans',sans-serif;font-size:32px;color:#c9a961;font-weight:700;line-height:1;margin-bottom:10px;}
+    .principle h4{font-size:15px;color:#1a1a1a;margin:0 0 10px;font-weight:700;}
+    .principle p{font-size:13.5px;color:#555;line-height:1.8;margin:0;}
+
+    .disclaimer{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:24px 28px;font-size:13px;color:#555;line-height:1.85;margin-top:30px;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Researcher Growth Roadmap</span>
+      </div>
+      <div class="eyebrow gold">ACADEMIC · GROWTH</div>
+      <h1>研究生成長路線圖</h1>
+      <p class="lead">
+        從 0 基礎成長為一名獨立研究學者的 5 階段路徑指南。本工具不評分、不打標籤，
+        而是把博士/碩士生涯拆解為「探索定向 → 基礎奠定 → 深度積累 → 獨立突破 → 學者成型」五個階段，
+        每個階段提供：階段定位、核心任務清單、能力雷達、常見陷阱與資源推薦。
+        進度自動保存在本地，伴你從入學第一天走到答辯之後。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">🧭 5 個階段</span>
+        <span class="pill">✅ 50+ 行動任務</span>
+        <span class="pill">📡 5 維能力雷達</span>
+        <span class="pill">🧰 4 個實用工具盒</span>
+        <span class="pill">💾 進度本地保存</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Roadmap ===================== -->
+  <section class="roadmap-section">
+    <div class="container narrow">
+
+      <!-- Overall progress -->
+      <div class="overall-card">
+        <div>
+          <div class="overall-num"><span id="overallPct">0</span><small>%</small></div>
+          <div class="overall-label">Overall Roadmap Progress</div>
+        </div>
+        <div>
+          <div class="overall-bar"><div class="overall-fill" id="overallFill"></div></div>
+          <div class="overall-tier">
+            <span>Newcomer</span><span>Apprentice</span><span>Practitioner</span><span>Contributor</span><span>Independent</span>
+          </div>
+          <p style="font-size:12.5px;color:#888;margin:14px 0 0;line-height:1.7;">
+            進度反映你已完成的任務佔全部任務的比例。沒有"必須做完"的壓力——慢慢走，比走得快更重要。
+          </p>
+        </div>
+      </div>
+
+      <!-- Stage timeline -->
+      <div class="timeline-wrap">
+        <div class="timeline-bar"><div class="timeline-fill" id="timelineFill"></div></div>
+        <div class="timeline-steps" id="timelineSteps">
+          <!-- 由 JS 渲染 -->
+        </div>
+      </div>
+
+      <!-- Stage card -->
+      <div class="stage-card" id="stageCard">
+        <div class="stage-tag" id="stageTag">STAGE 01</div>
+        <h2 id="stageName">--</h2>
+        <div class="stage-en" id="stageNameEn">--</div>
+        <div class="stage-period" id="stagePeriod">--</div>
+        <p class="stage-position" id="stagePosition">--</p>
+
+        <div class="three-col">
+          <div class="col">
+            <div class="col-title">🎯 核心目標</div>
+            <ul id="stageGoals"></ul>
+          </div>
+          <div class="col">
+            <div class="col-title">📦 階段產出</div>
+            <ul id="stageDeliverables"></ul>
+          </div>
+          <div class="col">
+            <div class="col-title">⚠️ 常見陷阱</div>
+            <ul id="stagePitfalls"></ul>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-h">
+            <h3>🗂 行動清單</h3>
+            <span class="count" id="taskCount">0 / 0 已完成</span>
+          </div>
+          <ul class="task-list" id="taskList"></ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-h">
+            <h3>📡 能力雷達</h3>
+            <span class="count">當前 vs 階段目標</span>
+          </div>
+          <div class="radar-block">
+            <svg class="radar-svg" viewBox="0 0 300 300" id="radarSvg"></svg>
+            <div class="radar-legend">
+              <div class="legend-row"><span class="legend-dot cur"></span><span>當前能力（按本階段任務完成度估算）</span></div>
+              <div class="legend-row"><span class="legend-dot tar"></span><span>本階段建議達到的水準</span></div>
+              <div class="ability-tip">
+                能力雷達的 5 個維度：<br>
+                <strong>文獻</strong>：信息檢索、閱讀與綜述能力<br>
+                <strong>方法</strong>：實驗設計、編程、分析能力<br>
+                <strong>寫作</strong>：學術論文與技術文檔表達<br>
+                <strong>表達</strong>：學術匯報、討論與社交<br>
+                <strong>獨立</strong>：自主提出問題與規劃研究的能力
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-h"><h3>🧭 心法與實踐</h3></div>
+          <ul class="gold-list" id="stageActions"></ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-h"><h3>📚 推薦資源</h3></div>
+          <ul class="gold-list" id="stageResources"></ul>
+        </div>
+
+        <div class="stage-nav">
+          <button type="button" id="prevStageBtn" class="btn-ghost-dark">← 上一階段</button>
+          <button type="button" id="resetBtn" class="btn-ghost-dark" title="清空所有進度">重置進度</button>
+          <button type="button" id="nextStageBtn" class="btn-purple">下一階段 →</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== Toolbox ===================== -->
+  <section class="toolbox-section">
+    <div class="container narrow">
+      <div class="eyebrow gold">PRACTICAL TOOLBOX</div>
+      <h2 style="font-size:32px;color:#1a1a1a;margin:8px 0 12px;">通用工具盒</h2>
+      <p style="font-size:15px;color:#555;line-height:1.75;max-width:680px;">
+        不分階段都能用的研究工作流模板。研究是一場馬拉松，重要的是建立可持續的節奏，而不是某一次的爆發。
+      </p>
+
+      <div class="toolbox-grid">
+
+        <div class="tool-card">
+          <div class="tool-sub">TOOL 01</div>
+          <h3>文獻精讀三遍法</h3>
+          <ol>
+            <li><b>第一遍 · 5 分鐘掃描</b>：標題、摘要、結論、圖表。判斷「是否值得讀」與「在領域中的位置」。</li>
+            <li><b>第二遍 · 1 小時通讀</b>：理解方法和結果，但不糾結公式細節；產出一句話總結與三條 takeaways。</li>
+            <li><b>第三遍 · 半天精讀</b>：能複述 motivation、方法、實驗設計、局限；嘗試「如果是我會怎麼做得更好」。</li>
+            <li><b>輸出</b>：把每篇論文寫一張卡片（問題 / 方法 / 結論 / 對我的研究的意義 / 可批判點）。</li>
+          </ol>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-sub">TOOL 02</div>
+          <h3>學術一週節奏</h3>
+          <ul>
+            <li><b>週一</b>：規劃 — 列出本週 3 個必須完成的研究動作。</li>
+            <li><b>週二 ~ 週四</b>：深度工作日 — 每天 2-4 小時無干擾的「研究時間段」（編程 / 寫作 / 推導）。</li>
+            <li><b>週五</b>：閱讀與輸入 — 讀 2-3 篇新文獻、整理筆記、瀏覽 arXiv / 頂會新文。</li>
+            <li><b>週六</b>：產出與整理 — 寫週報、更新筆記、整理代碼倉庫。</li>
+            <li><b>週日</b>：徹底休息 — 不打開研究文件，讓大腦離線。</li>
+          </ul>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-sub">TOOL 03</div>
+          <h3>論文寫作流程（IMRaD+）</h3>
+          <ol>
+            <li><b>Step 1</b> — 先畫圖再寫字：把核心結果做成 4-6 張圖。</li>
+            <li><b>Step 2</b> — 寫 Results：圍繞每張圖寫 1-2 段。</li>
+            <li><b>Step 3</b> — 寫 Methods：可被別人復現是底線。</li>
+            <li><b>Step 4</b> — 寫 Introduction：問題 → 缺口 → 我的貢獻（三段式）。</li>
+            <li><b>Step 5</b> — 寫 Discussion：意義、局限、未來工作。</li>
+            <li><b>Step 6</b> — 最後寫 Abstract & Title：濃縮全文。</li>
+            <li><b>Step 7</b> — 冷卻 3 天再讀一遍，再請同行批評。</li>
+          </ol>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-sub">TOOL 04</div>
+          <h3>給導師寫郵件模板</h3>
+<pre>Subject: [週報 W12] 進展 / 阻塞 / 下週計劃
+
+老師好，
+
+【本週進展】
+1. 完成 X 實驗，主要結果：……（附圖）
+2. 讀完 Y 篇文獻，關鍵發現：……
+
+【遇到的阻塞】
+- 在 Z 步遇到 …… 問題，已嘗試 A、B 兩種方案。
+- 我傾向選 A，因為 ……，請您過目。
+
+【下週計劃】
+1. ……
+2. ……
+
+附件：本週 slides.pdf / code link
+
+謝謝！
+[你的名字]</pre>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Principles ===================== -->
+  <section class="principles-section">
+    <div class="container narrow">
+      <div class="eyebrow gold">CORE PRINCIPLES</div>
+      <h2 style="font-size:32px;color:#1a1a1a;margin:8px 0 12px;">寫給每一位研究新人的 6 條心法</h2>
+      <p style="font-size:15px;color:#555;line-height:1.75;">
+        這些不是規則，是過往無數研究者用迷茫和挫敗換來的共識。當你在研究中失去方向時，回來看看。
+      </p>
+
+      <div class="principles-grid">
+        <div class="principle">
+          <div class="p-num">01</div>
+          <h4>研究不是學習</h4>
+          <p>學習是吸收已有的知識，研究是製造新的知識。從入學第一天起，把自己當作"知識生產者"，不是"課程通關者"。</p>
+        </div>
+        <div class="principle">
+          <div class="p-num">02</div>
+          <h4>問題比答案重要</h4>
+          <p>能定義一個好問題，就已經完成了研究的一半。多問"為什麼這是個問題"，而不是急著給答案。</p>
+        </div>
+        <div class="principle">
+          <div class="p-num">03</div>
+          <h4>輸出驅動輸入</h4>
+          <p>不要等"準備好了"再寫。寫作會暴露你思維的漏洞——盡早寫、頻繁寫，把寫作當作思考工具。</p>
+        </div>
+        <div class="principle">
+          <div class="p-num">04</div>
+          <h4>失敗是常態</h4>
+          <p>實驗失敗、論文被拒、方向被推翻都是常態。研究的進度從來不是線性的，而是「停滯-停滯-停滯-躍遷」。</p>
+        </div>
+        <div class="principle">
+          <div class="p-num">05</div>
+          <h4>主動管理導師</h4>
+          <p>導師不是上司，是合作者。主動同步進度、主動約定時間、主動提出問題——好的師生關係是雙方都在管理的結果。</p>
+        </div>
+        <div class="principle">
+          <div class="p-num">06</div>
+          <h4>身心是底層基建</h4>
+          <p>睡眠、運動、社交不是奢侈品，是研究能力的底層配置。一個耗竭的大腦無法產出深刻的洞察。</p>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        <strong>關於本工具　</strong>
+        本路線圖綜合了多領域博士培養經驗、學術成長文獻（Phillips & Pugh,
+        <em>How to Get a PhD</em>; Feibelman, <em>A PhD Is Not Enough!</em>; Bolker, <em>Writing Your Dissertation in Fifteen Minutes a Day</em>）
+        及科研社群共識整理而成。它是一張地圖，不是時刻表——你可以按自己的節奏走，也可以跳階段、可以折返。重要的是「你正在路上」。
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/researcher-growth.js"></script>
+</body>
+</html>
