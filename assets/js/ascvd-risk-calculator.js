@@ -1,346 +1,288 @@
-/*
-  ASCVD Risk Calculator
-  Model: 2013 ACC/AHA Pooled Cohort Equations, Goff et al.
-  Purpose: 10-year primary prevention ASCVD risk estimate.
-
-  Important:
-  - For educational use only.
-  - Not medical advice.
-  - Calculation runs locally in the browser.
-*/
+/* =======================================================
+ * ASCVD Risk Calculator
+ * Based on 2013 ACC/AHA Pooled Cohort Equations
+ * Goff DC Jr, et al. Circulation. 2014;129(25 Suppl 2):S49-73.
+ * ======================================================= */
 
 (function () {
   "use strict";
 
-  const form = document.getElementById("ascvdForm");
-  const warningBox = document.getElementById("formWarning");
-
-  const riskPercentEl = document.getElementById("riskPercent");
-  const riskCategoryEl = document.getElementById("riskCategory");
-  const riskMeterFillEl = document.getElementById("riskMeterFill");
-  const resultNarrativeEl = document.getElementById("resultNarrative");
-  const inputEchoEl = document.getElementById("inputEcho");
-
-  /*
-    Coefficients for 2013 ACC/AHA Pooled Cohort Equations.
-    Four groups: female_black, female_white, male_black, male_white.
-    For "other / non-Black" groups, this tool uses the white coefficient set.
-  */
-  const COEFFS = {
-    female_black: {
-      baseSurv: 0.95334,
-      mean: 86.6081,
-      lnAge: 17.1141,
-      lnAgeSq: 0,
-      lnTotalChol: 0.9396,
-      lnAgeTotalChol: 0,
-      lnHdl: -18.9196,
-      lnAgeHdl: 4.4748,
-      lnTreatedSbp: 29.2907,
-      lnAgeTreatedSbp: -6.4321,
-      lnUntreatedSbp: 27.8197,
-      lnAgeUntreatedSbp: -6.0873,
-      smoker: 0.6908,
-      lnAgeSmoker: 0,
-      diabetes: 0.8738
+  // ---------- Coefficients (PCE) ----------
+  const COEF = {
+    white_female: {
+      lnAge: -29.799, lnAgeSq: 4.884,
+      lnTC: 13.540, lnAge_lnTC: -3.114,
+      lnHDL: -13.578, lnAge_lnHDL: 3.149,
+      lnTreatedSBP: 2.019, lnUntreatedSBP: 1.957,
+      lnAge_lnTreatedSBP: 0, lnAge_lnUntreatedSBP: 0,
+      smoker: 7.574, lnAge_smoker: -1.665,
+      diabetes: 0.661,
+      meanTerms: -29.18, baselineSurvival: 0.9665,
     },
-
-    female_white: {
-      baseSurv: 0.96652,
-      mean: -29.1817,
-      lnAge: -29.799,
-      lnAgeSq: 4.884,
-      lnTotalChol: 13.54,
-      lnAgeTotalChol: -3.114,
-      lnHdl: -13.578,
-      lnAgeHdl: 3.149,
-      lnTreatedSbp: 2.019,
-      lnAgeTreatedSbp: 0,
-      lnUntreatedSbp: 1.957,
-      lnAgeUntreatedSbp: 0,
-      smoker: 7.574,
-      lnAgeSmoker: -1.665,
-      diabetes: 0.661
+    black_female: {
+      lnAge: 17.114, lnAgeSq: 0,
+      lnTC: 0.940, lnAge_lnTC: 0,
+      lnHDL: -18.920, lnAge_lnHDL: 4.475,
+      lnTreatedSBP: 29.291, lnUntreatedSBP: 27.820,
+      lnAge_lnTreatedSBP: -6.432, lnAge_lnUntreatedSBP: -6.087,
+      smoker: 0.691, lnAge_smoker: 0,
+      diabetes: 0.874,
+      meanTerms: 86.61, baselineSurvival: 0.9533,
     },
-
-    male_black: {
-      baseSurv: 0.89536,
-      mean: 19.5425,
-      lnAge: 2.469,
-      lnAgeSq: 0,
-      lnTotalChol: 0.302,
-      lnAgeTotalChol: 0,
-      lnHdl: -0.307,
-      lnAgeHdl: 0,
-      lnTreatedSbp: 1.916,
-      lnAgeTreatedSbp: 0,
-      lnUntreatedSbp: 1.809,
-      lnAgeUntreatedSbp: 0,
-      smoker: 0.549,
-      lnAgeSmoker: 0,
-      diabetes: 0.645
+    white_male: {
+      lnAge: 12.344, lnAgeSq: 0,
+      lnTC: 11.853, lnAge_lnTC: -2.664,
+      lnHDL: -7.990, lnAge_lnHDL: 1.769,
+      lnTreatedSBP: 1.797, lnUntreatedSBP: 1.764,
+      lnAge_lnTreatedSBP: 0, lnAge_lnUntreatedSBP: 0,
+      smoker: 7.837, lnAge_smoker: -1.795,
+      diabetes: 0.658,
+      meanTerms: 61.18, baselineSurvival: 0.9144,
     },
-
-    male_white: {
-      baseSurv: 0.91436,
-      mean: 61.1816,
-      lnAge: 12.344,
-      lnAgeSq: 0,
-      lnTotalChol: 11.853,
-      lnAgeTotalChol: -2.664,
-      lnHdl: -7.99,
-      lnAgeHdl: 1.769,
-      lnTreatedSbp: 1.797,
-      lnAgeTreatedSbp: 0,
-      lnUntreatedSbp: 1.764,
-      lnAgeUntreatedSbp: 0,
-      smoker: 7.837,
-      lnAgeSmoker: -1.795,
-      diabetes: 0.658
-    }
+    black_male: {
+      lnAge: 2.469, lnAgeSq: 0,
+      lnTC: 0.302, lnAge_lnTC: 0,
+      lnHDL: -0.307, lnAge_lnHDL: 0,
+      lnTreatedSBP: 1.916, lnUntreatedSBP: 1.809,
+      lnAge_lnTreatedSBP: 0, lnAge_lnUntreatedSBP: 0,
+      smoker: 0.549, lnAge_smoker: 0,
+      diabetes: 0.645,
+      meanTerms: 19.54, baselineSurvival: 0.8954,
+    },
   };
 
-  function getRadioValue(name) {
-    const checked = form.querySelector(`input[name="${name}"]:checked`);
-    return checked ? checked.value : "";
+  // ---------- Helpers ----------
+  function ln(x) { return Math.log(x); }
+
+  function getKey(sex, race) {
+    const r = race === "black" ? "black" : "white";
+    const s = sex === "male" ? "male" : "female";
+    return `${r}_${s}`;
   }
 
-  function toNumber(id) {
-    const value = document.getElementById(id).value.trim();
-    return value === "" ? NaN : Number(value);
-  }
+  function calcASCVD(input) {
+    const c = COEF[getKey(input.sex, input.race)];
+    const age = input.age;
+    const tc = input.totalChol;
+    const hdl = input.hdl;
+    const sbp = input.sbp;
+    const treated = input.bpMeds === "yes";
+    const smoker = input.smoker === "yes" ? 1 : 0;
+    const diab = input.diabetes === "yes" ? 1 : 0;
 
-  function showWarning(message) {
-    warningBox.textContent = message;
-    warningBox.classList.add("show");
-  }
-
-  function clearWarning() {
-    warningBox.textContent = "";
-    warningBox.classList.remove("show");
-  }
-
-  function validateInputs(data) {
-    if (data.knownAscvd === "yes") {
-      return "此工具主要適用於沒有已知臨床 ASCVD 的一級預防人群。若曾有心肌梗死、中風、冠脈介入或其他 ASCVD，請與醫師討論二級預防管理。";
-    }
-
-    const requiredFields = [
-      ["年齡", data.age],
-      ["總膽固醇", data.totalChol],
-      ["HDL-C", data.hdl],
-      ["收縮壓", data.sbp]
-    ];
-
-    for (const [label, value] of requiredFields) {
-      if (!Number.isFinite(value)) {
-        return `請填寫有效的「${label}」。`;
-      }
-    }
-
-    if (!data.sex) return "請選擇生理性別。";
-    if (!data.race) return "請選擇族群 / Race。";
-    if (!data.bpMeds) return "請選擇是否正在使用降壓藥。";
-    if (!data.diabetes) return "請選擇是否有糖尿病。";
-    if (!data.smoker) return "請選擇目前是否吸菸。";
-
-    if (data.age < 40 || data.age > 79) {
-      return "PCE 10 年 ASCVD 風險估算通常適用於 40–79 歲。";
-    }
-
-    if (data.totalChol < 130 || data.totalChol > 320) {
-      return "總膽固醇建議輸入範圍為 130–320 mg/dL。";
-    }
-
-    if (data.hdl < 20 || data.hdl > 100) {
-      return "HDL-C 建議輸入範圍為 20–100 mg/dL。";
-    }
-
-    if (data.sbp < 90 || data.sbp > 200) {
-      return "收縮壓建議輸入範圍為 90–200 mmHg。";
-    }
-
-    if (data.hdl >= data.totalChol) {
-      return "HDL-C 通常不應高於或等於總膽固醇。請確認輸入值。";
-    }
-
-    return "";
-  }
-
-  function getFormData() {
-    return {
-      knownAscvd: getRadioValue("knownAscvd"),
-      age: toNumber("age"),
-      sex: document.getElementById("sex").value,
-      race: document.getElementById("race").value,
-      totalChol: toNumber("totalChol"),
-      hdl: toNumber("hdl"),
-      sbp: toNumber("sbp"),
-      bpMeds: document.getElementById("bpMeds").value,
-      diabetes: document.getElementById("diabetes").value,
-      smoker: document.getElementById("smoker").value
-    };
-  }
-
-  function calculateAscvdRisk(data) {
-    const raceForEquation = data.race === "black" ? "black" : "white";
-    const key = `${data.sex}_${raceForEquation}`;
-    const c = COEFFS[key];
-
-    if (!c) {
-      throw new Error("No coefficient set found for selected sex/race.");
-    }
-
-    const lnAge = Math.log(data.age);
+    const lnAge = ln(age);
     const lnAgeSq = lnAge * lnAge;
-    const lnTotalChol = Math.log(data.totalChol);
-    const lnHdl = Math.log(data.hdl);
-    const lnSbp = Math.log(data.sbp);
+    const lnTC = ln(tc);
+    const lnHDL = ln(hdl);
+    const lnSBP = ln(sbp);
 
-    const treated = data.bpMeds === "yes" ? 1 : 0;
-    const untreated = treated === 1 ? 0 : 1;
-    const smoker = data.smoker === "yes" ? 1 : 0;
-    const diabetes = data.diabetes === "yes" ? 1 : 0;
+    let sum = 0;
+    sum += c.lnAge * lnAge;
+    sum += c.lnAgeSq * lnAgeSq;
+    sum += c.lnTC * lnTC;
+    sum += c.lnAge_lnTC * lnAge * lnTC;
+    sum += c.lnHDL * lnHDL;
+    sum += c.lnAge_lnHDL * lnAge * lnHDL;
 
-    const individualSum =
-      c.lnAge * lnAge +
-      c.lnAgeSq * lnAgeSq +
-      c.lnTotalChol * lnTotalChol +
-      c.lnAgeTotalChol * lnAge * lnTotalChol +
-      c.lnHdl * lnHdl +
-      c.lnAgeHdl * lnAge * lnHdl +
-      c.lnTreatedSbp * lnSbp * treated +
-      c.lnAgeTreatedSbp * lnAge * lnSbp * treated +
-      c.lnUntreatedSbp * lnSbp * untreated +
-      c.lnAgeUntreatedSbp * lnAge * lnSbp * untreated +
-      c.smoker * smoker +
-      c.lnAgeSmoker * lnAge * smoker +
-      c.diabetes * diabetes;
+    if (treated) {
+      sum += c.lnTreatedSBP * lnSBP;
+      sum += c.lnAge_lnTreatedSBP * lnAge * lnSBP;
+    } else {
+      sum += c.lnUntreatedSBP * lnSBP;
+      sum += c.lnAge_lnUntreatedSBP * lnAge * lnSBP;
+    }
 
-    const risk = 1 - Math.pow(c.baseSurv, Math.exp(individualSum - c.mean));
+    sum += c.smoker * smoker;
+    sum += c.lnAge_smoker * lnAge * smoker;
+    sum += c.diabetes * diab;
 
+    const risk = 1 - Math.pow(c.baselineSurvival, Math.exp(sum - c.meanTerms));
     return Math.max(0, Math.min(1, risk));
   }
 
-  function classifyRisk(riskPercent) {
-    if (riskPercent < 5) {
-      return {
-        label: "低風險",
-        tone: "low",
-        text: "估算結果屬於低風險範圍。仍建議維持健康飲食、規律運動、避免吸菸並定期追蹤血壓與血脂。"
-      };
-    }
+  // ---------- Risk stratification ----------
+  function classifyRisk(p) {
+    const pct = p * 100;
+    if (pct < 5)   return { key: "low",          label: "Low · 低風險",         tone: "is-low" };
+    if (pct < 7.5) return { key: "borderline",   label: "Borderline · 邊緣",    tone: "is-borderline" };
+    if (pct < 20)  return { key: "intermediate", label: "Intermediate · 中度",  tone: "is-intermediate" };
+    return            { key: "high",          label: "High · 高風險",        tone: "is-high" };
+  }
 
-    if (riskPercent < 7.5) {
-      return {
-        label: "邊緣風險",
-        tone: "borderline",
-        text: "估算結果屬於邊緣風險範圍。建議與醫療專業人員討論個人風險增強因子與生活方式介入。"
-      };
+  function narrativeFor(category, pct) {
+    const text = pct.toFixed(1);
+    switch (category.key) {
+      case "low":
+        return `估算 10 年 ASCVD 事件風險約為 ${text}%，屬於低風險區間。請持續維持健康生活型態（運動、飲食、控制體重、不吸菸），並依年齡層定期追蹤血壓與血脂。`;
+      case "borderline":
+        return `估算 10 年 ASCVD 事件風險約為 ${text}%，落在邊緣區間。建議與醫師討論是否存在加成風險因子（如家族史、慢性發炎、CAC 評分等），以決定是否加強生活型態或藥物介入。`;
+      case "intermediate":
+        return `估算 10 年 ASCVD 事件風險約為 ${text}%，屬於中度風險。臨床上常會討論是否啟動 statin 治療、加強血壓與糖尿病控制，並評估是否輔助 CAC 等檢查。`;
+      case "high":
+        return `估算 10 年 ASCVD 事件風險約為 ${text}%，屬於高風險。建議儘速與醫師討論完整的心血管風險管理方案，包括藥物、生活型態與後續追蹤。`;
     }
+  }
 
-    if (riskPercent < 20) {
-      return {
-        label: "中等風險",
-        tone: "intermediate",
-        text: "估算結果屬於中等風險範圍。通常需要更完整的醫病討論，以評估降脂、血壓控制與其他預防策略。"
-      };
+  // ---------- DOM ----------
+  const form = document.getElementById("ascvdForm");
+  const warning = document.getElementById("formWarning");
+  const riskPercentEl = document.getElementById("riskPercent");
+  const riskCategoryEl = document.getElementById("riskCategory");
+  const meterFill = document.getElementById("riskMeterFill");
+  const narrativeEl = document.getElementById("resultNarrative");
+  const echoEl = document.getElementById("inputEcho");
+
+  function showWarning(msg) {
+    if (!msg) {
+      warning.classList.remove("show");
+      warning.textContent = "";
+      return;
     }
+    warning.textContent = msg;
+    warning.classList.add("show");
+  }
 
+  function setInvalid(el, on) {
+    if (!el) return;
+    el.classList.toggle("invalid", !!on);
+  }
+
+  function readForm() {
+    const fd = new FormData(form);
     return {
-      label: "高風險",
-      tone: "high",
-      text: "估算結果屬於高風險範圍。建議盡快與醫療專業人員討論個人化預防與治療方案。"
+      knownAscvd: fd.get("knownAscvd"),
+      age: parseFloat(fd.get("age")),
+      sex: fd.get("sex"),
+      race: fd.get("race"),
+      totalChol: parseFloat(fd.get("totalChol")),
+      hdl: parseFloat(fd.get("hdl")),
+      sbp: parseFloat(fd.get("sbp")),
+      bpMeds: fd.get("bpMeds"),
+      diabetes: fd.get("diabetes"),
+      smoker: fd.get("smoker"),
     };
   }
 
-  function formatPercent(risk) {
-    const percent = risk * 100;
+  function validate(d) {
+    const errors = [];
+    const fields = ["age", "sex", "race", "totalChol", "hdl", "sbp", "bpMeds", "diabetes", "smoker"];
+    fields.forEach(f => setInvalid(form.elements[f], false));
 
-    if (percent < 1) {
-      return percent.toFixed(2);
+    if (d.knownAscvd === "yes") {
+      errors.push("你已選擇有臨床 ASCVD。本工具是初級預防的風險估算，請與醫師討論二級預防方案。");
     }
 
-    return percent.toFixed(1);
+    if (!d.sex)  { errors.push("請選擇生理性別。"); setInvalid(form.elements.sex, true); }
+    if (!d.race) { errors.push("請選擇族群。"); setInvalid(form.elements.race, true); }
+    if (!d.bpMeds) { errors.push("請選擇是否使用降壓藥。"); setInvalid(form.elements.bpMeds, true); }
+    if (!d.diabetes) { errors.push("請選擇糖尿病狀態。"); setInvalid(form.elements.diabetes, true); }
+    if (!d.smoker) { errors.push("請選擇吸菸狀態。"); setInvalid(form.elements.smoker, true); }
+
+    if (!Number.isFinite(d.age) || d.age < 40 || d.age > 79) {
+      errors.push("年齡需介於 40–79 歲（PCE 適用範圍）。");
+      setInvalid(form.elements.age, true);
+    }
+    if (!Number.isFinite(d.totalChol) || d.totalChol < 130 || d.totalChol > 320) {
+      errors.push("總膽固醇 TC 需介於 130–320 mg/dL。");
+      setInvalid(form.elements.totalChol, true);
+    }
+    if (!Number.isFinite(d.hdl) || d.hdl < 20 || d.hdl > 100) {
+      errors.push("HDL-C 需介於 20–100 mg/dL。");
+      setInvalid(form.elements.hdl, true);
+    }
+    if (!Number.isFinite(d.sbp) || d.sbp < 90 || d.sbp > 200) {
+      errors.push("收縮壓 SBP 需介於 90–200 mmHg。");
+      setInvalid(form.elements.sbp, true);
+    }
+
+    return errors;
   }
 
-  function labelYesNo(value) {
-    return value === "yes" ? "是" : "否";
+  function renderEcho(d) {
+    const map = {
+      female: "女性", male: "男性",
+      white: "非黑人 / 其他", black: "黑人",
+      yes: "是", no: "否",
+    };
+    const items = [
+      ["年齡", `${d.age} 歲`],
+      ["性別", map[d.sex] || "—"],
+      ["族群", map[d.race] || "—"],
+      ["TC", `${d.totalChol} mg/dL`],
+      ["HDL-C", `${d.hdl} mg/dL`],
+      ["SBP", `${d.sbp} mmHg`],
+      ["降壓藥", map[d.bpMeds] || "—"],
+      ["糖尿病", map[d.diabetes] || "—"],
+      ["吸菸", map[d.smoker] || "—"],
+    ];
+    echoEl.innerHTML = items.map(([k, v]) => `
+      <div class="status-item">
+        <span class="k">${k}</span>
+        <strong>${v}</strong>
+      </div>
+    `).join("");
   }
 
-  function labelSex(value) {
-    return value === "female" ? "女性" : "男性";
+  function setMeter(pct) {
+    // Map 0–20%+ → 0–100% bar width
+    const width = Math.max(0, Math.min(100, (pct / 20) * 100));
+    meterFill.style.width = `${width}%`;
   }
 
-  function labelRace(value) {
-    return value === "black" ? "黑人 / African American" : "非黑人 / 其他族群";
-  }
-
-  function updateResult(data, risk) {
-    const percentText = formatPercent(risk);
-    const percentValue = risk * 100;
-    const category = classifyRisk(percentValue);
-
-    riskPercentEl.textContent = percentText;
-    riskCategoryEl.textContent = category.label;
-    resultNarrativeEl.textContent = `你的估算 10 年 ASCVD 風險約為 ${percentText}%。${category.text}`;
-
-    /*
-      Meter display cap:
-      30% and above fills the bar. This avoids a nearly empty visual for common
-      low-to-moderate values while still showing directionality.
-    */
-    const meterWidth = Math.min(100, (percentValue / 30) * 100);
-    riskMeterFillEl.style.width = `${meterWidth}%`;
-
-    riskCategoryEl.dataset.tone = category.tone;
-
-    inputEchoEl.innerHTML = `
-      <div class="status-item"><span>年齡</span><strong>${data.age} 歲</strong></div>
-      <div class="status-item"><span>生理性別</span><strong>${labelSex(data.sex)}</strong></div>
-      <div class="status-item"><span>族群</span><strong>${labelRace(data.race)}</strong></div>
-      <div class="status-item"><span>總膽固醇</span><strong>${data.totalChol} mg/dL</strong></div>
-      <div class="status-item"><span>HDL-C</span><strong>${data.hdl} mg/dL</strong></div>
-      <div class="status-item"><span>收縮壓</span><strong>${data.sbp} mmHg</strong></div>
-      <div class="status-item"><span>降壓藥</span><strong>${labelYesNo(data.bpMeds)}</strong></div>
-      <div class="status-item"><span>糖尿病</span><strong>${labelYesNo(data.diabetes)}</strong></div>
-      <div class="status-item"><span>目前吸菸</span><strong>${labelYesNo(data.smoker)}</strong></div>
-    `;
+  function setCategory(cat) {
+    riskCategoryEl.textContent = cat.label;
+    riskCategoryEl.classList.remove("is-low", "is-borderline", "is-intermediate", "is-high");
+    riskCategoryEl.classList.add(cat.tone);
   }
 
   function resetResult() {
-    clearWarning();
-
     riskPercentEl.textContent = "—";
     riskCategoryEl.textContent = "等待輸入";
-    riskCategoryEl.removeAttribute("data-tone");
-    riskMeterFillEl.style.width = "0%";
-    resultNarrativeEl.textContent = "完成左側表單後，這裡會顯示估算的 10 年 ASCVD 風險與分層結果。";
-    inputEchoEl.innerHTML = "";
+    riskCategoryEl.classList.remove("is-low", "is-borderline", "is-intermediate", "is-high");
+    meterFill.style.width = "0%";
+    narrativeEl.textContent = "完成左側表單後，這裡會顯示估算的 10 年 ASCVD 風險與分層結果。";
+    echoEl.innerHTML = "";
+    showWarning("");
   }
 
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
-    clearWarning();
+  // ---------- Events ----------
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const data = readForm();
+    const errors = validate(data);
 
-    const data = getFormData();
-    const validationMessage = validateInputs(data);
-
-    if (validationMessage) {
-      showWarning(validationMessage);
-      return;
+    if (errors.length) {
+      showWarning(errors.join(" "));
+      // 嚴重前置條件：已有 ASCVD 直接停止
+      if (data.knownAscvd === "yes") return;
+      // 其他驗證錯誤也停止
+      if (errors.some(msg => !msg.includes("二級預防"))) return;
+    } else {
+      showWarning("");
     }
 
-    try {
-      const risk = calculateAscvdRisk(data);
-      updateResult(data, risk);
-    } catch (error) {
-      showWarning("計算時發生錯誤，請檢查輸入資料後再試一次。");
-      console.error(error);
-    }
+    const p = calcASCVD(data);
+    const pct = p * 100;
+    const cat = classifyRisk(p);
+
+    riskPercentEl.textContent = pct.toFixed(1);
+    setCategory(cat);
+    setMeter(pct);
+    narrativeEl.textContent = narrativeFor(cat, pct);
+    renderEcho(data);
   });
 
   form.addEventListener("reset", function () {
-    window.setTimeout(resetResult, 0);
+    // 等待原生 reset 完成後再清掉狀態
+    setTimeout(resetResult, 0);
+    ["age", "sex", "race", "totalChol", "hdl", "sbp", "bpMeds", "diabetes", "smoker"]
+      .forEach(f => setInvalid(form.elements[f], false));
+  });
+
+  // 即時消除 invalid 視覺
+  form.addEventListener("input", function (e) {
+    if (e.target && e.target.classList.contains("invalid")) {
+      e.target.classList.remove("invalid");
+    }
   });
 })();
