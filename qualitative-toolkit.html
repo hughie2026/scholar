@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qualitative Research Toolkit · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:780px;}
+    .eyebrow.gold{color:#c9a961;}
+
+    /* Breadcrumb */
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+
+    /* Meta pills */
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{background:#fff;border:1px solid #ece5d3;padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;}
+
+    /* Section */
+    .tool-section{padding:60px 0 80px;background:#fff;}
+
+    /* Module nav */
+    .module-nav-title{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:14px;text-transform:uppercase;}
+    .module-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:48px;}
+    .module-tab{cursor:pointer;background:#fff;border:1px solid #ece5d3;padding:14px 16px;text-align:left;transition:.2s;font-family:inherit;border-radius:0;}
+    .module-tab:hover{border-color:#d4c5a0;background:#faf7f0;}
+    .module-tab.active{border-color:#c9a961;border-left:3px solid #c9a961;background:#faf7f0;}
+    .module-tab .tab-num{font-size:10px;letter-spacing:1.5px;color:#c9a961;font-weight:700;display:block;}
+    .module-tab .tab-title{font-size:14px;color:#1a1a1a;font-weight:600;margin-top:4px;display:block;line-height:1.35;}
+    .module-tab .tab-desc{font-size:11px;color:#888;margin-top:4px;line-height:1.5;display:block;}
+
+    .module-panel{display:none;}
+    .module-panel.active{display:block;}
+
+    /* Tool card */
+    .tool-card{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:38px 36px;margin-bottom:24px;}
+    .tool-card .step-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;text-transform:uppercase;}
+    .tool-card h2{font-size:28px;color:#1a1a1a;margin:0 0 8px;line-height:1.3;}
+    .tool-card .step-desc{font-size:14px;color:#888;margin:0 0 28px;line-height:1.75;}
+
+    /* Fields */
+    .field{margin-bottom:22px;}
+    .field.hidden{display:none;}
+    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .field > label small{font-weight:400;color:#888;font-size:12px;margin-left:6px;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+    @media(max-width:600px){.field-row{grid-template-columns:1fr;gap:0;}}
+
+    .field input[type="number"], .field input[type="text"], .field textarea, .field select{
+      width:100%;padding:11px 13px;font-size:14px;
+      border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+      font-family:inherit;outline:none;transition:.2s;border-radius:0;
+    }
+    .field textarea{min-height:90px;resize:vertical;line-height:1.6;}
+    .field input:focus, .field select:focus, .field textarea:focus{border-color:#c9a961;}
+
+    /* Card-style radio */
+    .radio-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .radio-grid.three{grid-template-columns:1fr 1fr 1fr;}
+    @media(max-width:700px){.radio-grid, .radio-grid.three{grid-template-columns:1fr;}}
+    .radio-card{cursor:pointer;}
+    .radio-card input{display:none;}
+    .radio-card span{display:block;padding:12px 16px;border:1px solid #ece5d3;background:#fff;color:#555;font-size:13.5px;line-height:1.55;transition:.2s;}
+    .radio-card span small{display:block;color:#888;font-size:12px;margin-top:3px;letter-spacing:.2px;}
+    .radio-card:hover span{border-color:#d4c5a0;}
+    .radio-card input:checked + span{border-color:#c9a961;color:#1a1a1a;background:#faf7f0;font-weight:600;}
+    .radio-card input:checked + span small{color:#c9a961;font-weight:600;}
+
+    /* Inline radio row */
+    .radio-row{display:flex;gap:10px;flex-wrap:wrap;}
+    .radio-btn{flex:1;min-width:100px;cursor:pointer;}
+    .radio-btn input{display:none;}
+    .radio-btn span{display:block;text-align:center;padding:11px 16px;border:1px solid #ece5d3;background:#fff;color:#555;font-size:13.5px;transition:.2s;}
+    .radio-btn:hover span{border-color:#d4c5a0;}
+    .radio-btn input:checked + span{border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;}
+
+    /* Hint */
+    .hint-box{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:14px 18px;font-size:13px;color:#555;line-height:1.75;}
+    .hint-box strong{color:#c9a961;letter-spacing:.5px;}
+
+    /* Buttons */
+    .btn-purple, .btn-ghost-dark{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.6px;
+      font-weight:700;padding:13px 26px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .btn-ghost-dark:disabled{opacity:.35;cursor:not-allowed;}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;}
+
+    /* Result */
+    .method-card{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:32px;margin-bottom:20px;}
+    .method-eyebrow{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;text-transform:uppercase;margin-bottom:8px;}
+    .method-name{font-family:'Encode Sans',sans-serif;font-size:28px;color:#1a1a1a;font-weight:700;line-height:1.25;margin:0 0 4px;}
+    .method-en{font-size:13px;color:#888;letter-spacing:.4px;margin-bottom:14px;}
+    .method-summary{font-size:14px;color:#555;line-height:1.85;margin:0;}
+    .alt-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+    .alt-list .tag{font-size:12px;letter-spacing:.4px;color:#555;background:#fff;border:1px solid #ece5d3;padding:6px 12px;}
+
+    .result-section{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:24px 28px;margin-bottom:18px;}
+    .result-section h3{font-size:17px;color:#1a1a1a;margin:0 0 14px;font-weight:700;}
+    .result-section ul{padding-left:20px;line-height:1.9;color:#555;font-size:14px;margin:0;}
+    .result-section li{margin-bottom:5px;}
+    .result-section li em{color:#888;font-style:normal;}
+    .report-block{background:#faf7f0;border:1px solid #ece5d3;padding:18px 20px;font-family:'Encode Sans',sans-serif;font-size:13px;color:#1a1a1a;line-height:1.9;white-space:pre-wrap;word-break:break-word;}
+
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px;}
+    .summary-item{background:#faf7f0;border:1px solid #ece5d3;padding:16px 14px;}
+    .summary-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:6px;text-transform:uppercase;}
+    .summary-value{font-size:14px;color:#1a1a1a;font-weight:600;line-height:1.5;}
+
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    /* Checklist */
+    .checklist-domain{margin-bottom:28px;}
+    .checklist-domain-title{font-size:12px;letter-spacing:1.4px;color:#c9a961;font-weight:700;text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #ece5d3;}
+    .cl-item{padding:18px 0;border-bottom:1px solid #f3ecdb;}
+    .cl-item:last-child{border-bottom:none;}
+    .cl-item-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px;}
+    .cl-num{font-family:'Encode Sans',sans-serif;font-weight:700;font-size:14px;color:#c9a961;flex-shrink:0;min-width:32px;}
+    .cl-text{font-size:14px;color:#1a1a1a;line-height:1.65;flex:1;}
+    .cl-text small{display:block;color:#888;font-size:12px;font-weight:400;margin-top:3px;line-height:1.6;}
+    .cl-controls{display:flex;gap:6px;flex-wrap:wrap;margin-left:46px;margin-bottom:8px;}
+    .cl-radio{cursor:pointer;}
+    .cl-radio input{display:none;}
+    .cl-radio span{display:block;padding:5px 12px;border:1px solid #ece5d3;background:#fff;font-size:12px;color:#555;letter-spacing:.4px;transition:.2s;}
+    .cl-radio:hover span{border-color:#d4c5a0;}
+    .cl-radio input:checked + span{border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;}
+    .cl-note{margin-left:46px;}
+    .cl-note textarea{width:100%;padding:8px 10px;font-size:13px;border:1px solid #ece5d3;background:#fff;font-family:inherit;outline:none;min-height:42px;resize:vertical;border-radius:0;line-height:1.55;}
+    .cl-note textarea:focus{border-color:#c9a961;}
+
+    .score-bar{position:sticky;top:0;background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;z-index:10;}
+    .score-bar .score-text{font-size:13px;color:#555;}
+    .score-bar .score-num{font-family:'Encode Sans',sans-serif;font-weight:700;font-size:20px;color:#c9a961;margin:0 4px;}
+    .score-bar .score-actions{display:flex;gap:8px;flex-wrap:wrap;}
+    .score-bar .score-actions button{font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.2px;padding:8px 14px;border:1px solid #1a1a1a;background:transparent;color:#1a1a1a;cursor:pointer;font-weight:700;text-transform:uppercase;}
+    .score-bar .score-actions button:hover{background:#1a1a1a;color:#fff;}
+
+    /* IP slider */
+    .ip-slider{margin-bottom:22px;}
+    .ip-slider > label{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:8px;}
+    .ip-slider .ip-value{color:#c9a961;font-weight:700;font-family:'Encode Sans',sans-serif;}
+    .ip-slider .ip-desc{font-size:12px;color:#888;margin-bottom:8px;line-height:1.6;}
+    .ip-slider input[type=range]{width:100%;-webkit-appearance:none;height:3px;background:#ece5d3;outline:none;}
+    .ip-slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:#c9a961;cursor:pointer;border:none;border-radius:50%;}
+    .ip-slider input[type=range]::-moz-range-thumb{width:18px;height:18px;background:#c9a961;cursor:pointer;border:none;border-radius:50%;}
+    .ip-anchors{display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:6px;letter-spacing:.4px;}
+
+    /* Toast */
+    .toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;padding:12px 22px;font-size:13px;letter-spacing:.5px;opacity:0;pointer-events:none;transition:.3s;z-index:99;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+    @media print{
+      .page-hero, .module-tabs, .module-nav-title, .footer, .main-header, .utility-bar, .btn-row, .score-bar .score-actions{display:none !important;}
+      .module-panel{display:none !important;}
+      .module-panel.active{display:block !important;}
+      .score-bar{position:static;}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Qualitative Research Toolkit</span>
+      </div>
+      <div class="eyebrow gold">QUALITATIVE · METHODS &amp; REPORTING</div>
+      <h1>Qualitative Research Toolkit</h1>
+      <p class="lead">
+        為質性研究者準備的整合工具箱。從研究設計取向、訪談與焦點團體大綱、抽樣策略、資訊力說明，
+        到 COREQ、SRQR、CASP、JBI、ENTREQ 與 GRADE-CERQual 等報告與品質評估清單，一站式完成。
+        所有計算皆在本地進行，可一鍵複製或列印為 PDF。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">🧭 11 個模組</span>
+        <span class="pill">📋 五份國際清單</span>
+        <span class="pill">🧪 含產出模板</span>
+        <span class="pill">🔒 本地計算</span>
+        <span class="pill">📖 教學用途</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="tool-section">
+    <div class="container">
+
+      <div class="module-nav-title">SELECT A MODULE</div>
+      <div class="module-tabs" id="moduleTabs">
+        <button class="module-tab active" data-module="design"><span class="tab-num">01 · DESIGN</span><span class="tab-title">研究設計選擇</span><span class="tab-desc">推薦合適的質性研究取向</span></button>
+        <button class="module-tab" data-module="interview"><span class="tab-num">02 · GUIDE</span><span class="tab-title">訪談大綱生成</span><span class="tab-desc">半結構化訪談模板輸出</span></button>
+        <button class="module-tab" data-module="fgd"><span class="tab-num">03 · GUIDE</span><span class="tab-title">焦點團體提綱</span><span class="tab-desc">含暖身、規則、核心議題</span></button>
+        <button class="module-tab" data-module="sampling"><span class="tab-num">04 · SAMPLE</span><span class="tab-title">抽樣策略助手</span><span class="tab-desc">立意/最大差異/雪球等</span></button>
+        <button class="module-tab" data-module="ip"><span class="tab-num">05 · POWER</span><span class="tab-title">資訊力說明</span><span class="tab-desc">Malterud 五維度評估</span></button>
+        <button class="module-tab" data-module="coreq"><span class="tab-num">06 · CHECKLIST</span><span class="tab-title">COREQ 32 項</span><span class="tab-desc">訪談與焦點團體報告</span></button>
+        <button class="module-tab" data-module="srqr"><span class="tab-num">07 · CHECKLIST</span><span class="tab-title">SRQR 21 項</span><span class="tab-desc">通用質性研究報告</span></button>
+        <button class="module-tab" data-module="casp"><span class="tab-num">08 · APPRAISAL</span><span class="tab-title">CASP 質性版</span><span class="tab-desc">10 題批判性評讀</span></button>
+        <button class="module-tab" data-module="jbi"><span class="tab-num">09 · APPRAISAL</span><span class="tab-title">JBI 質性版</span><span class="tab-desc">10 題嚴謹性評估</span></button>
+        <button class="module-tab" data-module="entreq"><span class="tab-num">10 · SYNTHESIS</span><span class="tab-title">ENTREQ 21 項</span><span class="tab-desc">質性綜合報告透明度</span></button>
+        <button class="module-tab" data-module="cerqual"><span class="tab-num">11 · CONFIDENCE</span><span class="tab-title">GRADE-CERQual</span><span class="tab-desc">綜合發現信心評估</span></button>
+      </div>
+
+      <!-- ===================== MODULE 1: DESIGN ===================== -->
+      <div class="module-panel active" id="m-design">
+        <div class="tool-card">
+          <div class="step-num">MODULE 01</div>
+          <h2>質性研究設計選擇</h2>
+          <p class="step-desc">依次回答研究目的、哲學立場、研究焦點與時間，系統會推薦最適合的取向，並列出方法特徵與常見變體。</p>
+
+          <div class="field">
+            <label>1. 你的研究目的最接近哪一個？</label>
+            <div class="radio-grid" id="dPurpose">
+              <label class="radio-card"><input type="radio" name="d_purpose" value="phenomenon"><span>探討主觀經驗與意義<small>「在……的處境中是什麼樣子？」</small></span></label>
+              <label class="radio-card"><input type="radio" name="d_purpose" value="theory"><span>建構理論／解釋過程<small>「這個過程如何發生？」</small></span></label>
+              <label class="radio-card"><input type="radio" name="d_purpose" value="culture"><span>描述群體文化／實踐<small>「他們怎麼做事、為何這麼做？」</small></span></label>
+              <label class="radio-card"><input type="radio" name="d_purpose" value="case"><span>深度理解單一/多個案<small>「這個個案的全貌與脈絡？」</small></span></label>
+              <label class="radio-card"><input type="radio" name="d_purpose" value="narrative"><span>分析個人敘事／故事<small>「他/她如何說自己的故事？」</small></span></label>
+              <label class="radio-card"><input type="radio" name="d_purpose" value="describe"><span>對事件/觀點質性描述<small>低推論、貼近資料</small></span></label>
+              <label class="radio-card"><input type="radio" name="d_purpose" value="action"><span>與利害關係人共創改變<small>研究者參與實踐</small></span></label>
+              <label class="radio-card"><input type="radio" name="d_purpose" value="discourse"><span>分析語言與權力關係<small>論述、文本、媒體</small></span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>2. 你的哲學立場 / 認識論偏好？</label>
+            <div class="radio-grid">
+              <label class="radio-card"><input type="radio" name="d_epistem" value="constructivist"><span>建構主義<small>知識由互動共構</small></span></label>
+              <label class="radio-card"><input type="radio" name="d_epistem" value="interpretivist"><span>詮釋主義<small>意義植根於文化脈絡</small></span></label>
+              <label class="radio-card"><input type="radio" name="d_epistem" value="postpositivist"><span>後實證主義<small>追求可驗證真實</small></span></label>
+              <label class="radio-card"><input type="radio" name="d_epistem" value="critical"><span>批判理論<small>關注權力、解放</small></span></label>
+              <label class="radio-card"><input type="radio" name="d_epistem" value="pragmatist"><span>實用主義<small>聚焦問題可行解答</small></span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>3. 主要分析單位</label>
+            <div class="radio-grid three">
+              <label class="radio-card"><input type="radio" name="d_unit" value="individual"><span>個體經驗</span></label>
+              <label class="radio-card"><input type="radio" name="d_unit" value="group"><span>群體互動／文化</span></label>
+              <label class="radio-card"><input type="radio" name="d_unit" value="process"><span>過程／演變</span></label>
+              <label class="radio-card"><input type="radio" name="d_unit" value="bounded"><span>有界系統／個案</span></label>
+              <label class="radio-card"><input type="radio" name="d_unit" value="text"><span>文本／論述</span></label>
+              <label class="radio-card"><input type="radio" name="d_unit" value="setting"><span>場域／組織</span></label>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>4. 預估研究時間</label>
+              <div class="radio-row">
+                <label class="radio-btn"><input type="radio" name="d_time" value="short"><span>短期 ≤6 月</span></label>
+                <label class="radio-btn"><input type="radio" name="d_time" value="medium"><span>6–12 月</span></label>
+                <label class="radio-btn"><input type="radio" name="d_time" value="long"><span>>12 月</span></label>
+              </div>
+            </div>
+            <div class="field">
+              <label>5. 研究者參與程度</label>
+              <div class="radio-row">
+                <label class="radio-btn"><input type="radio" name="d_role" value="outside"><span>外部觀察</span></label>
+                <label class="radio-btn"><input type="radio" name="d_role" value="engaged"><span>深入互動</span></label>
+                <label class="radio-btn"><input type="radio" name="d_role" value="participant"><span>共同參與</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn-purple" id="dRunBtn">推薦取向 →</button>
+            <button type="button" class="btn-ghost-dark" id="dResetBtn">清空</button>
+          </div>
+        </div>
+
+        <div id="dResult" style="display:none;">
+          <div class="method-card">
+            <div class="method-eyebrow">RECOMMENDED APPROACH</div>
+            <h3 class="method-name" id="dName">--</h3>
+            <div class="method-en" id="dEn">--</div>
+            <p class="method-summary" id="dSummary">--</p>
+            <div class="alt-list" id="dAlts"></div>
+          </div>
+          <div class="result-section"><h3>🧾 你的選擇摘要</h3><div class="summary-grid" id="dSummary2"></div></div>
+          <div class="result-section"><h3>🔑 核心特徵</h3><ul id="dFeatures"></ul></div>
+          <div class="result-section"><h3>🛠 常見方法與分析步驟</h3><ul id="dMethods"></ul></div>
+          <div class="result-section"><h3>⚠️ 常見錯誤</h3><ul id="dPitfalls"></ul></div>
+          <div class="result-section disclaimer"><strong>提醒　</strong>此推薦為起點而非終局，最終取向應結合具體研究問題、文獻傳統與導師建議。</div>
+          <div class="btn-row">
+            <button type="button" class="btn-ghost-dark" id="dCopyBtn">📋 複製建議</button>
+            <button type="button" class="btn-ghost-dark" onclick="window.print()">🖨️ 列印 / PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== MODULE 2: INTERVIEW ===================== -->
+      <div class="module-panel" id="m-interview">
+        <div class="tool-card">
+          <div class="step-num">MODULE 02</div>
+          <h2>訪談大綱生成器</h2>
+          <p class="step-desc">輸入研究主題與重點議題，系統會輸出包含開場、暖身、核心問題、追問探究與結束語的半結構化訪談指南。</p>
+
+          <div class="field"><label>研究主題</label><input type="text" id="iv_topic" placeholder="例：腫瘤護理人員的道德困境經驗"></div>
+          <div class="field"><label>研究問題（1–3 個，每行一個）</label><textarea id="iv_rq" placeholder="例：護理人員如何詮釋臨床中的道德兩難？\n他們採取哪些因應策略？"></textarea></div>
+          <div class="field"><label>受訪者特徵</label><input type="text" id="iv_pop" placeholder="例：服務 ≥3 年的腫瘤科護理人員"></div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>訪談類型</label>
+              <div class="radio-row">
+                <label class="radio-btn"><input type="radio" name="iv_type" value="semi" checked><span>半結構化</span></label>
+                <label class="radio-btn"><input type="radio" name="iv_type" value="struct"><span>結構化</span></label>
+                <label class="radio-btn"><input type="radio" name="iv_type" value="unstruct"><span>非結構化</span></label>
+              </div>
+            </div>
+            <div class="field">
+              <label>預估時長</label>
+              <div class="radio-row">
+                <label class="radio-btn"><input type="radio" name="iv_dur" value="30"><span>30 分</span></label>
+                <label class="radio-btn"><input type="radio" name="iv_dur" value="60" checked><span>60 分</span></label>
+                <label class="radio-btn"><input type="radio" name="iv_dur" value="90"><span>90 分</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field"><label>核心主題（每行一個，建議 3–5 個）</label><textarea id="iv_themes" placeholder="例：道德困境的具體情境\n機構支持與限制\n自我調適策略"></textarea></div>
+          <div class="field"><label>理論／概念框架（選填）</label><input type="text" id="iv_theory" placeholder="例：Jameton 道德困境理論"></div>
+
+          <div class="btn-row">
+            <button type="button" class="btn-purple" id="ivRunBtn">生成訪談大綱 →</button>
+            <button type="button" class="btn-ghost-dark" id="ivResetBtn">清空</button>
+          </div>
+        </div>
+
+        <div id="ivResult" style="display:none;">
+          <div class="result-section"><h3>📝 訪談大綱（可直接編輯複製）</h3><div class="report-block" id="ivOutput">--</div></div>
+          <div class="result-section"><h3>💡 設計提示</h3><ul id="ivTips"></ul></div>
+          <div class="btn-row">
+            <button type="button" class="btn-ghost-dark" id="ivCopyBtn">📋 複製大綱</button>
+            <button type="button" class="btn-ghost-dark" onclick="window.print()">🖨️ 列印 / PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== MODULE 3: FGD ===================== -->
+      <div class="module-panel" id="m-fgd">
+        <div class="tool-card">
+          <div class="step-num">MODULE 03</div>
+          <h2>焦點團體提綱生成器</h2>
+          <p class="step-desc">輸入主題與群體特徵，輸出含基本規則、暖身活動、核心討論與排序活動的主持人指南。</p>
+
+          <div class="field"><label>研究主題</label><input type="text" id="fg_topic" placeholder="例：青少年使用社交媒體的心理感受"></div>
+          <div class="field"><label>研究問題（每行一個）</label><textarea id="fg_rq" placeholder="例：他們在社交媒體上感受到的壓力來自哪裡？"></textarea></div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>參與人數</label>
+              <div class="radio-row">
+                <label class="radio-btn"><input type="radio" name="fg_n" value="6-8" checked><span>6–8 人</span></label>
+                <label class="radio-btn"><input type="radio" name="fg_n" value="8-10"><span>8–10 人</span></label>
+                <label class="radio-btn"><input type="radio" name="fg_n" value="10-12"><span>10–12 人</span></label>
+              </div>
+            </div>
+            <div class="field">
+              <label>群體組成</label>
+              <div class="radio-row">
+                <label class="radio-btn"><input type="radio" name="fg_homo" value="homo" checked><span>同質</span></label>
+                <label class="radio-btn"><input type="radio" name="fg_homo" value="hetero"><span>異質</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field"><label>核心討論議題（每行一個，建議 3–5 個）</label><textarea id="fg_themes" placeholder="例：使用社交媒體的時機與感受\n與同儕比較的心理反應\n應對壓力的策略"></textarea></div>
+          <div class="field"><label>是否需要排序／投票活動？</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="fg_act" value="yes" checked><span>是</span></label>
+              <label class="radio-btn"><input type="radio" name="fg_act" value="no"><span>否</span></label>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn-purple" id="fgRunBtn">生成焦點團體提綱 →</button>
+            <button type="button" class="btn-ghost-dark" id="fgResetBtn">清空</button>
+          </div>
+        </div>
+
+        <div id="fgResult" style="display:none;">
+          <div class="result-section"><h3>👥 焦點團體主持指南</h3><div class="report-block" id="fgOutput">--</div></div>
+          <div class="result-section"><h3>💡 主持提示</h3><ul id="fgTips"></ul></div>
+          <div class="btn-row">
+            <button type="button" class="btn-ghost-dark" id="fgCopyBtn">📋 複製提綱</button>
+            <button type="button" class="btn-ghost-dark" onclick="window.print()">🖨️ 列印 / PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== MODULE 4: SAMPLING ===================== -->
+      <div class="module-panel" id="m-sampling">
+        <div class="tool-card">
+          <div class="step-num">MODULE 04</div>
+          <h2>抽樣策略助手</h2>
+          <p class="step-desc">依據研究設計與目標，推薦最適合的非機率抽樣方法，並給出招募語句模板。</p>
+
+          <div class="field">
+            <label>研究取向</label>
+            <div class="radio-grid three">
+              <label class="radio-card"><input type="radio" name="s_design" value="phenomenology"><span>現象學</span></label>
+              <label class="radio-card"><input type="radio" name="s_design" value="grounded"><span>紮根理論</span></label>
+              <label class="radio-card"><input type="radio" name="s_design" value="ethnography"><span>民族誌</span></label>
+              <label class="radio-card"><input type="radio" name="s_design" value="case"><span>個案研究</span></label>
+              <label class="radio-card"><input type="radio" name="s_design" value="narrative"><span>敘事研究</span></label>
+              <label class="radio-card"><input type="radio" name="s_design" value="qd"><span>質性描述</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>主要抽樣意圖</label>
+            <div class="radio-grid">
+              <label class="radio-card"><input type="radio" name="s_aim" value="rich"><span>找到資訊豐富的個案<small>立意抽樣</small></span></label>
+              <label class="radio-card"><input type="radio" name="s_aim" value="variation"><span>呈現最大可能變異<small>最大差異抽樣</small></span></label>
+              <label class="radio-card"><input type="radio" name="s_aim" value="similar"><span>聚焦同質次群體<small>同質抽樣</small></span></label>
+              <label class="radio-card"><input type="radio" name="s_aim" value="theory"><span>持續對照建構理論<small>理論抽樣</small></span></label>
+              <label class="radio-card"><input type="radio" name="s_aim" value="hidden"><span>觸及隱藏族群<small>雪球/網絡抽樣</small></span></label>
+              <label class="radio-card"><input type="radio" name="s_aim" value="critical"><span>聚焦關鍵/極端個案<small>關鍵/極端個案</small></span></label>
+              <label class="radio-card"><input type="radio" name="s_aim" value="typical"><span>呈現典型情境<small>典型個案</small></span></label>
+              <label class="radio-card"><input type="radio" name="s_aim" value="convenient"><span>條件受限便利招募<small>便利抽樣（謹慎使用）</small></span></label>
+            </div>
+          </div>
+
+          <div class="field"><label>研究對象描述</label><input type="text" id="s_pop" placeholder="例：在三甲醫院 ICU 工作 ≥2 年的護理人員"></div>
+          <div class="field"><label>納入條件（每行一個）</label><textarea id="s_in" placeholder="例：年滿 20 歲\n持續工作 ≥2 年\n能以中文受訪"></textarea></div>
+          <div class="field"><label>排除條件（每行一個）</label><textarea id="s_ex" placeholder="例：目前長期病假\n為研究團隊成員"></textarea></div>
+
+          <div class="btn-row">
+            <button type="button" class="btn-purple" id="sRunBtn">產生抽樣建議 →</button>
+            <button type="button" class="btn-ghost-dark" id="sResetBtn">清空</button>
+          </div>
+        </div>
+
+        <div id="sResult" style="display:none;">
+          <div class="method-card">
+            <div class="method-eyebrow">RECOMMENDED SAMPLING</div>
+            <h3 class="method-name" id="sName">--</h3>
+            <div class="method-en" id="sEn">--</div>
+            <p class="method-summary" id="sSummary">--</p>
+            <div class="alt-list" id="sAlts"></div>
+          </div>
+          <div class="result-section"><h3>🎯 操作步驟</h3><ul id="sSteps"></ul></div>
+          <div class="result-section"><h3>📨 招募邀請語模板</h3><div class="report-block" id="sInvite">--</div></div>
+          <div class="result-section"><h3>⚠️ 注意事項</h3><ul id="sCautions"></ul></div>
+          <div class="btn-row">
+            <button type="button" class="btn-ghost-dark" id="sCopyBtn">📋 複製建議</button>
+            <button type="button" class="btn-ghost-dark" onclick="window.print()">🖨️ 列印 / PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== MODULE 5: INFORMATION POWER ===================== -->
+      <div class="module-panel" id="m-ip">
+        <div class="tool-card">
+          <div class="step-num">MODULE 05</div>
+          <h2>資訊力評估（Information Power）</h2>
+          <p class="step-desc">基於 Malterud, Siersma &amp; Guassora (2016) 五維度模型估算所需樣本量。資訊力越高，所需個案越少。</p>
+
+          <div class="ip-slider">
+            <label><span>① 研究目的（Aim）</span><span class="ip-value" id="ip1v">3</span></label>
+            <div class="ip-desc">研究目的越聚焦／狹窄，所需樣本越少。</div>
+            <input type="range" id="ip1" min="1" max="5" value="3">
+            <div class="ip-anchors"><span>1 寬泛探索性</span><span>5 高度聚焦</span></div>
+          </div>
+          <div class="ip-slider">
+            <label><span>② 樣本特異性（Specificity）</span><span class="ip-value" id="ip2v">3</span></label>
+            <div class="ip-desc">樣本越特異／經歷越貼題，所需樣本越少。</div>
+            <input type="range" id="ip2" min="1" max="5" value="3">
+            <div class="ip-anchors"><span>1 稀疏</span><span>5 高度特異</span></div>
+          </div>
+          <div class="ip-slider">
+            <label><span>③ 理論背景（Theory）</span><span class="ip-value" id="ip3v">3</span></label>
+            <div class="ip-desc">理論支持越強或越貼合主題，所需樣本越少。</div>
+            <input type="range" id="ip3" min="1" max="5" value="3">
+            <div class="ip-anchors"><span>1 缺乏</span><span>5 強理論基礎</span></div>
+          </div>
+          <div class="ip-slider">
+            <label><span>④ 對話品質（Dialogue Quality）</span><span class="ip-value" id="ip4v">3</span></label>
+            <div class="ip-desc">研究者訪談技巧與資料豐厚度越高，所需樣本越少。</div>
+            <input type="range" id="ip4" min="1" max="5" value="3">
+            <div class="ip-anchors"><span>1 較弱</span><span>5 強而豐富</span></div>
+          </div>
+          <div class="ip-slider">
+            <label><span>⑤ 分析策略（Analysis）</span><span class="ip-value" id="ip5v">3</span></label>
+            <div class="ip-desc">深度個案分析所需樣本少於跨個案比較。</div>
+            <input type="range" id="ip5" min="1" max="5" value="3">
+            <div class="ip-anchors"><span>1 跨個案比較</span><span>5 深度單一/縱向</span></div>
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn-purple" id="ipRunBtn">估算建議樣本量 →</button>
+            <button type="button" class="btn-ghost-dark" id="ipResetBtn">重設</button>
+          </div>
+        </div>
+
+        <div id="ipResult" style="display:none;">
+          <div class="result-section">
+            <h3>📊 評估摘要</h3>
+            <div class="summary-grid" id="ipSummary"></div>
+          </div>
+          <div class="result-section">
+            <h3>👥 建議樣本量</h3>
+            <div class="report-block" id="ipRange">--</div>
+          </div>
+          <div class="result-section">
+            <h3>📝 方法章節敘述模板</h3>
+            <div class="report-block" id="ipNarrative">--</div>
+          </div>
+          <div class="result-section disclaimer"><strong>提醒　</strong>「資訊力」是樣本充足性的相對性概念，最終仍需在資料蒐集中以 saturation / sufficiency 動態判斷。</div>
+          <div class="btn-row">
+            <button type="button" class="btn-ghost-dark" id="ipCopyBtn">📋 複製敘述</button>
+            <button type="button" class="btn-ghost-dark" onclick="window.print()">🖨️ 列印 / PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== MODULE 6-10: CHECKLISTS ===================== -->
+      <div class="module-panel" id="m-coreq">
+        <div class="tool-card"><div class="step-num">MODULE 06</div><h2>COREQ 32 項清單</h2><p class="step-desc">Tong, Sainsbury &amp; Craig (2007) 提出，用於訪談與焦點團體質性研究的報告完整度自評。</p></div>
+        <div class="score-bar"><div class="score-text">已回答 <span class="score-num" id="coreqAnswered">0</span> / 32 ｜ 達標 <span class="score-num" id="coreqYes">0</span> 項</div><div class="score-actions"><button data-cl="coreq" data-act="copy">複製摘要</button><button data-cl="coreq" data-act="reset">清空</button><button onclick="window.print()">列印</button></div></div>
+        <div id="coreqList"></div>
+      </div>
+
+      <div class="module-panel" id="m-srqr">
+        <div class="tool-card"><div class="step-num">MODULE 07</div><h2>SRQR 21 項清單</h2><p class="step-desc">O'Brien et al. (2014) 提出的通用質性研究報告標準（Standards for Reporting Qualitative Research）。</p></div>
+        <div class="score-bar"><div class="score-text">已回答 <span class="score-num" id="srqrAnswered">0</span> / 21 ｜ 達標 <span class="score-num" id="srqrYes">0</span> 項</div><div class="score-actions"><button data-cl="srqr" data-act="copy">複製摘要</button><button data-cl="srqr" data-act="reset">清空</button><button onclick="window.print()">列印</button></div></div>
+        <div id="srqrList"></div>
+      </div>
+
+      <div class="module-panel" id="m-casp">
+        <div class="tool-card"><div class="step-num">MODULE 08</div><h2>CASP 質性研究批判性評讀</h2><p class="step-desc">Critical Appraisal Skills Programme (CASP) 質性版，10 項用於系統性評估質性研究的可信度與相關性。</p></div>
+        <div class="score-bar"><div class="score-text">已回答 <span class="score-num" id="caspAnswered">0</span> / 10 ｜ Yes <span class="score-num" id="caspYes">0</span> 項</div><div class="score-actions"><button data-cl="casp" data-act="copy">複製摘要</button><button data-cl="casp" data-act="reset">清空</button><button onclick="window.print()">列印</button></div></div>
+        <div id="caspList"></div>
+      </div>
+
+      <div class="module-panel" id="m-jbi">
+        <div class="tool-card"><div class="step-num">MODULE 09</div><h2>JBI 質性研究嚴謹性評估</h2><p class="step-desc">Joanna Briggs Institute 質性研究核對表，10 項聚焦於哲學立場、方法一致性與研究者反思。</p></div>
+        <div class="score-bar"><div class="score-text">已回答 <span class="score-num" id="jbiAnswered">0</span> / 10 ｜ Yes <span class="score-num" id="jbiYes">0</span> 項</div><div class="score-actions"><button data-cl="jbi" data-act="copy">複製摘要</button><button data-cl="jbi" data-act="reset">清空</button><button onclick="window.print()">列印</button></div></div>
+        <div id="jbiList"></div>
+      </div>
+
+      <div class="module-panel" id="m-entreq">
+        <div class="tool-card"><div class="step-num">MODULE 10</div><h2>ENTREQ 21 項清單</h2><p class="step-desc">Tong et al. (2012) 提出，用於增進質性研究綜合報告（synthesis）透明度的 21 項清單。</p></div>
+        <div class="score-bar"><div class="score-text">已回答 <span class="score-num" id="entreqAnswered">0</span> / 21 ｜ 達標 <span class="score-num" id="entreqYes">0</span> 項</div><div class="score-actions"><button data-cl="entreq" data-act="copy">複製摘要</button><button data-cl="entreq" data-act="reset">清空</button><button onclick="window.print()">列印</button></div></div>
+        <div id="entreqList"></div>
+      </div>
+
+      <!-- ===================== MODULE 11: CERQual ===================== -->
+      <div class="module-panel" id="m-cerqual">
+        <div class="tool-card">
+          <div class="step-num">MODULE 11</div>
+          <h2>GRADE-CERQual 信心評估</h2>
+          <p class="step-desc">針對單一綜合發現（review finding），從四個面向評估其證據信心，並得出總體信心等級（高/中/低/極低）。</p>
+
+          <div class="field"><label>綜合發現（Finding）</label><textarea id="cq_finding" placeholder="例：醫護人員在末期病人決策中經常感受到道德壓力，主要源自家屬期望與臨床判斷之間的落差。"></textarea></div>
+          <div class="field"><label>納入研究數量</label><input type="number" id="cq_n" min="1" placeholder="例：8"></div>
+
+          <div id="cqDomains"></div>
+
+          <div class="btn-row">
+            <button type="button" class="btn-purple" id="cqRunBtn">產生信心評估 →</button>
+            <button type="button" class="btn-ghost-dark" id="cqResetBtn">清空</button>
+          </div>
+        </div>
+
+        <div id="cqResult" style="display:none;">
+          <div class="method-card">
+            <div class="method-eyebrow">OVERALL CONFIDENCE</div>
+            <h3 class="method-name" id="cqLevel">--</h3>
+            <div class="method-en" id="cqLevelEn">--</div>
+            <p class="method-summary" id="cqLevelDesc">--</p>
+          </div>
+          <div class="result-section"><h3>📋 證據概況表（Evidence Profile）</h3><div class="report-block" id="cqProfile">--</div></div>
+          <div class="result-section disclaimer"><strong>提醒　</strong>CERQual 信心等級為定性判斷，需團隊共識與書面說明每個面向的依據。</div>
+          <div class="btn-row">
+            <button type="button" class="btn-ghost-dark" id="cqCopyBtn">📋 複製報告</button>
+            <button type="button" class="btn-ghost-dark" onclick="window.print()">🖨️ 列印 / PDF</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast">已複製到剪貼板</div>
+
+  <script src="assets/js/qual-toolkit.js"></script>
+</body>
+</html>
