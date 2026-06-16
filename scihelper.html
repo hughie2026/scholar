@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCI / SSCI Paper Writing Assistant · Hughie's Online Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* =============== Base =============== */
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Open Sans',-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;color:#1a1a1a;background:#fff;line-height:1.6;}
+  .container{max-width:1180px;margin:0 auto;padding:0 24px;}
+  a{color:inherit;}
+
+  /* =============== Top bars =============== */
+  .utility-bar{background:#1a1a1a;color:#bbb;font-size:11px;letter-spacing:1.5px;}
+  .utility-inner{padding:8px 0;text-align:right;}
+  .main-header{border-bottom:1px solid #ece5d3;background:#fff;}
+  .header-inner{display:flex;justify-content:space-between;align-items:center;padding:18px 0;}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
+  .brand-w{width:42px;height:42px;background:#c9a961;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Encode Sans',sans-serif;font-weight:700;font-size:22px;}
+  .brand-text{display:flex;flex-direction:column;line-height:1.2;}
+  .brand-line1{font-family:'Encode Sans',sans-serif;font-weight:700;font-size:18px;color:#1a1a1a;}
+  .brand-line2{font-size:11px;letter-spacing:2px;color:#888;text-transform:uppercase;}
+  .primary-nav a{margin-left:28px;font-size:13px;letter-spacing:1.4px;color:#1a1a1a;text-decoration:none;font-weight:600;text-transform:uppercase;transition:.2s;}
+  .primary-nav a:hover{color:#c9a961;}
+  .primary-nav a.active{color:#c9a961;}
+
+  /* =============== Hero =============== */
+  .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+  .page-hero h1{font-family:'Encode Sans',sans-serif;font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;font-weight:700;}
+  .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:820px;}
+  .eyebrow.gold{color:#c9a961;font-size:12px;letter-spacing:2.4px;font-weight:700;text-transform:uppercase;font-family:'Encode Sans',sans-serif;}
+  .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+  .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+  .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+  .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+  .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+  .meta-pills .pill{background:#fff;border:1px solid #ece5d3;padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;}
+
+  /* =============== Section =============== */
+  .tool-section{padding:60px 0 80px;background:#fff;}
+
+  /* =============== Progress =============== */
+  .progress-wrap{margin-bottom:30px;}
+  .progress-label{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:1.5px;color:#888;margin-bottom:8px;text-transform:uppercase;font-family:'Encode Sans',sans-serif;font-weight:700;}
+  .progress-label .pct{color:#c9a961;}
+  .progress-bar{height:4px;background:#ece5d3;position:relative;overflow:hidden;}
+  .progress-fill{position:absolute;left:0;top:0;height:100%;background:#c9a961;width:0;transition:width .3s ease;}
+
+  /* =============== Module nav =============== */
+  .module-nav-title{font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:14px;text-transform:uppercase;}
+  .module-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:48px;}
+  .module-tab{cursor:pointer;background:#fff;border:1px solid #ece5d3;padding:14px 16px;text-align:left;transition:.2s;font-family:inherit;border-radius:0;position:relative;}
+  .module-tab:hover{border-color:#d4c5a0;background:#faf7f0;}
+  .module-tab.active{border-color:#c9a961;border-left:3px solid #c9a961;background:#faf7f0;}
+  .module-tab.done::after{content:"✓";position:absolute;top:10px;right:12px;color:#c9a961;font-weight:700;font-size:14px;}
+  .module-tab .tab-num{font-family:'Encode Sans',sans-serif;font-size:10px;letter-spacing:1.5px;color:#c9a961;font-weight:700;display:block;}
+  .module-tab .tab-title{font-size:14px;color:#1a1a1a;font-weight:600;margin-top:4px;display:block;line-height:1.35;}
+  .module-tab .tab-desc{font-size:11px;color:#888;margin-top:4px;line-height:1.5;display:block;}
+  .module-panel{display:none;}
+  .module-panel.active{display:block;}
+
+  /* =============== Tool card =============== */
+  .tool-card{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:38px 36px;margin-bottom:24px;}
+  .tool-card .step-num{font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;text-transform:uppercase;}
+  .tool-card h2{font-family:'Encode Sans',sans-serif;font-size:28px;color:#1a1a1a;margin:0 0 8px;line-height:1.3;font-weight:700;}
+  .tool-card .step-desc{font-size:14px;color:#888;margin:0 0 28px;line-height:1.75;}
+
+  /* =============== Fields =============== */
+  .field{margin-bottom:22px;}
+  .field.hidden{display:none;}
+  .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+  .field > label small{font-weight:400;color:#888;font-size:12px;margin-left:6px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:600px){.field-row{grid-template-columns:1fr;gap:0;}}
+
+  .field input[type="number"], .field input[type="text"], .field textarea, .field select{
+    width:100%;padding:11px 13px;font-size:14px;
+    border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+    font-family:inherit;outline:none;transition:.2s;border-radius:0;
+  }
+  .field textarea{min-height:90px;resize:vertical;line-height:1.6;}
+  .field input:focus, .field select:focus, .field textarea:focus{border-color:#c9a961;}
+  .char-count{font-size:11px;color:#888;text-align:right;margin-top:4px;letter-spacing:.3px;}
+  .char-count.over{color:#b8985a;font-weight:600;}
+
+  /* Card-style radio */
+  .radio-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .radio-grid.three{grid-template-columns:1fr 1fr 1fr;}
+  @media(max-width:700px){.radio-grid, .radio-grid.three{grid-template-columns:1fr;}}
+  .radio-card{cursor:pointer;}
+  .radio-card input{display:none;}
+  .radio-card span{display:block;padding:12px 16px;border:1px solid #ece5d3;background:#fff;color:#555;font-size:13.5px;line-height:1.55;transition:.2s;}
+  .radio-card span small{display:block;color:#888;font-size:12px;margin-top:3px;letter-spacing:.2px;}
+  .radio-card:hover span{border-color:#d4c5a0;}
+  .radio-card input:checked + span{border-color:#c9a961;color:#1a1a1a;background:#faf7f0;font-weight:600;}
+  .radio-card input:checked + span small{color:#c9a961;font-weight:600;}
+
+  .radio-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .radio-btn{flex:1;min-width:100px;cursor:pointer;}
+  .radio-btn input{display:none;}
+  .radio-btn span{display:block;text-align:center;padding:11px 16px;border:1px solid #ece5d3;background:#fff;color:#555;font-size:13.5px;transition:.2s;}
+  .radio-btn:hover span{border-color:#d4c5a0;}
+  .radio-btn input:checked + span{border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;}
+
+  /* Hint */
+  .hint-box{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:14px 18px;font-size:13px;color:#555;line-height:1.75;margin-top:6px;}
+  .hint-box strong{color:#c9a961;letter-spacing:.5px;}
+  .hint-box code{background:#fff;border:1px solid #ece5d3;padding:1px 6px;font-size:12px;color:#1a1a1a;}
+
+  /* Template/example collapse */
+  details.tmpl{margin-top:6px;border:1px dashed #ece5d3;padding:10px 14px;background:#fffdf7;}
+  details.tmpl summary{cursor:pointer;font-size:12px;color:#c9a961;letter-spacing:1px;font-weight:700;text-transform:uppercase;outline:none;font-family:'Encode Sans',sans-serif;}
+  details.tmpl[open] summary{margin-bottom:8px;}
+  details.tmpl p{margin:6px 0;font-size:13px;color:#555;line-height:1.75;}
+  details.tmpl .ex{font-style:italic;color:#777;}
+
+  /* =============== Buttons =============== */
+  .btn-purple, .btn-ghost-dark{
+    font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.6px;
+    font-weight:700;padding:13px 26px;border:1px solid;cursor:pointer;
+    transition:.2s;text-transform:uppercase;border-radius:0;
+  }
+  .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+  .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+  .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+  .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+  .btn-ghost-dark:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;}
+
+  /* Result block */
+  .result-section{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:24px 28px;margin-bottom:18px;}
+  .result-section h3{font-family:'Encode Sans',sans-serif;font-size:17px;color:#1a1a1a;margin:0 0 14px;font-weight:700;}
+  .result-section ul{padding-left:20px;line-height:1.9;color:#555;font-size:14px;margin:0;}
+  .result-section li{margin-bottom:5px;}
+  .report-block{background:#faf7f0;border:1px solid #ece5d3;padding:18px 20px;font-family:'Encode Sans',sans-serif;font-size:13.5px;color:#1a1a1a;line-height:1.95;white-space:pre-wrap;word-break:break-word;}
+
+  /* Preview */
+  .preview-paper{background:#fff;border:1px solid #ece5d3;padding:48px 52px;font-family:'Times New Roman',serif;color:#1a1a1a;line-height:1.85;}
+  .preview-paper h1.ptitle{font-family:'Times New Roman',serif;font-size:24px;text-align:center;margin:0 0 16px;color:#1a1a1a;font-weight:700;}
+  .preview-paper .pauthors{text-align:center;color:#444;font-size:14px;margin-bottom:6px;}
+  .preview-paper .paff{text-align:center;color:#888;font-size:12px;margin-bottom:30px;}
+  .preview-paper h2.psec{font-family:'Times New Roman',serif;font-size:17px;color:#1a1a1a;font-weight:700;margin:28px 0 10px;border-bottom:2px solid #c9a961;padding-bottom:4px;}
+  .preview-paper h3.psub{font-family:'Times New Roman',serif;font-size:15px;color:#1a1a1a;font-weight:700;margin:20px 0 8px;}
+  .preview-paper p{font-size:14px;color:#333;margin:0 0 12px;text-align:justify;}
+  .preview-paper .pkw{font-size:13px;color:#555;margin-top:8px;}
+  .preview-paper .pkw strong{color:#1a1a1a;}
+
+  .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px;}
+  .summary-item{background:#faf7f0;border:1px solid #ece5d3;padding:16px 14px;}
+  .summary-label{font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:6px;text-transform:uppercase;}
+  .summary-value{font-size:14px;color:#1a1a1a;font-weight:600;line-height:1.5;}
+
+  .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+  .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+  /* Footer */
+  .footer{background:#1a1a1a;color:#bbb;padding:60px 0 0;margin-top:60px;}
+  .footer-top{display:grid;grid-template-columns:2fr 1fr;gap:40px;padding-bottom:40px;}
+  @media(max-width:700px){.footer-top{grid-template-columns:1fr;}}
+  .footer .brand-line1{color:#fff;}
+  .footer .brand-line2{color:#888;}
+  .footer-brand p{color:#888;font-size:13px;margin-top:14px;}
+  .footer-contact h5{font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;color:#c9a961;margin:0 0 14px;text-transform:uppercase;font-weight:700;}
+  .contact-item{font-size:13px;color:#bbb;margin-bottom:6px;}
+  .contact-item a{color:#bbb;text-decoration:none;transition:.2s;}
+  .contact-item a:hover{color:#c9a961;}
+  .footer-bottom{border-top:1px solid #333;padding:18px 0;font-size:12px;color:#777;}
+  .footer-bottom-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  /* Toast */
+  .toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;padding:12px 22px;font-size:13px;letter-spacing:.5px;opacity:0;pointer-events:none;transition:.3s;z-index:99;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  @media print{
+    .page-hero, .module-tabs, .module-nav-title, .footer, .main-header, .utility-bar, .btn-row, .progress-wrap, .tool-card{display:none !important;}
+    .module-panel{display:none !important;}
+    .module-panel#m-preview{display:block !important;}
+    .preview-paper{border:none;padding:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="utility-bar">
+  <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+</div>
+
+<header class="main-header">
+  <div class="container header-inner">
+    <a href="#" class="brand">
+      <div class="brand-w">H</div>
+      <div class="brand-text">
+        <span class="brand-line1">Hughie's</span>
+        <span class="brand-line2">Online Laboratory</span>
+      </div>
+    </a>
+    <nav class="primary-nav">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#" class="active">Tools</a>
+      <a href="#">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="#">Home</a><span class="bc-sep">›</span>
+      <a href="#">Tools</a><span class="bc-sep">›</span>
+      <span>SCI / SSCI Paper Writing Assistant</span>
+    </div>
+    <div class="eyebrow gold">ACADEMIC WRITING · STEP-BY-STEP</div>
+    <h1>SCI / SSCI 論文填空寫作助手</h1>
+    <p class="lead">
+      把寫一篇可投稿的高質量 SCI / SSCI 論文，拆解成 10 個可填的步驟。
+      從期刊定位、CARS Introduction、結構化 Abstract，到 IMRaD 各章節與最終整稿，
+      每一格都附帶寫作模板、實例與字數提示。所有資料僅保存於本地瀏覽器，可一鍵複製或列印 PDF。
+    </p>
+    <div class="meta-pills">
+      <span class="pill">📝 10 個寫作模組</span>
+      <span class="pill">🧪 含句型模板</span>
+      <span class="pill">💾 自動本地存檔</span>
+      <span class="pill">🔍 即時預覽完稿</span>
+      <span class="pill">📖 教學 / 研究用途</span>
+    </div>
+  </div>
+</section>
+
+<section class="tool-section">
+  <div class="container">
+
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <div class="progress-label"><span>WRITING PROGRESS</span><span class="pct" id="progPct">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    </div>
+
+    <div class="module-nav-title">SELECT A WRITING STEP</div>
+    <div class="module-tabs" id="moduleTabs">
+      <button class="module-tab active" data-module="positioning"><span class="tab-num">01 · POSITION</span><span class="tab-title">期刊與論文定位</span><span class="tab-desc">確定目標期刊、論文類型與貢獻</span></button>
+      <button class="module-tab" data-module="title"><span class="tab-num">02 · TITLE</span><span class="tab-title">標題 &amp; 關鍵詞</span><span class="tab-desc">產出可檢索、可吸引的標題</span></button>
+      <button class="module-tab" data-module="abstract"><span class="tab-num">03 · ABSTRACT</span><span class="tab-title">結構化摘要</span><span class="tab-desc">B-O-M-R-C 五段式填空</span></button>
+      <button class="module-tab" data-module="intro"><span class="tab-num">04 · INTRO</span><span class="tab-title">Introduction (CARS)</span><span class="tab-desc">建立領域 → 找出空白 → 填補空白</span></button>
+      <button class="module-tab" data-module="literature"><span class="tab-num">05 · LITERATURE</span><span class="tab-title">文獻綜述</span><span class="tab-desc">主題式整合與研究缺口</span></button>
+      <button class="module-tab" data-module="methods"><span class="tab-num">06 · METHODS</span><span class="tab-title">研究方法</span><span class="tab-desc">設計、樣本、變量、分析</span></button>
+      <button class="module-tab" data-module="results"><span class="tab-num">07 · RESULTS</span><span class="tab-title">研究結果</span><span class="tab-desc">樣本特徵、主要發現、效應量</span></button>
+      <button class="module-tab" data-module="discussion"><span class="tab-num">08 · DISCUSSION</span><span class="tab-title">討論</span><span class="tab-desc">解讀、對話、限制、意涵</span></button>
+      <button class="module-tab" data-module="conclusion"><span class="tab-num">09 · CONCLUDE</span><span class="tab-title">結論 &amp; 後置部分</span><span class="tab-desc">Take-home、致謝、衝突</span></button>
+      <button class="module-tab" data-module="preview"><span class="tab-num">10 · PREVIEW</span><span class="tab-title">整稿預覽 / 匯出</span><span class="tab-desc">一鍵生成可投稿排版稿</span></button>
+    </div>
+
+    <!-- ===================== 01 POSITIONING ===================== -->
+    <div class="module-panel active" id="m-positioning">
+      <div class="tool-card">
+        <div class="step-num">STEP 01</div>
+        <h2>期刊與論文定位</h2>
+        <p class="step-desc">在動筆前確認三件事：寫給誰看（期刊與讀者）、寫的是什麼（論文類型）、為什麼值得發表（核心貢獻）。</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label>研究領域 <small>大領域 + 子領域</small></label>
+            <input type="text" data-key="pos_field" placeholder="例：Public Health · Health Communication">
+          </div>
+          <div class="field">
+            <label>目標期刊資料庫</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="pos_db" value="SCI"><span>SCI / SCIE</span></label>
+              <label class="radio-btn"><input type="radio" name="pos_db" value="SSCI"><span>SSCI</span></label>
+              <label class="radio-btn"><input type="radio" name="pos_db" value="Both"><span>SCI &amp; SSCI</span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>論文類型</label>
+          <div class="radio-grid three">
+            <label class="radio-card"><input type="radio" name="pos_type" value="original"><span>Original Research<small>原創實證研究</small></span></label>
+            <label class="radio-card"><input type="radio" name="pos_type" value="review"><span>Systematic Review<small>系統性回顧</small></span></label>
+            <label class="radio-card"><input type="radio" name="pos_type" value="meta"><span>Meta-Analysis<small>整合分析</small></span></label>
+            <label class="radio-card"><input type="radio" name="pos_type" value="methods"><span>Methods Paper<small>方法論論文</small></span></label>
+            <label class="radio-card"><input type="radio" name="pos_type" value="case"><span>Case Study<small>個案研究</small></span></label>
+            <label class="radio-card"><input type="radio" name="pos_type" value="qual"><span>Qualitative Study<small>質性研究</small></span></label>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>目標期刊 (1–3 個)</label>
+            <input type="text" data-key="pos_journal" placeholder="例：The Lancet Public Health; Health Communication">
+          </div>
+          <div class="field">
+            <label>影響因子 / JCR 分區 <small>選填</small></label>
+            <input type="text" data-key="pos_if" placeholder="例：IF 5.6 · Q1">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>核心貢獻 (One-Sentence Contribution)<small>用一句話說明：你的研究帶來了什麼新的知識？</small></label>
+          <textarea data-key="pos_contrib" placeholder="例：我們首次證明……，挑戰了既有的……假設，為……提供新的證據。"></textarea>
+          <details class="tmpl"><summary>句型模板</summary>
+            <p>This study is <strong>the first to</strong> [動作] in [情境/族群], <strong>which extends</strong> prior evidence by [新增的價值].</p>
+            <p class="ex">例：This study is the first to examine moral distress trajectories among ICU nurses in low-resource settings, which extends prior evidence by linking individual-level distress to organizational climate.</p>
+          </details>
+        </div>
+
+        <div class="field">
+          <label>目標讀者 / Scope 適配說明</label>
+          <textarea data-key="pos_audience" placeholder="例：本研究適合刊登於該刊，因其關注……，本研究恰好回應該刊近年呼籲的……方向。"></textarea>
+        </div>
+
+        <div class="hint-box"><strong>提醒　</strong>建議先去候選期刊翻 3 篇近一年同主題論文，記下他們的：① Abstract 結構 ② Methods 細節密度 ③ Discussion 對話對象。後續模板會貼合最常見格式，但細節仍需依該刊 Author Guidelines 微調。</div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-purple" data-next="title">儲存並進入下一步 →</button>
+          <button type="button" class="btn-ghost-dark" data-reset="positioning">清空本步</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 02 TITLE ===================== -->
+    <div class="module-panel" id="m-title">
+      <div class="tool-card">
+        <div class="step-num">STEP 02</div>
+        <h2>標題 &amp; 關鍵詞</h2>
+        <p class="step-desc">SCI/SSCI 標題的核心：含關鍵變量、研究對象、研究設計，可被資料庫精準檢索，並讓人一眼看出研究貢獻。</p>
+
+        <div class="field"><label>核心自變量 / Independent Variable / 介入</label><input type="text" data-key="ti_iv" placeholder="例：mindfulness-based intervention"></div>
+        <div class="field"><label>核心因變量 / Outcome</label><input type="text" data-key="ti_dv" placeholder="例：burnout, sleep quality"></div>
+        <div class="field"><label>研究對象 / Population</label><input type="text" data-key="ti_pop" placeholder="例：emergency department nurses"></div>
+        <div class="field"><label>研究設計 / Design</label><input type="text" data-key="ti_design" placeholder="例：a randomized controlled trial"></div>
+
+        <div class="field">
+          <label>標題風格偏好</label>
+          <div class="radio-grid three">
+            <label class="radio-card"><input type="radio" name="ti_style" value="declarative"><span>陳述型<small>直接點出主要發現</small></span></label>
+            <label class="radio-card"><input type="radio" name="ti_style" value="descriptive"><span>描述型<small>說明做了什麼研究</small></span></label>
+            <label class="radio-card"><input type="radio" name="ti_style" value="question"><span>提問型<small>以研究問題為標題</small></span></label>
+          </div>
+        </div>
+
+        <div class="field"><label>主要關鍵詞 (5–8 個，用分號或逗號分隔)<small>建議覆蓋 MeSH 或 APA Thesaurus 詞彙</small></label><textarea data-key="ti_kw" placeholder="例：mindfulness; burnout; nurses; randomized controlled trial; sleep quality"></textarea></div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-purple" id="tiGenBtn">生成 3 個標題候選 →</button>
+          <button type="button" class="btn-ghost-dark" data-reset="title">清空本步</button>
+        </div>
+      </div>
+
+      <div id="tiResult" style="display:none;">
+        <div class="result-section"><h3>📌 標題候選</h3><div class="report-block" id="tiOutput">--</div></div>
+        <div class="result-section"><h3>💡 標題優化提示</h3><ul>
+          <li>長度建議：英文 12–18 字（多數頂刊要求 ≤ 20 字）。</li>
+          <li>避免縮寫、避免「A study of…」這類冗詞。</li>
+          <li>陳述型可在標題中暗示主要發現，但需避免絕對化。</li>
+          <li>若為 RCT、系統性回顧、Meta-analysis，建議在標題或副標題中明示。</li>
+        </ul></div>
+        <div class="btn-row">
+          <button type="button" class="btn-ghost-dark" data-copy="tiOutput">📋 複製標題</button>
+          <button type="button" class="btn-purple" data-next="abstract">下一步：摘要 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 03 ABSTRACT ===================== -->
+    <div class="module-panel" id="m-abstract">
+      <div class="tool-card">
+        <div class="step-num">STEP 03</div>
+        <h2>結構化摘要 (B-O-M-R-C)</h2>
+        <p class="step-desc">多數 SCI/SSCI 期刊要求結構化摘要：Background → Objective → Methods → Results → Conclusion。建議總字數 200–300 詞。</p>
+
+        <div class="field">
+          <label>① Background <small>1–2 句，問題重要性 + 研究缺口</small></label>
+          <textarea data-key="ab_bg" data-cc="ab_bg_cc" placeholder="例：Burnout among emergency nurses has reached unprecedented levels, yet effective low-cost interventions remain scarce."></textarea>
+          <div class="char-count" id="ab_bg_cc">0 字</div>
+          <details class="tmpl"><summary>句型模板</summary>
+            <p>[問題] is increasingly recognized as a major concern in [情境], <strong>yet</strong> [現有不足]. <strong>To date</strong>, few studies have [缺口].</p>
+          </details>
+        </div>
+
+        <div class="field">
+          <label>② Objective / Aim <small>1 句，動詞開頭</small></label>
+          <textarea data-key="ab_obj" data-cc="ab_obj_cc" placeholder="例：This study aimed to examine the effect of an 8-week mindfulness program on burnout among emergency nurses."></textarea>
+          <div class="char-count" id="ab_obj_cc">0 字</div>
+        </div>
+
+        <div class="field">
+          <label>③ Methods <small>2–4 句：設計 / 樣本 / 主要測量 / 分析</small></label>
+          <textarea data-key="ab_method" data-cc="ab_method_cc" placeholder="例：A two-arm parallel RCT was conducted with 120 nurses recruited from three tertiary hospitals. Burnout was measured by MBI-HSS at baseline and post-intervention. Data were analyzed using mixed-effects models."></textarea>
+          <div class="char-count" id="ab_method_cc">0 字</div>
+        </div>
+
+        <div class="field">
+          <label>④ Results <small>2–4 句：主要結果 + 數據（含 effect size / CI / p）</small></label>
+          <textarea data-key="ab_result" data-cc="ab_result_cc" placeholder="例：The intervention group showed a significant reduction in emotional exhaustion compared with controls (β = -4.2, 95% CI -6.1 to -2.3, p &lt; .001), with a medium effect size (d = 0.58)."></textarea>
+          <div class="char-count" id="ab_result_cc">0 字</div>
+        </div>
+
+        <div class="field">
+          <label>⑤ Conclusion <small>1–2 句：解釋意涵 + 暗示應用 / 後續</small></label>
+          <textarea data-key="ab_conc" data-cc="ab_conc_cc" placeholder="例：A brief mindfulness-based intervention can meaningfully reduce burnout among emergency nurses and warrants integration into routine staff support programs."></textarea>
+          <div class="char-count" id="ab_conc_cc">0 字</div>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-purple" id="abGenBtn">組合摘要 →</button>
+          <button type="button" class="btn-ghost-dark" data-reset="abstract">清空本步</button>
+        </div>
+      </div>
+
+      <div id="abResult" style="display:none;">
+        <div class="result-section"><h3>📑 結構化摘要</h3><div class="report-block" id="abOutput">--</div></div>
+        <div class="result-section"><h3>💡 摘要檢核清單</h3><ul>
+          <li>是否使用過去式描述方法與結果？</li>
+          <li>是否有具體數據（effect size, CI, p）而非僅有「significant」？</li>
+          <li>結論是否回應 Objective，並避免過度推論？</li>
+          <li>總字數是否落在期刊規定（多為 250 ± 50 詞）？</li>
+        </ul></div>
+        <div class="btn-row">
+          <button type="button" class="btn-ghost-dark" data-copy="abOutput">📋 複製摘要</button>
+          <button type="button" class="btn-purple" data-next="intro">下一步：Introduction →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 04 INTRO (CARS) ===================== -->
+    <div class="module-panel" id="m-intro">
+      <div class="tool-card">
+        <div class="step-num">STEP 04</div>
+        <h2>Introduction · CARS 三步法</h2>
+        <p class="step-desc">Swales 的 Create A Research Space (CARS) 模型：① 建立研究領域重要性 → ② 指出研究缺口 → ③ 說明本研究如何填補。Intro 段落建議 4–6 段，總長 600–1000 詞。</p>
+
+        <div class="field">
+          <label>Move 1 · Establishing Territory <small>領域重要性、現況、規模、社會/科學意義</small></label>
+          <textarea data-key="in_m1" placeholder="寫下 2–4 句：問題的普遍性 / 重要性 / 影響規模。可引用流行病學、政策或里程碑研究。"></textarea>
+          <details class="tmpl"><summary>句型模板</summary>
+            <p>"<strong>[Issue]</strong> has been increasingly recognized as a critical challenge in [field], affecting [scale/population] (Smith, 2022)."</p>
+            <p>"Recent advances in [topic] have <strong>highlighted the importance of</strong> [aspect]."</p>
+          </details>
+        </div>
+
+        <div class="field">
+          <label>Move 2a · Reviewing Previous Research <small>2–3 段，主題式而非作者式</small></label>
+          <textarea data-key="in_m2a" placeholder="條列 2–4 個主題群組，每群組 2–3 句綜整文獻共識與分歧。"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Move 2b · Identifying the Gap <small>關鍵的「但是…」段落</small></label>
+          <textarea data-key="in_m2b" placeholder="例：然而，現有研究多侷限於……，少有研究探討……，亦缺乏……的長期數據。"></textarea>
+          <details class="tmpl"><summary>常用「Gap」句型</summary>
+            <p>"<strong>However</strong>, prior studies have largely focused on … <strong>while overlooking</strong> …"</p>
+            <p>"<strong>To the best of our knowledge</strong>, no study has examined …"</p>
+            <p>"<strong>Evidence regarding</strong> [X] <strong>remains inconsistent / scarce / limited to</strong> …"</p>
+          </details>
+        </div>
+
+        <div class="field">
+          <label>Move 3a · Announcing Present Research <small>清楚陳述本研究的目的</small></label>
+          <textarea data-key="in_m3a" placeholder="例：本研究旨在……。具體而言，我們考察了……。"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Move 3b · Research Questions / Hypotheses</label>
+          <textarea data-key="in_m3b" placeholder="RQ1: ……；H1: ……；H2: ……（每行一個）"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Move 3c · Significance &amp; Roadmap <small>本研究的學術 / 實務貢獻 + 文章結構</small></label>
+          <textarea data-key="in_m3c" placeholder="例：本研究將為……提供新證據，對……具有實務意涵。文章首先回顧文獻，其次說明方法，最後討論……。"></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-purple" id="inGenBtn">組合 Introduction 草稿 →</button>
+          <button type="button" class="btn-ghost-dark" data-reset="intro">清空本步</button>
+        </div>
+      </div>
+
+      <div id="inResult" style="display:none;">
+        <div class="result-section"><h3>📜 Introduction 草稿</h3><div class="report-block" id="inOutput">--</div></div>
+        <div class="result-section"><h3>💡 Intro 寫作要點</h3><ul>
+          <li>遵循「廣 → 窄」漏斗結構：從大領域逐層收斂到本研究。</li>
+          <li>不要在 Intro 直接報告結果（除非該刊明確要求）。</li>
+          <li>每個段落建議只承擔一個主要意圖。</li>
+          <li>引用 5–10 年內文獻為主，奠基性經典文獻可較舊。</li>
+        </ul></div>
+        <div class="btn-row">
+          <button type="button" class="btn-ghost-dark" data-copy="inOutput">📋 複製 Intro</button>
+          <button type="button" class="btn-purple" data-next="literature">下一步：文獻綜述 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 05 LITERATURE ===================== -->
+    <div class="module-panel" id="m-literature">
+      <div class="tool-card">
+        <div class="step-num">STEP 05</div>
+        <h2>文獻綜述：主題式整合</h2>
+        <p class="step-desc">SSCI 多數刊有獨立 Literature Review；SCI 則常融入 Introduction。本步以「主題式」（thematic）整合為基礎。</p>
+
+        <div class="field">
+          <label>理論 / 概念框架</label>
+          <input type="text" data-key="lr_theory" placeholder="例：Job Demands–Resources Model (Bakker & Demerouti, 2007)">
+        </div>
+
+        <div class="field">
+          <label>主題 1：標題</label>
+          <input type="text" data-key="lr_t1_title" placeholder="例：Antecedents of nurse burnout">
+        </div>
+        <div class="field">
+          <label>主題 1：整合段落 <small>3–5 句，引用 4–8 篇文獻</small></label>
+          <textarea data-key="lr_t1_body" placeholder="呈現主流共識 → 不同觀點 → 仍存爭議或不足。"></textarea>
+        </div>
+
+        <div class="field">
+          <label>主題 2：標題</label>
+          <input type="text" data-key="lr_t2_title" placeholder="例：Mindfulness-based interventions in healthcare">
+        </div>
+        <div class="field">
+          <label>主題 2：整合段落</label>
+          <textarea data-key="lr_t2_body" placeholder="…"></textarea>
+        </div>
+
+        <div class="field">
+          <label>主題 3：標題 <small>選填</small></label>
+          <input type="text" data-key="lr_t3_title" placeholder="例：Implementation barriers in clinical settings">
+        </div>
+        <div class="field">
+          <label>主題 3：整合段落 <small>選填</small></label>
+          <textarea data-key="lr_t3_body" placeholder="…"></textarea>
+        </div>
+
+        <div class="field">
+          <label>研究缺口綜整 <small>本研究將填補的 1–3 個缺口</small></label>
+          <textarea data-key="lr_gap" placeholder="例：(1) 缺乏針對急診情境的隨機對照研究；(2) 缺乏對中介機制的探討。"></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-purple" id="lrGenBtn">組合文獻綜述草稿 →</button>
+          <button type="button" class="btn-ghost-dark" data-reset="literature">清空本步</button>
+        </div>
+      </div>
+
+      <div id="lrResult" style="display:none;">
+        <div class="result-section"><h3>📚 文獻綜述草稿</h3><div class="report-block" id="lrOutput">--</div></div>
+        <div class="result-section"><h3>💡 寫作建議</h3><ul>
+          <li>避免「作者堆砌式」（Smith said…; Lee said…），改用「論點為核心」。</li>
+          <li>每段以主題句開頭，結尾連接到下一段主題。</li>
+          <li>引用平衡：支持文獻 ≈ 反證 / 異質文獻。</li>
+          <li>最後一段必須清楚收斂到「研究缺口」，自然導向本研究。</li>
+        </ul></div>
+        <div class="btn-row">
+          <button type="button" class="btn-ghost-dark" data-copy="lrOutput">📋 複製文獻綜述</button>
+          <button type="button" class="btn-purple" data-next="methods">下一步：Methods →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 06 METHODS ===================== -->
+    <div class="module-panel" id="m-methods">
+      <div class="tool-card">
+        <div class="step-num">STEP 06</div>
+        <h2>研究方法 (Methods)</h2>
+        <p class="step-desc">Methods 的核心原則是「可重現」：另一位研究者讀完應能複製你的研究。建議使用過去式、被動語態（依期刊風格而定）。</p>
+
+        <div class="field">
+          <label>研究設計</label>
+          <input type="text" data-key="me_design" placeholder="例：a two-arm, parallel-group, single-blind randomized controlled trial">
+          <details class="tmpl"><summary>常見設計詞彙</summary>
+            <p>cross-sectional · longitudinal cohort · case-control · randomized controlled trial · quasi-experimental · phenomenological qualitative · grounded theory · mixed-methods explanatory sequential</p>
+          </details>
+        </div>
+
+        <div class="field">
+          <label>研究場域 / Setting</label>
+          <input type="text" data-key="me_setting" placeholder="例：three tertiary hospitals in northern Taiwan, between Jan 2024 and Sep 2024">
+        </div>
+
+        <div class="field">
+          <label>樣本來源 &amp; 抽樣方法</label>
+          <textarea data-key="me_sampling" placeholder="例：Participants were recruited via stratified random sampling from the hospital staff database…"></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>納入條件</label>
+            <textarea data-key="me_in" placeholder="每行一條"></textarea>
+          </div>
+          <div class="field">
+            <label>排除條件</label>
+            <textarea data-key="me_ex" placeholder="每行一條"></textarea>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>樣本量計算 <small>包含效應量、α、power、軟體</small></label>
+          <textarea data-key="me_power" placeholder="例：A priori power analysis using G*Power 3.1 indicated that a total sample of 102 was required to detect a medium effect (d = 0.5) with α = .05 and power = 0.80…"></textarea>
+        </div>
+
+        <div class="field">
+          <label>變量與測量工具 <small>每個變量：定義 + 工具 + 信效度</small></label>
+          <textarea data-key="me_measures" placeholder="例：Burnout was measured by the 22-item Maslach Burnout Inventory (MBI-HSS); Cronbach's α in the present sample = .89."></textarea>
+        </div>
+
+        <div class="field">
+          <label>資料蒐集流程</label>
+          <textarea data-key="me_procedure" placeholder="例：After informed consent, participants completed an online survey at baseline, 4 weeks, and 8 weeks. Reminders were sent at days 3 and 7."></textarea>
+        </div>
+
+        <div class="field">
+          <label>統計 / 分析策略</label>
+          <textarea data-key="me_analysis" placeholder="例：Descriptive statistics were computed for all variables. Hypotheses were tested using mixed-effects models in R 4.3.1 (lme4 package). Significance was set at α = .05 (two-tailed)."></textarea>
+        </div>
+
+        <div class="field">
+          <label>研究倫理</label>
+          <textarea data-key="me_ethics" placeholder="例：The study was approved by the Institutional Review Board of [機構] (IRB No. XXXX). Written informed consent was obtained from all participants. The trial was registered at ClinicalTrials.gov (NCTXXXXXXXX)."></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-purple" id="meGenBtn">組合 Methods 草稿 →</button>
+          <button type="button" class="btn-ghost-dark" data-reset="methods">清空本步</button>
+        </div>
+      </div>
+
+      <div id="meResult" style="display:none;">
+        <div class="result-section"><h3>🧪 Methods 草稿</h3><div class="report-block" id="meOutput">--</div></div>
+        <div class="result-section"><h3>💡 報告規範對照</h3><ul>
+          <li>RCT → CONSORT；觀察性研究 → STROBE；系統回顧 → PRISMA；質性 → COREQ / SRQR。</li>
+          <li>所有測量工具需報告信度（Cronbach's α / κ / ICC），效度需要時引用驗證文獻。</li>
+          <li>Methods 通常使用過去式；分析模型可用現在式描述「why」。</li>
+        </ul></div>
+        <div class="btn-row">
+          <button type="button" class="btn-ghost-dark" data-copy="meOutput">📋 複製 Methods</button>
+          <button type="button" class="btn-purple" data-next="results">下一步：Results →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 07 RESULTS ===================== -->
+    <div class="module-panel" id="m-results">
+      <div class="tool-card">
+        <div class="step-num">STEP 07</div>
+        <h2>研究結果 (Results)</h2>
+        <p class="step-desc">Results 報告事實，不解釋。順序：① 樣本特徵 → ② 主要分析 → ③ 次要 / 探索性分析。配合 Tables &amp; Figures 引用。</p>
+
+        <div class="field">
+          <label>樣本流程 / 回應率</label>
+          <textarea data-key="re_flow" placeholder="例：Of 168 invited, 132 consented (response rate 78.6%); 12 were excluded for incomplete baseline data, leaving 120 (60 per arm) in the final analysis."></textarea>
+        </div>
+
+        <div class="field">
+          <label>樣本特徵摘要 (對應 Table 1)</label>
+          <textarea data-key="re_sample" placeholder="例：The mean age was 32.4 years (SD = 6.1); 78% were female. Baseline burnout did not differ between groups (p = .43)."></textarea>
+        </div>
+
+        <div class="field">
+          <label>主要結果 1 <small>對應主要假設 / RQ</small></label>
+          <textarea data-key="re_main1" placeholder="例：The intervention significantly reduced emotional exhaustion at 8 weeks (β = -4.2, 95% CI -6.1 to -2.3, p < .001, d = 0.58)."></textarea>
+        </div>
+
+        <div class="field">
+          <label>主要結果 2 <small>選填</small></label>
+          <textarea data-key="re_main2" placeholder="…"></textarea>
+        </div>
+
+        <div class="field">
+          <label>次要 / 探索性結果</label>
+          <textarea data-key="re_sec" placeholder="例：Subgroup analyses suggested larger effects among nurses with &lt;3 years of experience (p_interaction = .02)."></textarea>
+        </div>
+
+        <div class="field">
+          <label>圖表清單 (每行一個)</label>
+          <textarea data-key="re_tables" placeholder="例：Table 1. Baseline characteristics of participants&#10;Table 2. Mixed-effects model for burnout outcomes&#10;Figure 1. CONSORT flow diagram&#10;Figure 2. Trajectory of emotional exhaustion across time"></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-purple" id="reGenBtn">組合 Results 草稿 →</button>
+          <button type="button" class="btn-ghost-dark" data-reset="results">清空本步</button>
+        </div>
+      </div>
+
+      <div id="reResult" style="display:none;">
+        <div class="result-section"><h3>📊 Results 草稿</h3><div class="report-block" id="reOutput">--</div></div>
+        <div class="result-section"><h3>💡 報告檢核</h3><ul>
+          <li>每個推論統計都同時提供：點估計 + 信賴區間 + p 值 + 效應量。</li>
+          <li>避免在 Results 解讀「為什麼」，那屬於 Discussion。</li>
+          <li>段落順序與 Methods 中分析策略一致。</li>
+          <li>圖表自帶說明性標題，文中以「(Table 1)」引用，避免重複表中所有數值。</li>
+        </ul></div>
+        <div class="btn-row">
+          <button type="button" class="btn-ghost-dark" data-copy="reOutput">📋 複製 Results</button>
+          <button type="button" class="btn-purple" data-next="discussion">下一步：Discussion →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 08 DISCUSSION ===================== -->
+    <div class="module-panel" id="m-discussion">
+      <div class="tool-card">
+        <div class="step-num">STEP 08</div>
+        <h2>討論 (Discussion)</h2>
+        <p class="step-desc">Discussion 是審稿人最在意的章節。建議結構：① 主要發現摘述 → ② 與既有文獻對話 → ③ 理論意涵 → ④ 實務意涵 → ⑤ 限制 → ⑥ 未來研究方向。</p>
+
+        <div class="field">
+          <label>① 主要發現摘述 <small>1 段，呼應 Intro 中的 RQ/Hypothesis</small></label>
+          <textarea data-key="di_summary" placeholder="例：本研究發現……。具體而言，與控制組相比……。"></textarea>
+          <details class="tmpl"><summary>句型模板</summary>
+            <p>"This study aimed to … <strong>Our findings demonstrate that</strong> …, <strong>thereby supporting / contradicting</strong> our hypothesis that …"</p>
+          </details>
+        </div>
+
+        <div class="field">
+          <label>② 與既有文獻對話 <small>同向證據 + 反向證據 + 解釋差異</small></label>
+          <textarea data-key="di_compare" placeholder="例：本研究結果與 X (2022) 一致，皆顯示……。然而，與 Y (2021) 不同，後者報告……，可能由於樣本……。"></textarea>
+        </div>
+
+        <div class="field">
+          <label>③ 理論意涵 (Theoretical Implications)</label>
+          <textarea data-key="di_theory" placeholder="例：本研究擴展了 X 理論，提示在 Y 情境下……，挑戰了既有對 Z 的假設。"></textarea>
+        </div>
+
+        <div class="field">
+          <label>④ 實務 / 政策意涵 (Practical / Policy Implications)</label>
+          <textarea data-key="di_practice" placeholder="例：對醫院管理者而言，本研究暗示……。對教育者而言……。對政策制定者……。"></textarea>
+        </div>
+
+        <div class="field">
+          <label>⑤ 研究限制 (Limitations)<small>不要過度自我貶低，但需誠實</small></label>
+          <textarea data-key="di_limit" placeholder="例：(1) 樣本來自單一區域，外部效度受限；(2) 自我報告可能存在社會期許偏誤；(3) 追蹤期僅 8 週，長期效果未知。"></textarea>
+        </div>
+
+        <div class="field">
+          <label>⑥ 未來研究方向</label>
+          <textarea data-key="di_future" placeholder="例：未來研究應採用多中心、多元樣本，並納入客觀生理指標……。"></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-purple" id="diGenBtn">組合 Discussion 草稿 →</button>
+          <button type="button" class="btn-ghost-dark" data-reset="discussion">清空本步</button>
+        </div>
+      </div>
+
+      <div id="diResult" style="display:none;">
+        <div class="result-section"><h3>🧭 Discussion 草稿</h3><div class="report-block" id="diOutput">--</div></div>
+        <div class="result-section"><h3>💡 審稿人喜歡看見什麼</h3><ul>
+          <li>誠實但不誇大：避免「This is the first study to definitively prove…」。</li>
+          <li>解釋反向結果，而非略過。</li>
+          <li>限制段建議放在結論前，並具體說明對結果解釋的影響。</li>
+          <li>未來研究方向要與限制呼應，不要寫成空泛口號。</li>
+        </ul></div>
+        <div class="btn-row">
+          <button type="button" class="btn-ghost-dark" data-copy="diOutput">📋 複製 Discussion</button>
+          <button type="button" class="btn-purple" data-next="conclusion">下一步：Conclusion →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 09 CONCLUSION ===================== -->
+    <div class="module-panel" id="m-conclusion">
+      <div class="tool-card">
+        <div class="step-num">STEP 09</div>
+        <h2>結論與後置部分</h2>
+        <p class="step-desc">短而有力。不要重複 Discussion 內容，只回答：「讀者最該帶走什麼？」</p>
+
+        <div class="field">
+          <label>Take-home Message <small>1–2 句</small></label>
+          <textarea data-key="co_take" placeholder="例：本研究提供了首個 RCT 證據，顯示 8 週正念課程能顯著降低急診護理人員的情緒耗竭，且可在臨床日常中可行落地。"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Conclusion 段落 <small>3–5 句：摘要主要發現 + 主要意涵 + 一句展望</small></label>
+          <textarea data-key="co_body" placeholder="例：In conclusion, …"></textarea>
+        </div>
+
+        <div class="field"><label>致謝 (Acknowledgements)</label><textarea data-key="co_ack" placeholder="例：The authors thank … for assistance in data collection."></textarea></div>
+        <div class="field"><label>資助 (Funding)</label><input type="text" data-key="co_fund" placeholder="例：This work was supported by [Funder] under Grant No. XXXX."></div>
+        <div class="field"><label>利益衝突 (Conflict of Interest)</label><input type="text" data-key="co_coi" placeholder="例：The authors declare no conflict of interest."></div>
+        <div class="field"><label>作者貢獻 (Author Contributions, CRediT)</label><textarea data-key="co_credit" placeholder="例：Conceptualization: A; Methodology: A, B; Investigation: B, C; Writing — original draft: A; Writing — review &amp; editing: All authors."></textarea></div>
+        <div class="field"><label>資料 / 程式碼公開聲明 (Data Availability)</label><textarea data-key="co_data" placeholder="例：De-identified data and analysis code are available at [DOI / repository] upon request."></textarea></div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-purple" id="coGenBtn">組合結論段 →</button>
+          <button type="button" class="btn-ghost-dark" data-reset="conclusion">清空本步</button>
+        </div>
+      </div>
+
+      <div id="coResult" style="display:none;">
+        <div class="result-section"><h3>🏁 Conclusion 段</h3><div class="report-block" id="coOutput">--</div></div>
+        <div class="btn-row">
+          <button type="button" class="btn-ghost-dark" data-copy="coOutput">📋 複製結論</button>
+          <button type="button" class="btn-purple" data-next="preview">下一步：整稿預覽 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 10 PREVIEW ===================== -->
+    <div class="module-panel" id="m-preview">
+      <div class="tool-card">
+        <div class="step-num">STEP 10</div>
+        <h2>整稿預覽 / 匯出</h2>
+        <p class="step-desc">系統會把前 9 步的填空內容組合成完整論文草稿。可一鍵複製、列印 PDF，或匯出 .txt 至本地。匯入功能可載入之前的存檔繼續寫。</p>
+
+        <div class="field-row">
+          <div class="field"><label>論文標題（手動覆寫，選填）</label><input type="text" data-key="pv_title" placeholder="留空則使用 Step 02 的第一個候選"></div>
+          <div class="field"><label>作者群</label><input type="text" data-key="pv_authors" placeholder="例：Hsiao, H.-W.; Chen, Y.-L.; Wang, M.-J."></div>
+        </div>
+        <div class="field"><label>所屬機構</label><input type="text" data-key="pv_aff" placeholder="例：Department of Public Health, National Taiwan University, Taiwan"></div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-purple" id="pvGenBtn">生成完整論文預覽 →</button>
+          <button type="button" class="btn-ghost-dark" id="pvExportBtn">⬇ 匯出存檔 (.json)</button>
+          <button type="button" class="btn-ghost-dark" id="pvImportBtn">⬆ 匯入存檔</button>
+          <button type="button" class="btn-ghost-dark" id="pvClearAllBtn">🗑 清空全部</button>
+          <input type="file" id="pvImportFile" accept=".json" style="display:none;">
+        </div>
+      </div>
+
+      <div id="pvResult" style="display:none;">
+        <div class="result-section">
+          <h3>🧾 完整論文預覽</h3>
+          <div class="preview-paper" id="pvPaper"></div>
+        </div>
+        <div class="result-section disclaimer"><strong>提醒　</strong>本工具產出為「結構化草稿」。投稿前請仔細：① 對齊目標期刊 Author Guidelines（字數、引用格式、副標題層級）；② 完整 Reference List 由文獻管理工具生成（EndNote / Zotero）；③ 進行語言潤稿（建議 native 校對或專業 editing service）。</div>
+        <div class="btn-row">
+          <button type="button" class="btn-ghost-dark" id="pvCopyBtn">📋 複製全文</button>
+          <button type="button" class="btn-ghost-dark" id="pvDownloadBtn">⬇ 下載為 .txt</button>
+          <button type="button" class="btn-ghost-dark" onclick="window.print()">🖨️ 列印 / PDF</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-top">
+    <div class="footer-brand">
+      <div class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text"><span class="brand-line1">Hughie's</span><span class="brand-line2">Online Laboratory</span></div>
+      </div>
+      <p>An open research toolkit for everyone.</p>
+    </div>
+    <div class="footer-contact">
+      <h5>Quick Links</h5>
+      <div class="contact-item"><a href="#">Home</a></div>
+      <div class="contact-item"><a href="#">About the Lab</a></div>
+      <div class="contact-item"><a href="#">All Tools</a></div>
+      <div class="contact-item"><a href="#">Contact</a></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container footer-bottom-inner">
+      <span>© 2025 Hughie's Online Lab</span>
+      <span>For educational use only — not a substitute for professional academic editing.</span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast" class="toast">已複製到剪貼板</div>
+
+<script>
+/* ==================================================================
+   SCI / SSCI Paper Writing Assistant - Logic
+   ================================================================== */
+const STORAGE_KEY = 'sci_writing_assistant_v1';
+
+/* ---------- State & Persistence ---------- */
+const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); updateProgress(); }
+
+function bindInputs(){
+  // text / textarea / number with data-key
+  document.querySelectorAll('[data-key]').forEach(el=>{
+    const k = el.dataset.key;
+    if(state[k] !== undefined) el.value = state[k];
+    el.addEventListener('input', ()=>{
+      state[k] = el.value;
+      saveState();
+      const ccId = el.dataset.cc;
+      if(ccId){
+        const cc = document.getElementById(ccId);
+        const n = el.value.trim().split(/\s+/).filter(Boolean).length;
+        cc.textContent = n + ' 字';
+      }
+    });
+    if(el.dataset.cc){
+      const cc = document.getElementById(el.dataset.cc);
+      const n = (el.value||'').trim().split(/\s+/).filter(Boolean).length;
+      cc.textContent = n + ' 字';
+    }
+  });
+  // radios
+  document.querySelectorAll('input[type=radio]').forEach(r=>{
+    const name = r.name;
+    if(state[name] === r.value) r.checked = true;
+    r.addEventListener('change', ()=>{
+      if(r.checked){ state[name] = r.value; saveState(); }
+    });
+  });
+}
+
+/* ---------- Tab navigation ---------- */
+function switchModule(name){
+  document.querySelectorAll('.module-tab').forEach(t=>t.classList.toggle('active', t.dataset.module===name));
+  document.querySelectorAll('.module-panel').forEach(p=>p.classList.toggle('active', p.id==='m-'+name));
+  window.scrollTo({top:document.querySelector('.tool-section').offsetTop-30, behavior:'smooth'});
+}
+document.getElementById('moduleTabs').addEventListener('click', e=>{
+  const btn = e.target.closest('.module-tab');
+  if(btn) switchModule(btn.dataset.module);
+});
+document.querySelectorAll('[data-next]').forEach(b=>{
+  b.addEventListener('click', ()=>switchModule(b.dataset.next));
+});
+
+/* ---------- Reset per step ---------- */
+const stepKeyPrefix = {
+  positioning: ['pos_'],
+  title: ['ti_'],
+  abstract: ['ab_'],
+  intro: ['in_'],
+  literature: ['lr_'],
+  methods: ['me_'],
+  results: ['re_'],
+  discussion: ['di_'],
+  conclusion: ['co_'],
+};
+document.querySelectorAll('[data-reset]').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const step = b.dataset.reset;
+    const prefixes = stepKeyPrefix[step] || [];
+    Object.keys(state).forEach(k=>{
+      if(prefixes.some(p=>k.startsWith(p))) delete state[k];
+    });
+    saveState();
+    document.querySelectorAll('[data-key]').forEach(el=>{
+      if(prefixes.some(p=>el.dataset.key.startsWith(p))) el.value = '';
+    });
+    document.querySelectorAll('input[type=radio]').forEach(r=>{
+      if(prefixes.some(p=>r.name.startsWith(p))) r.checked = false;
+    });
+    showToast('已清空本步驟');
+  });
+});
+
+/* ---------- Toast & Copy ---------- */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg || '已複製到剪貼板';
+  t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+function copyText(text){
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(()=>showToast('已複製到剪貼板'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); showToast('已複製到剪貼板'); }catch(e){}
+    document.body.removeChild(ta);
+  }
+}
+document.querySelectorAll('[data-copy]').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const id = b.dataset.copy;
+    const node = document.getElementById(id);
+    if(!node) return;
+    copyText(node.innerText);
+  });
+});
+
+/* ---------- Progress ---------- */
+function updateProgress(){
+  // 每個步驟若有任一關鍵欄位被填寫就視為「進行中」，必填若都填寫則「完成」
+  const steps = ['positioning','title','abstract','intro','literature','methods','results','discussion','conclusion'];
+  const required = {
+    positioning: ['pos_field','pos_journal','pos_contrib'],
+    title: ['ti_iv','ti_dv','ti_pop','ti_kw'],
+    abstract: ['ab_bg','ab_obj','ab_method','ab_result','ab_conc'],
+    intro: ['in_m1','in_m2b','in_m3a'],
+    literature: ['lr_t1_title','lr_t1_body','lr_gap'],
+    methods: ['me_design','me_sampling','me_measures','me_analysis'],
+    results: ['re_flow','re_sample','re_main1'],
+    discussion: ['di_summary','di_compare','di_limit'],
+    conclusion: ['co_take','co_body'],
+  };
+  let done = 0;
+  steps.forEach(s=>{
+    const ok = required[s].every(k=>(state[k]||'').trim());
+    document.querySelector(`.module-tab[data-module="${s}"]`).classList.toggle('done', ok);
+    if(ok) done++;
+  });
+  const pct = Math.round(done / steps.length * 100);
+  document.getElementById('progPct').textContent = pct + '%';
+  document.getElementById('progFill').style.width = pct + '%';
+}
+
+/* ==================================================================
+   Generators
+   ================================================================== */
+
+/* ---- Step 02: Title ---- */
+document.getElementById('tiGenBtn').addEventListener('click', ()=>{
+  const iv = state.ti_iv || '[independent variable]';
+  const dv = state.ti_dv || '[outcome]';
+  const pop = state.ti_pop || '[population]';
+  const design = state.ti_design || '[design]';
+  const style = state.ti_style || 'descriptive';
+
+  const candidates = [];
+  if(style==='declarative'){
+    candidates.push(`${capitalize(iv)} reduces ${dv} in ${pop}: ${capitalize(design)}`);
+    candidates.push(`Effects of ${iv} on ${dv} among ${pop}: Evidence from ${design}`);
+    candidates.push(`${capitalize(iv)} improves ${dv} among ${pop}`);
+  } else if(style==='question'){
+    candidates.push(`Does ${iv} reduce ${dv} in ${pop}? ${capitalize(design)}`);
+    candidates.push(`Can ${iv} improve ${dv} among ${pop}?`);
+    candidates.push(`Is ${iv} associated with ${dv} in ${pop}? A ${design.replace(/^a\s/i,'')}`);
+  } else {
+    candidates.push(`The effect of ${iv} on ${dv} among ${pop}: ${capitalize(design)}`);
+    candidates.push(`Examining ${iv} and ${dv} in ${pop}: ${capitalize(design)}`);
+    candidates.push(`${capitalize(iv)} and ${dv} among ${pop}: A ${design.replace(/^a\s/i,'')}`);
+  }
+  const kw = (state.ti_kw||'').split(/[;,，；]+/).map(s=>s.trim()).filter(Boolean);
+  let txt = candidates.map((t,i)=>`候選 ${i+1}：\n${t}\n`).join('\n');
+  if(kw.length){
+    txt += `\n關鍵詞 (Keywords)：\n${kw.join('; ')}`;
+  }
+  document.getElementById('tiOutput').textContent = txt;
+  document.getElementById('tiResult').style.display='block';
+});
+function capitalize(s){ if(!s) return s; return s.charAt(0).toUpperCase()+s.slice(1); }
+
+/* ---- Step 03: Abstract ---- */
+document.getElementById('abGenBtn').addEventListener('click', ()=>{
+  const parts = [
+    ['Background', state.ab_bg],
+    ['Objective', state.ab_obj],
+    ['Methods', state.ab_method],
+    ['Results', state.ab_result],
+    ['Conclusion', state.ab_conc],
+  ];
+  const out = parts.map(([k,v])=> `${k}: ${(v||'[請填寫]').trim()}`).join('\n\n');
+  const kw = (state.ti_kw||'').split(/[;,，；]+/).map(s=>s.trim()).filter(Boolean);
+  const total = parts.reduce((acc,[,v])=>acc + ((v||'').trim().split(/\s+/).filter(Boolean).length), 0);
+  let txt = out + (kw.length? `\n\nKeywords: ${kw.join('; ')}` : '');
+  txt += `\n\n[Word count ≈ ${total} words]`;
+  document.getElementById('abOutput').textContent = txt;
+  document.getElementById('abResult').style.display='block';
+});
+
+/* ---- Step 04: Introduction ---- */
+document.getElementById('inGenBtn').addEventListener('click', ()=>{
+  const blocks = [
+    ['Move 1 · Establishing Territory', state.in_m1],
+    ['Move 2a · Reviewing Previous Research', state.in_m2a],
+    ['Move 2b · Identifying the Gap', state.in_m2b],
+    ['Move 3a · Present Study', state.in_m3a],
+    ['Move 3b · Research Questions / Hypotheses', state.in_m3b],
+    ['Move 3c · Significance & Roadmap', state.in_m3c],
+  ];
+  const txt = blocks.map(([k,v])=>`【${k}】\n${(v||'[尚未填寫]').trim()}`).join('\n\n');
+  document.getElementById('inOutput').textContent = txt;
+  document.getElementById('inResult').style.display='block';
+});
+
+/* ---- Step 05: Literature ---- */
+document.getElementById('lrGenBtn').addEventListener('click', ()=>{
+  let txt = '';
+  if(state.lr_theory) txt += `【Theoretical Framework】\n${state.lr_theory}\n\n`;
+  for(let i=1;i<=3;i++){
+    const t = state[`lr_t${i}_title`];
+    const b = state[`lr_t${i}_body`];
+    if(t || b){
+      txt += `【Theme ${i}: ${t||'(未命名)'}】\n${b||'[尚未填寫]'}\n\n`;
+    }
+  }
+  if(state.lr_gap) txt += `【Identified Gap】\n${state.lr_gap}\n`;
+  document.getElementById('lrOutput').textContent = txt || '[尚未填寫]';
+  document.getElementById('lrResult').style.display='block';
+});
+
+/* ---- Step 06: Methods ---- */
+document.getElementById('meGenBtn').addEventListener('click', ()=>{
+  const sec = (h, v)=> v ? `${h}\n${v}\n\n` : '';
+  let txt = '';
+  txt += sec('【Study Design】', state.me_design);
+  txt += sec('【Setting】', state.me_setting);
+  txt += sec('【Participants & Sampling】', state.me_sampling);
+  if(state.me_in || state.me_ex){
+    txt += '【Eligibility Criteria】\n';
+    if(state.me_in) txt += 'Inclusion:\n' + state.me_in.split('\n').filter(Boolean).map(s=>'  • '+s.trim()).join('\n') + '\n';
+    if(state.me_ex) txt += 'Exclusion:\n' + state.me_ex.split('\n').filter(Boolean).map(s=>'  • '+s.trim()).join('\n') + '\n';
+    txt += '\n';
+  }
+  txt += sec('【Sample Size Calculation】', state.me_power);
+  txt += sec('【Variables & Measures】', state.me_measures);
+  txt += sec('【Data Collection Procedure】', state.me_procedure);
+  txt += sec('【Statistical / Analytical Strategy】', state.me_analysis);
+  txt += sec('【Ethics】', state.me_ethics);
+  document.getElementById('meOutput').textContent = txt || '[尚未填寫]';
+  document.getElementById('meResult').style.display='block';
+});
+
+/* ---- Step 07: Results ---- */
+document.getElementById('reGenBtn').addEventListener('click', ()=>{
+  const sec = (h, v)=> v ? `${h}\n${v}\n\n` : '';
+  let txt = '';
+  txt += sec('【Sample Flow / Response Rate】', state.re_flow);
+  txt += sec('【Sample Characteristics (Table 1)】', state.re_sample);
+  txt += sec('【Primary Outcome 1】', state.re_main1);
+  if(state.re_main2) txt += sec('【Primary Outcome 2】', state.re_main2);
+  txt += sec('【Secondary / Exploratory Findings】', state.re_sec);
+  if(state.re_tables){
+    txt += '【Tables & Figures】\n' + state.re_tables.split('\n').filter(Boolean).map(s=>'  · '+s.trim()).join('\n') + '\n';
+  }
+  document.getElementById('reOutput').textContent = txt || '[尚未填寫]';
+  document.getElementById('reResult').style.display='block';
+});
+
+/* ---- Step 08: Discussion ---- */
+document.getElementById('diGenBtn').addEventListener('click', ()=>{
+  const blocks = [
+    ['1. Summary of Main Findings', state.di_summary],
+    ['2. Comparison with Existing Literature', state.di_compare],
+    ['3. Theoretical Implications', state.di_theory],
+    ['4. Practical / Policy Implications', state.di_practice],
+    ['5. Limitations', state.di_limit],
+    ['6. Future Research', state.di_future],
+  ];
+  const txt = blocks.map(([k,v])=>`【${k}】\n${(v||'[尚未填寫]').trim()}`).join('\n\n');
+  document.getElementById('diOutput').textContent = txt;
+  document.getElementById('diResult').style.display='block';
+});
+
+/* ---- Step 09: Conclusion ---- */
+document.getElementById('coGenBtn').addEventListener('click', ()=>{
+  let txt = '';
+  if(state.co_take) txt += `【Take-home Message】\n${state.co_take}\n\n`;
+  if(state.co_body) txt += `【Conclusion】\n${state.co_body}\n\n`;
+  if(state.co_ack) txt += `【Acknowledgements】\n${state.co_ack}\n\n`;
+  if(state.co_fund) txt += `【Funding】\n${state.co_fund}\n\n`;
+  if(state.co_coi) txt += `【Conflict of Interest】\n${state.co_coi}\n\n`;
+  if(state.co_credit) txt += `【Author Contributions】\n${state.co_credit}\n\n`;
+  if(state.co_data) txt += `【Data Availability】\n${state.co_data}\n`;
+  document.getElementById('coOutput').textContent = txt || '[尚未填寫]';
+  document.getElementById('coResult').style.display='block';
+});
+
+/* ---- Step 10: Preview ---- */
+function buildAbstract(){
+  const parts = [
+    ['Background', state.ab_bg],['Objective', state.ab_obj],
+    ['Methods', state.ab_method],['Results', state.ab_result],['Conclusion', state.ab_conc],
+  ];
+  return parts.map(([k,v])=>`<p><strong>${k}:</strong> ${escapeHtml(v||'[尚未填寫]')}</p>`).join('');
+}
+function buildIntro(){
+  const arr = [state.in_m1, state.in_m2a, state.in_m2b, state.in_m3a, state.in_m3b, state.in_m3c].filter(Boolean);
+  return arr.map(s=>`<p>${escapeHtml(s).replace(/\n/g,'<br>')}</p>`).join('') || '<p>[尚未填寫]</p>';
+}
+function buildLit(){
+  let html = '';
+  if(state.lr_theory) html += `<h3 class="psub">Theoretical Framework</h3><p>${escapeHtml(state.lr_theory)}</p>`;
+  for(let i=1;i<=3;i++){
+    const t=state[`lr_t${i}_title`], b=state[`lr_t${i}_body`];
+    if(t||b){
+      html += `<h3 class="psub">${escapeHtml(t||'(Untitled Theme)')}</h3><p>${escapeHtml(b||'[尚未填寫]').replace(/\n/g,'<br>')}</p>`;
+    }
+  }
+  if(state.lr_gap) html += `<h3 class="psub">Research Gap</h3><p>${escapeHtml(state.lr_gap).replace(/\n/g,'<br>')}</p>`;
+  return html;
+}
+function buildMethods(){
+  const items = [
+    ['Study Design', state.me_design],
+    ['Setting', state.me_setting],
+    ['Participants and Sampling', state.me_sampling],
+    ['Sample Size', state.me_power],
+    ['Variables and Measures', state.me_measures],
+    ['Procedure', state.me_procedure],
+    ['Statistical Analysis', state.me_analysis],
+    ['Ethics', state.me_ethics],
+  ];
+  let html='';
+  items.forEach(([h,v])=>{ if(v) html += `<h3 class="psub">${h}</h3><p>${escapeHtml(v).replace(/\n/g,'<br>')}</p>`; });
+  if(state.me_in||state.me_ex){
+    let crit='<h3 class="psub">Eligibility Criteria</h3>';
+    if(state.me_in) crit += `<p><strong>Inclusion:</strong><br>${escapeHtml(state.me_in).replace(/\n/g,'<br>')}</p>`;
+    if(state.me_ex) crit += `<p><strong>Exclusion:</strong><br>${escapeHtml(state.me_ex).replace(/\n/g,'<br>')}</p>`;
+    html = html.replace('<h3 class="psub">Sample Size</h3>', crit + '<h3 class="psub">Sample Size</h3>');
+  }
+  return html || '<p>[尚未填寫]</p>';
+}
+function buildResults(){
+  const items = [
+    ['Sample Flow', state.re_flow],
+    ['Sample Characteristics', state.re_sample],
+    ['Primary Outcome', state.re_main1],
+    ['Secondary Outcome', state.re_main2],
+    ['Exploratory Findings', state.re_sec],
+  ];
+  let html='';
+  items.forEach(([h,v])=>{ if(v) html += `<h3 class="psub">${h}</h3><p>${escapeHtml(v).replace(/\n/g,'<br>')}</p>`; });
+  if(state.re_tables) html += `<h3 class="psub">Tables & Figures</h3><p>${escapeHtml(state.re_tables).replace(/\n/g,'<br>')}</p>`;
+  return html || '<p>[尚未填寫]</p>';
+}
+function buildDiscussion(){
+  const items = [
+    ['Summary of Main Findings', state.di_summary],
+    ['Comparison with Existing Literature', state.di_compare],
+    ['Theoretical Implications', state.di_theory],
+    ['Practical Implications', state.di_practice],
+    ['Limitations', state.di_limit],
+    ['Future Research', state.di_future],
+  ];
+  return items.map(([h,v])=> v ? `<h3 class="psub">${h}</h3><p>${escapeHtml(v).replace(/\n/g,'<br>')}</p>` : '').join('') || '<p>[尚未填寫]</p>';
+}
+function buildConclusion(){
+  let html='';
+  if(state.co_take) html += `<p><strong>${escapeHtml(state.co_take)}</strong></p>`;
+  if(state.co_body) html += `<p>${escapeHtml(state.co_body).replace(/\n/g,'<br>')}</p>`;
+  return html || '<p>[尚未填寫]</p>';
+}
+function buildBackmatter(){
+  let html='';
+  const m = [
+    ['Acknowledgements', state.co_ack],
+    ['Funding', state.co_fund],
+    ['Conflict of Interest', state.co_coi],
+    ['Author Contributions', state.co_credit],
+    ['Data Availability', state.co_data],
+  ];
+  m.forEach(([h,v])=>{ if(v) html += `<h3 class="psub">${h}</h3><p>${escapeHtml(v).replace(/\n/g,'<br>')}</p>`; });
+  return html;
+}
+function escapeHtml(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+document.getElementById('pvGenBtn').addEventListener('click', ()=>{
+  // 取得標題
+  let title = (state.pv_title||'').trim();
+  if(!title){
+    // 從 Step 02 第一個候選回推
+    const iv = state.ti_iv, dv = state.ti_dv, pop = state.ti_pop, design = state.ti_design;
+    if(iv && dv && pop) title = `The effect of ${iv} on ${dv} among ${pop}${design? ': '+capitalize(design):''}`;
+    else title = '[Untitled Manuscript]';
+  }
+  const authors = state.pv_authors || '[Author Names]';
+  const aff = state.pv_aff || '[Affiliation]';
+  const kw = (state.ti_kw||'').split(/[;,，；]+/).map(s=>s.trim()).filter(Boolean);
+
+  let html = '';
+  html += `<h1 class="ptitle">${escapeHtml(title)}</h1>`;
+  html += `<div class="pauthors">${escapeHtml(authors)}</div>`;
+  html += `<div class="paff">${escapeHtml(aff)}</div>`;
+
+  html += `<h2 class="psec">Abstract</h2>${buildAbstract()}`;
+  if(kw.length) html += `<p class="pkw"><strong>Keywords:</strong> ${kw.map(escapeHtml).join('; ')}</p>`;
+
+  html += `<h2 class="psec">1. Introduction</h2>${buildIntro()}`;
+  const litHtml = buildLit();
+  if(litHtml.trim()) html += `<h2 class="psec">2. Literature Review</h2>${litHtml}`;
+  html += `<h2 class="psec">${litHtml.trim()?3:2}. Methods</h2>${buildMethods()}`;
+  html += `<h2 class="psec">${litHtml.trim()?4:3}. Results</h2>${buildResults()}`;
+  html += `<h2 class="psec">${litHtml.trim()?5:4}. Discussion</h2>${buildDiscussion()}`;
+  html += `<h2 class="psec">${litHtml.trim()?6:5}. Conclusion</h2>${buildConclusion()}`;
+  const back = buildBackmatter();
+  if(back) html += `<h2 class="psec">Declarations</h2>${back}`;
+  html += `<h2 class="psec">References</h2><p style="color:#999;">[請使用 EndNote / Zotero 等文獻管理工具自動匯入引用清單，遵循目標期刊格式。]</p>`;
+
+  document.getElementById('pvPaper').innerHTML = html;
+  document.getElementById('pvResult').style.display='block';
+  window.scrollTo({top:document.getElementById('pvResult').offsetTop-30, behavior:'smooth'});
+});
+
+/* ---- Copy / Download / Import / Export ---- */
+document.getElementById('pvCopyBtn').addEventListener('click', ()=>{
+  copyText(document.getElementById('pvPaper').innerText);
+});
+document.getElementById('pvDownloadBtn').addEventListener('click', ()=>{
+  const text = document.getElementById('pvPaper').innerText;
+  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'manuscript_draft.txt';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 200);
+  showToast('已下載 manuscript_draft.txt');
+});
+
+document.getElementById('pvExportBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sci_paper_state.json';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 200);
+  showToast('已匯出存檔');
+});
+document.getElementById('pvImportBtn').addEventListener('click', ()=>{
+  document.getElementById('pvImportFile').click();
+});
+document.getElementById('pvImportFile').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const fr = new FileReader();
+  fr.onload = ()=>{
+    try{
+      const data = JSON.parse(fr.result);
+      Object.keys(state).forEach(k=>delete state[k]);
+      Object.assign(state, data);
+      saveState();
+      // refresh UI
+      document.querySelectorAll('[data-key]').forEach(el=>{ el.value = state[el.dataset.key] || ''; });
+      document.querySelectorAll('input[type=radio]').forEach(r=>{ r.checked = (state[r.name] === r.value); });
+      showToast('已匯入存檔');
+    }catch(err){ showToast('檔案格式錯誤'); }
+  };
+  fr.readAsText(f);
+});
+
+document.getElementById('pvClearAllBtn').addEventListener('click', ()=>{
+  if(!confirm('確定要清空所有 10 個步驟的內容嗎？此動作無法復原。')) return;
+  Object.keys(state).forEach(k=>delete state[k]);
+  saveState();
+  document.querySelectorAll('[data-key]').forEach(el=>el.value='');
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+  document.querySelectorAll('[id$="Result"]').forEach(n=>n.style.display='none');
+  showToast('已清空全部資料');
+});
+
+/* ---------- Init ---------- */
+bindInputs();
+updateProgress();
+</script>
+</body>
+</html>
