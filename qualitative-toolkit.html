@@ -59,6 +59,7 @@
       width:100%;padding:11px 13px;font-size:14px;
       border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
       font-family:inherit;outline:none;transition:.2s;border-radius:0;
+      box-sizing:border-box;
     }
     .field textarea{min-height:90px;resize:vertical;line-height:1.6;}
     .field input:focus, .field select:focus, .field textarea:focus{border-color:#c9a961;}
@@ -125,30 +126,60 @@
     .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
 
     /* Checklist */
+    .checklist-list{margin-top:8px;}
     .checklist-domain{margin-bottom:28px;}
-    .checklist-domain-title{font-size:12px;letter-spacing:1.4px;color:#c9a961;font-weight:700;text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #ece5d3;}
+    .checklist-domain:last-child{margin-bottom:0;}
+    .checklist-domain-title{
+      font-size:12px;letter-spacing:1.4px;color:#c9a961;font-weight:700;
+      text-transform:uppercase;margin:0 0 14px;padding-bottom:10px;
+      border-bottom:1px solid #ece5d3;
+    }
     .cl-item{padding:18px 0;border-bottom:1px solid #f3ecdb;}
     .cl-item:last-child{border-bottom:none;}
     .cl-item-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px;}
-    .cl-num{font-family:'Encode Sans',sans-serif;font-weight:700;font-size:14px;color:#c9a961;flex-shrink:0;min-width:32px;}
-    .cl-text{font-size:14px;color:#1a1a1a;line-height:1.65;flex:1;}
+    .cl-num{font-family:'Encode Sans',sans-serif;font-weight:700;font-size:14px;color:#c9a961;flex-shrink:0;min-width:28px;}
+    .cl-text{font-size:14px;color:#1a1a1a;line-height:1.65;flex:1;min-width:0;}
     .cl-text small{display:block;color:#888;font-size:12px;font-weight:400;margin-top:3px;line-height:1.6;}
-    .cl-controls{display:flex;gap:6px;flex-wrap:wrap;margin-left:46px;margin-bottom:8px;}
+    .cl-controls{display:flex;gap:6px;flex-wrap:wrap;margin-left:42px;margin-bottom:8px;}
     .cl-radio{cursor:pointer;}
     .cl-radio input{display:none;}
-    .cl-radio span{display:block;padding:5px 12px;border:1px solid #ece5d3;background:#fff;font-size:12px;color:#555;letter-spacing:.4px;transition:.2s;}
+    .cl-radio span{
+      display:block;padding:5px 12px;border:1px solid #ece5d3;background:#fff;
+      font-size:12px;color:#555;letter-spacing:.4px;transition:.2s;
+    }
     .cl-radio:hover span{border-color:#d4c5a0;}
     .cl-radio input:checked + span{border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;}
-    .cl-note{margin-left:46px;}
-    .cl-note textarea{width:100%;padding:8px 10px;font-size:13px;border:1px solid #ece5d3;background:#fff;font-family:inherit;outline:none;min-height:42px;resize:vertical;border-radius:0;line-height:1.55;}
+    .cl-note{margin-left:42px;}
+    .cl-note textarea{
+      width:100%;padding:8px 10px;font-size:13px;border:1px solid #ece5d3;
+      background:#fff;font-family:inherit;outline:none;min-height:42px;
+      resize:vertical;border-radius:0;line-height:1.55;box-sizing:border-box;
+    }
     .cl-note textarea:focus{border-color:#c9a961;}
 
-    .score-bar{position:sticky;top:0;background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;z-index:10;}
+    .score-bar{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:14px 18px;display:flex;justify-content:space-between;align-items:center;
+      flex-wrap:wrap;gap:12px;margin:8px 0 28px;
+    }
     .score-bar .score-text{font-size:13px;color:#555;}
-    .score-bar .score-num{font-family:'Encode Sans',sans-serif;font-weight:700;font-size:20px;color:#c9a961;margin:0 4px;}
+    .score-bar .score-num{
+      font-family:'Encode Sans',sans-serif;font-weight:700;
+      font-size:20px;color:#c9a961;margin:0 4px;
+    }
     .score-bar .score-actions{display:flex;gap:8px;flex-wrap:wrap;}
-    .score-bar .score-actions button{font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.2px;padding:8px 14px;border:1px solid #1a1a1a;background:transparent;color:#1a1a1a;cursor:pointer;font-weight:700;text-transform:uppercase;}
+    .score-bar .score-actions button{
+      font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.2px;
+      padding:8px 14px;border:1px solid #1a1a1a;background:transparent;
+      color:#1a1a1a;cursor:pointer;font-weight:700;text-transform:uppercase;
+    }
     .score-bar .score-actions button:hover{background:#1a1a1a;color:#fff;}
+
+    @media(max-width:600px){
+      .score-bar{flex-direction:column;align-items:stretch;}
+      .score-bar .score-text{text-align:center;}
+      .score-bar .score-actions{justify-content:center;}
+    }
 
     /* IP slider */
     .ip-slider{margin-bottom:22px;}
@@ -337,7 +368,7 @@
           <p class="step-desc">輸入研究主題與重點議題，系統會輸出包含開場、暖身、核心問題、追問探究與結束語的半結構化訪談指南。</p>
 
           <div class="field"><label>研究主題</label><input type="text" id="iv_topic" placeholder="例：腫瘤護理人員的道德困境經驗"></div>
-          <div class="field"><label>研究問題（1–3 個，每行一個）</label><textarea id="iv_rq" placeholder="例：護理人員如何詮釋臨床中的道德兩難？\n他們採取哪些因應策略？"></textarea></div>
+          <div class="field"><label>研究問題（1–3 個，每行一個）</label><textarea id="iv_rq" placeholder="例：護理人員如何詮釋臨床中的道德兩難？&#10;他們採取哪些因應策略？"></textarea></div>
           <div class="field"><label>受訪者特徵</label><input type="text" id="iv_pop" placeholder="例：服務 ≥3 年的腫瘤科護理人員"></div>
 
           <div class="field-row">
@@ -359,7 +390,7 @@
             </div>
           </div>
 
-          <div class="field"><label>核心主題（每行一個，建議 3–5 個）</label><textarea id="iv_themes" placeholder="例：道德困境的具體情境\n機構支持與限制\n自我調適策略"></textarea></div>
+          <div class="field"><label>核心主題（每行一個，建議 3–5 個）</label><textarea id="iv_themes" placeholder="例：道德困境的具體情境&#10;機構支持與限制&#10;自我調適策略"></textarea></div>
           <div class="field"><label>理論／概念框架（選填）</label><input type="text" id="iv_theory" placeholder="例：Jameton 道德困境理論"></div>
 
           <div class="btn-row">
@@ -406,7 +437,7 @@
             </div>
           </div>
 
-          <div class="field"><label>核心討論議題（每行一個，建議 3–5 個）</label><textarea id="fg_themes" placeholder="例：使用社交媒體的時機與感受\n與同儕比較的心理反應\n應對壓力的策略"></textarea></div>
+          <div class="field"><label>核心討論議題（每行一個，建議 3–5 個）</label><textarea id="fg_themes" placeholder="例：使用社交媒體的時機與感受&#10;與同儕比較的心理反應&#10;應對壓力的策略"></textarea></div>
           <div class="field"><label>是否需要排序／投票活動？</label>
             <div class="radio-row">
               <label class="radio-btn"><input type="radio" name="fg_act" value="yes" checked><span>是</span></label>
@@ -464,8 +495,8 @@
           </div>
 
           <div class="field"><label>研究對象描述</label><input type="text" id="s_pop" placeholder="例：在三甲醫院 ICU 工作 ≥2 年的護理人員"></div>
-          <div class="field"><label>納入條件（每行一個）</label><textarea id="s_in" placeholder="例：年滿 20 歲\n持續工作 ≥2 年\n能以中文受訪"></textarea></div>
-          <div class="field"><label>排除條件（每行一個）</label><textarea id="s_ex" placeholder="例：目前長期病假\n為研究團隊成員"></textarea></div>
+          <div class="field"><label>納入條件（每行一個）</label><textarea id="s_in" placeholder="例：年滿 20 歲&#10;持續工作 ≥2 年&#10;能以中文受訪"></textarea></div>
+          <div class="field"><label>排除條件（每行一個）</label><textarea id="s_ex" placeholder="例：目前長期病假&#10;為研究團隊成員"></textarea></div>
 
           <div class="btn-row">
             <button type="button" class="btn-purple" id="sRunBtn">產生抽樣建議 →</button>
@@ -556,35 +587,94 @@
         </div>
       </div>
 
-      <!-- ===================== MODULE 6-10: CHECKLISTS ===================== -->
+      <!-- ===================== MODULE 6: COREQ ===================== -->
       <div class="module-panel" id="m-coreq">
-        <div class="tool-card"><div class="step-num">MODULE 06</div><h2>COREQ 32 項清單</h2><p class="step-desc">Tong, Sainsbury &amp; Craig (2007) 提出，用於訪談與焦點團體質性研究的報告完整度自評。</p></div>
-        <div class="score-bar"><div class="score-text">已回答 <span class="score-num" id="coreqAnswered">0</span> / 32 ｜ 達標 <span class="score-num" id="coreqYes">0</span> 項</div><div class="score-actions"><button data-cl="coreq" data-act="copy">複製摘要</button><button data-cl="coreq" data-act="reset">清空</button><button onclick="window.print()">列印</button></div></div>
-        <div id="coreqList"></div>
+        <div class="tool-card">
+          <div class="step-num">MODULE 06</div>
+          <h2>COREQ 32 項清單</h2>
+          <p class="step-desc">Tong, Sainsbury &amp; Craig (2007) 提出，用於訪談與焦點團體質性研究的報告完整度自評。</p>
+          <div class="score-bar">
+            <div class="score-text">已回答 <span class="score-num" id="coreqAnswered">0</span> / 32 ｜ 達標 <span class="score-num" id="coreqYes">0</span> 項</div>
+            <div class="score-actions">
+              <button data-cl="coreq" data-act="copy">複製摘要</button>
+              <button data-cl="coreq" data-act="reset">清空</button>
+              <button onclick="window.print()">列印</button>
+            </div>
+          </div>
+          <div id="coreqList" class="checklist-list"></div>
+        </div>
       </div>
 
+      <!-- ===================== MODULE 7: SRQR ===================== -->
       <div class="module-panel" id="m-srqr">
-        <div class="tool-card"><div class="step-num">MODULE 07</div><h2>SRQR 21 項清單</h2><p class="step-desc">O'Brien et al. (2014) 提出的通用質性研究報告標準（Standards for Reporting Qualitative Research）。</p></div>
-        <div class="score-bar"><div class="score-text">已回答 <span class="score-num" id="srqrAnswered">0</span> / 21 ｜ 達標 <span class="score-num" id="srqrYes">0</span> 項</div><div class="score-actions"><button data-cl="srqr" data-act="copy">複製摘要</button><button data-cl="srqr" data-act="reset">清空</button><button onclick="window.print()">列印</button></div></div>
-        <div id="srqrList"></div>
+        <div class="tool-card">
+          <div class="step-num">MODULE 07</div>
+          <h2>SRQR 21 項清單</h2>
+          <p class="step-desc">O'Brien et al. (2014) 提出的通用質性研究報告標準（Standards for Reporting Qualitative Research）。</p>
+          <div class="score-bar">
+            <div class="score-text">已回答 <span class="score-num" id="srqrAnswered">0</span> / 21 ｜ 達標 <span class="score-num" id="srqrYes">0</span> 項</div>
+            <div class="score-actions">
+              <button data-cl="srqr" data-act="copy">複製摘要</button>
+              <button data-cl="srqr" data-act="reset">清空</button>
+              <button onclick="window.print()">列印</button>
+            </div>
+          </div>
+          <div id="srqrList" class="checklist-list"></div>
+        </div>
       </div>
 
+      <!-- ===================== MODULE 8: CASP ===================== -->
       <div class="module-panel" id="m-casp">
-        <div class="tool-card"><div class="step-num">MODULE 08</div><h2>CASP 質性研究批判性評讀</h2><p class="step-desc">Critical Appraisal Skills Programme (CASP) 質性版，10 項用於系統性評估質性研究的可信度與相關性。</p></div>
-        <div class="score-bar"><div class="score-text">已回答 <span class="score-num" id="caspAnswered">0</span> / 10 ｜ Yes <span class="score-num" id="caspYes">0</span> 項</div><div class="score-actions"><button data-cl="casp" data-act="copy">複製摘要</button><button data-cl="casp" data-act="reset">清空</button><button onclick="window.print()">列印</button></div></div>
-        <div id="caspList"></div>
+        <div class="tool-card">
+          <div class="step-num">MODULE 08</div>
+          <h2>CASP 質性研究批判性評讀</h2>
+          <p class="step-desc">Critical Appraisal Skills Programme (CASP) 質性版，10 項用於系統性評估質性研究的可信度與相關性。</p>
+          <div class="score-bar">
+            <div class="score-text">已回答 <span class="score-num" id="caspAnswered">0</span> / 10 ｜ Yes <span class="score-num" id="caspYes">0</span> 項</div>
+            <div class="score-actions">
+              <button data-cl="casp" data-act="copy">複製摘要</button>
+              <button data-cl="casp" data-act="reset">清空</button>
+              <button onclick="window.print()">列印</button>
+            </div>
+          </div>
+          <div id="caspList" class="checklist-list"></div>
+        </div>
       </div>
 
+      <!-- ===================== MODULE 9: JBI ===================== -->
       <div class="module-panel" id="m-jbi">
-        <div class="tool-card"><div class="step-num">MODULE 09</div><h2>JBI 質性研究嚴謹性評估</h2><p class="step-desc">Joanna Briggs Institute 質性研究核對表，10 項聚焦於哲學立場、方法一致性與研究者反思。</p></div>
-        <div class="score-bar"><div class="score-text">已回答 <span class="score-num" id="jbiAnswered">0</span> / 10 ｜ Yes <span class="score-num" id="jbiYes">0</span> 項</div><div class="score-actions"><button data-cl="jbi" data-act="copy">複製摘要</button><button data-cl="jbi" data-act="reset">清空</button><button onclick="window.print()">列印</button></div></div>
-        <div id="jbiList"></div>
+        <div class="tool-card">
+          <div class="step-num">MODULE 09</div>
+          <h2>JBI 質性研究嚴謹性評估</h2>
+          <p class="step-desc">Joanna Briggs Institute 質性研究核對表，10 項聚焦於哲學立場、方法一致性與研究者反思。</p>
+          <div class="score-bar">
+            <div class="score-text">已回答 <span class="score-num" id="jbiAnswered">0</span> / 10 ｜ Yes <span class="score-num" id="jbiYes">0</span> 項</div>
+            <div class="score-actions">
+              <button data-cl="jbi" data-act="copy">複製摘要</button>
+              <button data-cl="jbi" data-act="reset">清空</button>
+              <button onclick="window.print()">列印</button>
+            </div>
+          </div>
+          <div id="jbiList" class="checklist-list"></div>
+        </div>
       </div>
 
+      <!-- ===================== MODULE 10: ENTREQ ===================== -->
       <div class="module-panel" id="m-entreq">
-        <div class="tool-card"><div class="step-num">MODULE 10</div><h2>ENTREQ 21 項清單</h2><p class="step-desc">Tong et al. (2012) 提出，用於增進質性研究綜合報告（synthesis）透明度的 21 項清單。</p></div>
-        <div class="score-bar"><div class="score-text">已回答 <span class="score-num" id="entreqAnswered">0</span> / 21 ｜ 達標 <span class="score-num" id="entreqYes">0</span> 項</div><div class="score-actions"><button data-cl="entreq" data-act="copy">複製摘要</button><button data-cl="entreq" data-act="reset">清空</button><button onclick="window.print()">列印</button></div></div>
-        <div id="entreqList"></div>
+        <div class="tool-card">
+          <div class="step-num">MODULE 10</div>
+          <h2>ENTREQ 21 項清單</h2>
+          <p class="step-desc">Tong et al. (2012) 提出，用於增進質性研究綜合報告（synthesis）透明度的 21 項清單。</p>
+          <div class="score-bar">
+            <div class="score-text">已回答 <span class="score-num" id="entreqAnswered">0</span> / 21 ｜ 達標 <span class="score-num" id="entreqYes">0</span> 項</div>
+            <div class="score-actions">
+              <button data-cl="entreq" data-act="copy">複製摘要</button>
+              <button data-cl="entreq" data-act="reset">清空</button>
+              <button onclick="window.print()">列印</button>
+            </div>
+          </div>
+          <div id="entreqList" class="checklist-list"></div>
+        </div>
       </div>
 
       <!-- ===================== MODULE 11: CERQual ===================== -->
