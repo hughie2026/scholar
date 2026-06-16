@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Service Analysis Toolkit · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{background:#fff;border:1px solid #ece5d3;padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;}
+    .eyebrow.gold{color:#c9a961;font-size:11px;letter-spacing:1.8px;font-weight:700;text-transform:uppercase;}
+
+    /* Tabs */
+    .tools-section{padding:60px 0;background:#fff;}
+    .tools-section .narrow{max-width:960px;margin:0 auto;}
+    .tool-tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid #ece5d3;margin-bottom:36px;}
+    .tab-btn{
+      flex:1;min-width:140px;background:transparent;border:none;cursor:pointer;
+      padding:18px 14px;font-family:'Encode Sans',sans-serif;font-size:12px;
+      letter-spacing:1.2px;font-weight:700;color:#888;text-transform:uppercase;
+      border-bottom:3px solid transparent;transition:.2s;
+    }
+    .tab-btn b{display:block;font-size:11px;color:#bbb;margin-bottom:4px;letter-spacing:1.5px;}
+    .tab-btn:hover{color:#1a1a1a;}
+    .tab-btn:hover b{color:#c9a961;}
+    .tab-btn.active{color:#1a1a1a;border-bottom-color:#c9a961;}
+    .tab-btn.active b{color:#c9a961;}
+
+    /* Panel */
+    .tool-panel{display:none;}
+    .tool-panel.active{display:block;}
+
+    /* Form Card */
+    .form-step{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:42px 38px;margin-bottom:24px;}
+    .step-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
+    .form-step h2{font-size:28px;color:#1a1a1a;margin:0 0 10px;line-height:1.3;}
+    .step-desc{font-size:14px;color:#888;margin:0 0 32px;line-height:1.75;}
+
+    /* Fields */
+    .field{margin-bottom:24px;}
+    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .field-row.three{grid-template-columns:1fr 1fr 1fr;}
+    @media(max-width:600px){.field-row,.field-row.three{grid-template-columns:1fr;gap:0;}}
+    .field input[type="number"],.field input[type="text"],.field select,.field textarea{
+      width:100%;padding:12px 14px;font-size:14px;border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+      font-family:inherit;outline:none;transition:.2s;border-radius:0;box-sizing:border-box;
+    }
+    .field textarea{resize:vertical;min-height:80px;}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:#c9a961;}
+    .field-help{font-size:12px;color:#888;margin-top:6px;line-height:1.6;}
+
+    /* Checkbox / Radio cards */
+    .check-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .check-grid.three{grid-template-columns:1fr 1fr 1fr;}
+    @media(max-width:600px){.check-grid,.check-grid.three{grid-template-columns:1fr;}}
+    .check-card{cursor:pointer;}
+    .check-card input{display:none;}
+    .check-card span{display:block;padding:14px 18px;border:1px solid #ece5d3;background:#fff;color:#555;font-size:14px;line-height:1.55;transition:.2s;}
+    .check-card span small{display:block;color:#888;font-size:12px;margin-top:4px;letter-spacing:.2px;}
+    .check-card:hover span{border-color:#d4c5a0;}
+    .check-card input:checked + span{border-color:#c9a961;color:#1a1a1a;background:#faf7f0;font-weight:600;}
+    .check-card input:checked + span small{color:#c9a961;font-weight:600;}
+    .radio-row{display:flex;gap:12px;flex-wrap:wrap;}
+    .radio-btn{flex:1;min-width:110px;cursor:pointer;}
+    .radio-btn input{display:none;}
+    .radio-btn span{display:block;text-align:center;padding:12px 18px;border:1px solid #ece5d3;background:#fff;color:#555;font-size:14px;transition:.2s;}
+    .radio-btn:hover span{border-color:#d4c5a0;}
+    .radio-btn input:checked + span{border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;}
+
+    /* Hint */
+    .hint-box{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:14px 18px;font-size:13px;color:#555;line-height:1.75;margin-top:12px;}
+    .hint-box strong{color:#c9a961;letter-spacing:.5px;}
+
+    /* Buttons */
+    .form-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;flex-wrap:wrap;}
+    .btn-purple,.btn-ghost-dark{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;
+      font-weight:700;padding:14px 28px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+
+    /* Result */
+    .tool-result{display:none;}
+    .tool-result.show{display:block;}
+    .method-card{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:36px;margin-bottom:24px;}
+    .method-eyebrow{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;text-transform:uppercase;margin-bottom:10px;}
+    .method-name{font-family:'Encode Sans',sans-serif;font-size:30px;color:#1a1a1a;font-weight:700;line-height:1.25;margin:0 0 6px;}
+    .method-en{font-size:14px;color:#888;letter-spacing:.4px;margin-bottom:18px;}
+    .method-summary{font-size:14px;color:#555;line-height:1.85;margin:0;}
+    .alt-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+    .alt-list .tag{font-size:12px;letter-spacing:.4px;color:#555;background:#fff;border:1px solid #ece5d3;padding:6px 12px;}
+    .alt-list .tag.gold{background:#c9a961;color:#fff;border-color:#c9a961;}
+
+    .result-section{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:28px 32px;margin-bottom:20px;}
+    .result-section h3{font-size:18px;color:#1a1a1a;margin:0 0 18px;font-weight:700;}
+    .result-section ul{padding-left:20px;line-height:1.95;color:#555;font-size:14px;margin:0;}
+    .result-section li{margin-bottom:6px;}
+    .result-section li em{color:#888;font-style:normal;}
+    .result-section code{background:#faf7f0;border:1px solid #ece5d3;padding:2px 6px;font-family:'Encode Sans',sans-serif;font-size:13px;color:#1a1a1a;}
+    .report-block{background:#faf7f0;border:1px solid #ece5d3;padding:18px 20px;font-family:'Encode Sans',sans-serif;font-size:13px;color:#1a1a1a;line-height:1.85;white-space:pre-wrap;word-break:break-word;}
+
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:8px;}
+    .summary-item{background:#faf7f0;border:1px solid #ece5d3;padding:18px 16px;}
+    .summary-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:8px;text-transform:uppercase;}
+    .summary-value{font-size:14px;color:#1a1a1a;font-weight:600;line-height:1.5;}
+
+    /* Bars (used in 满意度 / 成本结构) */
+    .bar-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+    .bar-label{flex:0 0 130px;font-size:13px;color:#1a1a1a;font-weight:600;}
+    .bar-track{flex:1;height:18px;background:#f5efde;border:1px solid #ece5d3;position:relative;overflow:hidden;}
+    .bar-fill{height:100%;background:#c9a961;transition:width .5s ease;}
+    .bar-fill.warn{background:#d4955a;}
+    .bar-fill.danger{background:#c46b4d;}
+    .bar-value{flex:0 0 80px;text-align:right;font-size:13px;color:#555;font-weight:600;}
+
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    /* Toast */
+    .toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;padding:12px 22px;font-size:13px;letter-spacing:.5px;opacity:0;pointer-events:none;transition:.3s;z-index:99;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+    @media print{
+      .page-hero,.tool-tabs,.form-step,.form-nav,.footer,.main-header,.utility-bar{display:none !important;}
+      .tool-result{display:block !important;}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Health Service Analysis Toolkit</span>
+      </div>
+      <div class="eyebrow gold">PUBLIC HEALTH · MANAGEMENT</div>
+      <h1>健康服務與管理工作分析工具</h1>
+      <p class="lead">
+        為公共衛生工作者、社區衛生服務管理者、健康項目策劃人員設計的整合工具集。涵蓋
+        <strong>需求分析、慢病隨訪、健康教育、滿意度評估、成本人資估計</strong>五大模塊，
+        基於常用公衛實踐與管理經驗給出量化建議與模板化報告。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">🧰 5 個子工具</span>
+        <span class="pill">📋 含報告模板</span>
+        <span class="pill">📊 量化估算</span>
+        <span class="pill">🔒 本地計算</span>
+        <span class="pill">📖 教學/實務用途</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="tools-section">
+    <div class="container narrow">
+
+      <div class="tool-tabs" id="toolTabs">
+        <button class="tab-btn active" data-tab="needs"><b>01</b>需求分析</button>
+        <button class="tab-btn" data-tab="followup"><b>02</b>慢病隨訪</button>
+        <button class="tab-btn" data-tab="education"><b>03</b>健康教育</button>
+        <button class="tab-btn" data-tab="satisfaction"><b>04</b>滿意度</button>
+        <button class="tab-btn" data-tab="cost"><b>05</b>成本人資</button>
+      </div>
+
+      <!-- ============== 01 需求分析 ============== -->
+      <div class="tool-panel active" data-panel="needs">
+        <div class="form-step">
+          <div class="step-num">TOOL 01</div>
+          <h2>健康服務需求分析</h2>
+          <p class="step-desc">輸入目標人群基本特徵與主要健康問題，估算服務需求等級、優先方向與年度服務量。</p>
+
+          <div class="field-row">
+            <div class="field">
+              <label>目標人群規模（人）</label>
+              <input type="number" id="n_population" min="1" placeholder="如 10000">
+            </div>
+            <div class="field">
+              <label>區域類型</label>
+              <select id="n_region">
+                <option value="urban">城市社區</option>
+                <option value="rural">農村社區</option>
+                <option value="mixed">城鄉結合</option>
+                <option value="remote">偏遠地區</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row three">
+            <div class="field">
+              <label>≥65 歲人群比例 (%)</label>
+              <input type="number" id="n_elderly" min="0" max="100" step="0.1" placeholder="如 18">
+            </div>
+            <div class="field">
+              <label>慢病患病率 (%)</label>
+              <input type="number" id="n_chronic" min="0" max="100" step="0.1" placeholder="如 25">
+              <div class="field-help">高血壓、糖尿病等已知慢病合計</div>
+            </div>
+            <div class="field">
+              <label>現有服務覆蓋率 (%)</label>
+              <input type="number" id="n_coverage" min="0" max="100" step="0.1" placeholder="如 40">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>主要健康問題（可多選，至少 1 項）</label>
+            <div class="check-grid">
+              <label class="check-card"><input type="checkbox" name="n_issue" value="慢病管理"><span>慢病管理<small>高血壓 / 糖尿病 / COPD</small></span></label>
+              <label class="check-card"><input type="checkbox" name="n_issue" value="老年照護"><span>老年照護<small>失能 / 認知 / 跌倒預防</small></span></label>
+              <label class="check-card"><input type="checkbox" name="n_issue" value="婦幼保健"><span>婦幼保健<small>孕產 / 兒童體檢 / 接種</small></span></label>
+              <label class="check-card"><input type="checkbox" name="n_issue" value="心理健康"><span>心理健康<small>抑鬱 / 焦慮 / 壓力</small></span></label>
+              <label class="check-card"><input type="checkbox" name="n_issue" value="傳染病防控"><span>傳染病防控<small>呼吸道 / 腸道 / 媒介</small></span></label>
+              <label class="check-card"><input type="checkbox" name="n_issue" value="健康行為"><span>健康行為<small>戒煙 / 飲食 / 運動</small></span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>當地經濟水平</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="n_econ" value="low"><span>較低</span></label>
+              <label class="radio-btn"><input type="radio" name="n_econ" value="medium" checked><span>中等</span></label>
+              <label class="radio-btn"><input type="radio" name="n_econ" value="high"><span>較高</span></label>
+            </div>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn-ghost-dark" data-reset="needs">清空</button>
+            <button type="button" class="btn-purple" data-action="needs">生成需求分析 →</button>
+          </div>
+        </div>
+        <div class="tool-result" id="needsResult"></div>
+      </div>
+
+      <!-- ============== 02 慢病随访 ============== -->
+      <div class="tool-panel" data-panel="followup">
+        <div class="form-step">
+          <div class="step-num">TOOL 02</div>
+          <h2>慢性病隨訪計劃設計</h2>
+          <p class="step-desc">根據慢病類型、病情分級與控制狀態，輸出標準化隨訪頻率、檢查項目與干預清單。</p>
+
+          <div class="field">
+            <label>慢病類型</label>
+            <div class="check-grid three">
+              <label class="check-card"><input type="radio" name="f_disease" value="hypertension" checked><span>高血壓</span></label>
+              <label class="check-card"><input type="radio" name="f_disease" value="diabetes"><span>2 型糖尿病</span></label>
+              <label class="check-card"><input type="radio" name="f_disease" value="chd"><span>冠心病</span></label>
+              <label class="check-card"><input type="radio" name="f_disease" value="copd"><span>慢阻肺 (COPD)</span></label>
+              <label class="check-card"><input type="radio" name="f_disease" value="stroke"><span>腦卒中後</span></label>
+              <label class="check-card"><input type="radio" name="f_disease" value="ckd"><span>慢性腎病</span></label>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>病情分級</label>
+              <div class="radio-row">
+                <label class="radio-btn"><input type="radio" name="f_grade" value="1" checked><span>1 級（輕）</span></label>
+                <label class="radio-btn"><input type="radio" name="f_grade" value="2"><span>2 級（中）</span></label>
+                <label class="radio-btn"><input type="radio" name="f_grade" value="3"><span>3 級（重）</span></label>
+              </div>
+            </div>
+            <div class="field">
+              <label>當前控制狀態</label>
+              <div class="radio-row">
+                <label class="radio-btn"><input type="radio" name="f_control" value="good" checked><span>達標</span></label>
+                <label class="radio-btn"><input type="radio" name="f_control" value="poor"><span>未達標</span></label>
+                <label class="radio-btn"><input type="radio" name="f_control" value="unstable"><span>不穩定</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>管理患者人數</label>
+              <input type="number" id="f_patients" min="1" placeholder="如 200">
+            </div>
+            <div class="field">
+              <label>主要年齡段</label>
+              <select id="f_age">
+                <option value="adult">中青年（18-64）</option>
+                <option value="elderly" selected>老年（65 +）</option>
+                <option value="mixed">混合</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>合併症情況（可多選）</label>
+            <div class="check-grid three">
+              <label class="check-card"><input type="checkbox" name="f_comorb" value="hyperlipidemia"><span>血脂異常</span></label>
+              <label class="check-card"><input type="checkbox" name="f_comorb" value="obesity"><span>肥胖</span></label>
+              <label class="check-card"><input type="checkbox" name="f_comorb" value="smoking"><span>吸煙</span></label>
+              <label class="check-card"><input type="checkbox" name="f_comorb" value="depression"><span>抑鬱情緒</span></label>
+              <label class="check-card"><input type="checkbox" name="f_comorb" value="kidney"><span>腎功能異常</span></label>
+              <label class="check-card"><input type="checkbox" name="f_comorb" value="none"><span>無</span></label>
+            </div>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn-ghost-dark" data-reset="followup">清空</button>
+            <button type="button" class="btn-purple" data-action="followup">生成隨訪計劃 →</button>
+          </div>
+        </div>
+        <div class="tool-result" id="followupResult"></div>
+      </div>
+
+      <!-- ============== 03 健康教育 ============== -->
+      <div class="tool-panel" data-panel="education">
+        <div class="form-step">
+          <div class="step-num">TOOL 03</div>
+          <h2>健康教育干預設計</h2>
+          <p class="step-desc">根據目標人群、主題、預算與週期，推薦傳播策略組合、實施頻率與評估指標。</p>
+
+          <div class="field-row">
+            <div class="field">
+              <label>目標人群</label>
+              <select id="e_audience">
+                <option value="general">一般社區居民</option>
+                <option value="elderly">老年人</option>
+                <option value="chronic">慢病患者</option>
+                <option value="women">育齡婦女 / 孕產婦</option>
+                <option value="children">兒童青少年</option>
+                <option value="workplace">職業人群</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>干預週期</label>
+              <select id="e_duration">
+                <option value="short">短期（1-3 個月）</option>
+                <option value="medium" selected>中期（3-12 個月）</option>
+                <option value="long">長期（&gt; 12 個月）</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>健康教育主題</label>
+            <div class="check-grid three">
+              <label class="check-card"><input type="radio" name="e_topic" value="diet" checked><span>合理膳食</span></label>
+              <label class="check-card"><input type="radio" name="e_topic" value="exercise"><span>身體活動</span></label>
+              <label class="check-card"><input type="radio" name="e_topic" value="smoking"><span>戒煙限酒</span></label>
+              <label class="check-card"><input type="radio" name="e_topic" value="chronic"><span>慢病自管理</span></label>
+              <label class="check-card"><input type="radio" name="e_topic" value="mental"><span>心理健康</span></label>
+              <label class="check-card"><input type="radio" name="e_topic" value="infection"><span>傳染病預防</span></label>
+            </div>
+          </div>
+
+          <div class="field-row three">
+            <div class="field">
+              <label>覆蓋人數（人）</label>
+              <input type="number" id="e_size" min="1" placeholder="如 500">
+            </div>
+            <div class="field">
+              <label>可用預算（元）</label>
+              <input type="number" id="e_budget" min="0" placeholder="如 30000">
+            </div>
+            <div class="field">
+              <label>實施人員配備</label>
+              <select id="e_staff">
+                <option value="low">薄弱（&lt; 2 人）</option>
+                <option value="medium" selected>常規（2-5 人）</option>
+                <option value="high">充足（&gt; 5 人）</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>已具備的傳播渠道（可多選）</label>
+            <div class="check-grid three">
+              <label class="check-card"><input type="checkbox" name="e_channel" value="leaflet"><span>宣傳冊 / 海報</span></label>
+              <label class="check-card"><input type="checkbox" name="e_channel" value="lecture"><span>講座 / 課堂</span></label>
+              <label class="check-card"><input type="checkbox" name="e_channel" value="wechat"><span>微信群 / 公眾號</span></label>
+              <label class="check-card"><input type="checkbox" name="e_channel" value="video"><span>短視頻</span></label>
+              <label class="check-card"><input type="checkbox" name="e_channel" value="peer"><span>同伴小組</span></label>
+              <label class="check-card"><input type="checkbox" name="e_channel" value="onsite"><span>義診 / 入戶</span></label>
+            </div>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn-ghost-dark" data-reset="education">清空</button>
+            <button type="button" class="btn-purple" data-action="education">生成干預方案 →</button>
+          </div>
+        </div>
+        <div class="tool-result" id="educationResult"></div>
+      </div>
+
+      <!-- ============== 04 满意度 ============== -->
+      <div class="tool-panel" data-panel="satisfaction">
+        <div class="form-step">
+          <div class="step-num">TOOL 04</div>
+          <h2>健康服務質量滿意度分析</h2>
+          <p class="step-desc">輸入各維度平均評分（1-5 分），系統將計算綜合滿意度、識別短板維度並輸出改進優先級。</p>
+
+          <div class="field-row three">
+            <div class="field">
+              <label>調查樣本量</label>
+              <input type="number" id="s_n" min="1" placeholder="如 320">
+            </div>
+            <div class="field">
+              <label>有效回收率 (%)</label>
+              <input type="number" id="s_response" min="0" max="100" step="0.1" placeholder="如 85">
+            </div>
+            <div class="field">
+              <label>投訴率 (‰)</label>
+              <input type="number" id="s_complaint" min="0" step="0.01" placeholder="如 1.2">
+            </div>
+          </div>
+
+          <p style="font-size:13px;color:#888;margin:24px 0 14px;letter-spacing:.3px;">— 各維度平均評分（1-5 分） —</p>
+
+          <div class="field-row three">
+            <div class="field"><label>可及性</label><input type="number" id="s_access" min="1" max="5" step="0.01" placeholder="4.20"><div class="field-help">就診距離 / 等候時間</div></div>
+            <div class="field"><label>響應性</label><input type="number" id="s_response_d" min="1" max="5" step="0.01" placeholder="4.10"><div class="field-help">投訴處理速度</div></div>
+            <div class="field"><label>技術質量</label><input type="number" id="s_tech" min="1" max="5" step="0.01" placeholder="4.30"><div class="field-help">診療準確性</div></div>
+          </div>
+          <div class="field-row three">
+            <div class="field"><label>人文關懷</label><input type="number" id="s_care" min="1" max="5" step="0.01" placeholder="4.00"><div class="field-help">溝通態度 / 隱私保護</div></div>
+            <div class="field"><label>環境設施</label><input type="number" id="s_env" min="1" max="5" step="0.01" placeholder="3.90"><div class="field-help">候診環境 / 衛生</div></div>
+            <div class="field"><label>價格費用</label><input type="number" id="s_price" min="1" max="5" step="0.01" placeholder="3.70"><div class="field-help">費用合理性</div></div>
+          </div>
+
+          <div class="field-row">
+            <div class="field"><label>淨推薦比例 NPS：推薦者佔比 (%)</label><input type="number" id="s_promoter" min="0" max="100" step="0.1" placeholder="如 55"></div>
+            <div class="field"><label>淨推薦比例 NPS：貶損者佔比 (%)</label><input type="number" id="s_detractor" min="0" max="100" step="0.1" placeholder="如 12"></div>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn-ghost-dark" data-reset="satisfaction">清空</button>
+            <button type="button" class="btn-purple" data-action="satisfaction">生成滿意度報告 →</button>
+          </div>
+        </div>
+        <div class="tool-result" id="satisfactionResult"></div>
+      </div>
+
+      <!-- ============== 05 成本人资 ============== -->
+      <div class="tool-panel" data-panel="cost">
+        <div class="form-step">
+          <div class="step-num">TOOL 05</div>
+          <h2>健康項目成本與人資估計</h2>
+          <p class="step-desc">輸入項目規模、人員配置與物資單價，估算總成本、人月需求、人均成本及成本結構。</p>
+
+          <div class="field-row three">
+            <div class="field">
+              <label>項目名稱</label>
+              <input type="text" id="c_name" placeholder="如 社區高血壓管理項目">
+            </div>
+            <div class="field">
+              <label>服務對象人數</label>
+              <input type="number" id="c_target" min="1" placeholder="如 500">
+            </div>
+            <div class="field">
+              <label>項目週期（月）</label>
+              <input type="number" id="c_months" min="1" placeholder="如 12">
+            </div>
+          </div>
+
+          <div class="field-row three">
+            <div class="field">
+              <label>人均年服務頻次（次）</label>
+              <input type="number" id="c_freq" min="0" placeholder="如 6">
+            </div>
+            <div class="field">
+              <label>單次服務時長（分鐘）</label>
+              <input type="number" id="c_duration" min="0" placeholder="如 30">
+            </div>
+            <div class="field">
+              <label>人均物資成本（元/人次）</label>
+              <input type="number" id="c_material" min="0" step="0.01" placeholder="如 15">
+            </div>
+          </div>
+
+          <p style="font-size:13px;color:#888;margin:24px 0 14px;letter-spacing:.3px;">— 人員配置與月薪（元） —</p>
+
+          <div class="field-row three">
+            <div class="field"><label>醫生人數</label><input type="number" id="c_doc_n" min="0" value="0"></div>
+            <div class="field"><label>醫生月薪</label><input type="number" id="c_doc_s" min="0" placeholder="如 12000"></div>
+            <div class="field"><label>護士人數</label><input type="number" id="c_nur_n" min="0" value="0"></div>
+          </div>
+          <div class="field-row three">
+            <div class="field"><label>護士月薪</label><input type="number" id="c_nur_s" min="0" placeholder="如 8000"></div>
+            <div class="field"><label>公衛/防保人數</label><input type="number" id="c_ph_n" min="0" value="0"></div>
+            <div class="field"><label>公衛月薪</label><input type="number" id="c_ph_s" min="0" placeholder="如 7000"></div>
+          </div>
+          <div class="field-row three">
+            <div class="field"><label>管理人員人數</label><input type="number" id="c_mgr_n" min="0" value="0"></div>
+            <div class="field"><label>管理人員月薪</label><input type="number" id="c_mgr_s" min="0" placeholder="如 10000"></div>
+            <div class="field"><label>志願者/兼職人月補助</label><input type="number" id="c_vol" min="0" placeholder="如 2000"></div>
+          </div>
+
+          <p style="font-size:13px;color:#888;margin:24px 0 14px;letter-spacing:.3px;">— 其他投入 —</p>
+
+          <div class="field-row three">
+            <div class="field"><label>設備一次性投入（元）</label><input type="number" id="c_equip" min="0" placeholder="如 50000"></div>
+            <div class="field"><label>場地租金（元/月）</label><input type="number" id="c_rent" min="0" placeholder="如 5000"></div>
+            <div class="field"><label>培訓 + 宣傳預算（元）</label><input type="number" id="c_train" min="0" placeholder="如 20000"></div>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn-ghost-dark" data-reset="cost">清空</button>
+            <button type="button" class="btn-purple" data-action="cost">生成成本估算 →</button>
+          </div>
+        </div>
+        <div class="tool-result" id="costResult"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast">已複製到剪貼板</div>
+
+  <script src="assets/js/health-service.js"></script>
+</body>
+</html>
