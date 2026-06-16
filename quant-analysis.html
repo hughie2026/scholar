@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantitative Analysis Suite · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{background:#fff;border:1px solid #ece5d3;padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;}
+    .eyebrow.gold{color:#c9a961;font-size:11px;letter-spacing:1.8px;font-weight:700;text-transform:uppercase;}
+
+    /* Section */
+    .assessment-section{padding:70px 0;background:#fff;}
+    .assessment-section .narrow{max-width:960px;margin:0 auto;}
+
+    /* Progress */
+    .progress-wrap{margin-bottom:36px;}
+    .progress-bar{height:3px;background:#ece5d3;overflow:hidden;}
+    .progress-fill{height:100%;background:#c9a961;width:25%;transition:width .4s ease;}
+    .progress-steps{display:flex;justify-content:space-between;margin-top:16px;gap:8px;flex-wrap:wrap;}
+    .progress-steps .step{font-size:11px;letter-spacing:1.2px;color:#bbb;font-weight:600;text-transform:uppercase;}
+    .progress-steps .step b{display:block;font-size:14px;color:#ccc;margin-bottom:3px;font-weight:700;}
+    .progress-steps .step.active{color:#1a1a1a;}
+    .progress-steps .step.active b{color:#c9a961;}
+    .progress-steps .step.done{color:#555;}
+    .progress-steps .step.done b{color:#c9a961;}
+
+    /* Form Step */
+    .form-step{display:none;background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:42px 38px;}
+    .form-step.active{display:block;}
+    .step-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
+    .form-step h2{font-size:28px;color:#1a1a1a;margin:0 0 10px;line-height:1.3;}
+    .step-desc{font-size:14px;color:#888;margin:0 0 32px;line-height:1.75;}
+
+    /* Fields */
+    .field{margin-bottom:24px;}
+    .field.hidden{display:none;}
+    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:600px){.field-row{grid-template-columns:1fr;gap:0;}}
+
+    .field input[type="number"],
+    .field input[type="text"],
+    .field input[type="file"],
+    .field select,
+    .field textarea{
+      width:100%;padding:12px 14px;font-size:14px;
+      border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+      font-family:inherit;outline:none;transition:.2s;border-radius:0;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus{border-color:#c9a961;}
+    .field textarea{font-family:'Encode Sans',monospace;font-size:13px;line-height:1.7;resize:vertical;}
+
+    /* Card-style radio grid */
+    .radio-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .radio-grid.three{grid-template-columns:repeat(3,1fr);}
+    @media(max-width:600px){.radio-grid,.radio-grid.three{grid-template-columns:1fr;}}
+    .radio-card{cursor:pointer;}
+    .radio-card input{display:none;}
+    .radio-card span{display:block;padding:14px 18px;border:1px solid #ece5d3;background:#fff;color:#555;font-size:14px;line-height:1.55;transition:.2s;}
+    .radio-card span small{display:block;color:#888;font-size:12px;margin-top:4px;letter-spacing:.2px;}
+    .radio-card:hover span{border-color:#d4c5a0;}
+    .radio-card input:checked + span{border-color:#c9a961;color:#1a1a1a;background:#faf7f0;font-weight:600;}
+    .radio-card input:checked + span small{color:#c9a961;font-weight:600;}
+
+    /* Hint box */
+    .hint-box{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:14px 18px;font-size:13px;color:#555;line-height:1.75;margin-top:8px;}
+    .hint-box strong{color:#c9a961;letter-spacing:.5px;}
+
+    /* Form Navigation */
+    .form-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;flex-wrap:wrap;}
+    .btn-purple, .btn-ghost-dark{font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;font-weight:700;padding:14px 28px;border:1px solid;cursor:pointer;transition:.2s;text-transform:uppercase;border-radius:0;}
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .btn-ghost-dark:disabled{opacity:.35;cursor:not-allowed;}
+    .btn-ghost-dark:disabled:hover{background:transparent;color:#1a1a1a;}
+
+    /* Data preview */
+    .data-preview{margin-top:18px;border:1px solid #ece5d3;background:#faf7f0;padding:18px 20px;font-size:13px;color:#555;max-height:280px;overflow:auto;}
+    .data-preview table{width:100%;border-collapse:collapse;font-size:12px;font-family:'Encode Sans',monospace;}
+    .data-preview th{text-align:left;padding:6px 10px;background:#fff;border-bottom:2px solid #c9a961;color:#1a1a1a;font-weight:700;letter-spacing:.4px;}
+    .data-preview td{padding:5px 10px;border-bottom:1px solid #ece5d3;color:#555;}
+    .data-preview tr:last-child td{border-bottom:none;}
+    .data-stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:#888;letter-spacing:.4px;}
+    .data-stats span{padding:4px 10px;background:#fff;border:1px solid #ece5d3;}
+
+    /* Variable picker */
+    .var-list{max-height:180px;overflow:auto;border:1px solid #ece5d3;background:#fff;padding:6px 0;}
+    .var-list label{display:block;padding:8px 14px;font-size:13px;color:#555;cursor:pointer;border-bottom:1px solid #f5f0e1;transition:.15s;}
+    .var-list label:last-child{border-bottom:none;}
+    .var-list label:hover{background:#faf7f0;}
+    .var-list input{margin-right:10px;accent-color:#c9a961;}
+    .var-list label.checked{background:#faf7f0;color:#1a1a1a;font-weight:600;}
+    .var-list .var-type{float:right;color:#c9a961;font-size:11px;letter-spacing:.6px;}
+
+    /* Result */
+    .result-panel{background:transparent;}
+    .result-head{text-align:center;padding:0 0 36px;margin-bottom:30px;border-bottom:1px solid #ece5d3;}
+    .result-head h2{font-size:36px;color:#1a1a1a;margin:10px 0 14px;line-height:1.2;}
+    .result-head p{color:#555;font-size:15px;line-height:1.7;max-width:560px;margin:0 auto;}
+
+    .method-card{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:36px;margin-bottom:24px;}
+    .method-eyebrow{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;text-transform:uppercase;margin-bottom:10px;}
+    .method-name{font-family:'Encode Sans',sans-serif;font-size:30px;color:#1a1a1a;font-weight:700;line-height:1.25;margin:0 0 6px;}
+    .method-en{font-size:14px;color:#888;letter-spacing:.4px;margin-bottom:18px;}
+    .method-summary{font-size:14px;color:#555;line-height:1.85;margin:0;}
+
+    .result-section{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:28px 32px;margin-bottom:20px;}
+    .result-section h3{font-size:18px;color:#1a1a1a;margin:0 0 18px;font-weight:700;}
+    .result-section h4{font-size:14px;color:#1a1a1a;margin:18px 0 10px;font-weight:700;letter-spacing:.4px;}
+    .result-section ul{padding-left:20px;line-height:1.95;color:#555;font-size:14px;margin:0;}
+    .result-section li{margin-bottom:6px;}
+    .result-section p{font-size:14px;color:#555;line-height:1.85;margin:0 0 10px;}
+    .result-section code{background:#faf7f0;border:1px solid #ece5d3;padding:2px 6px;font-family:'Encode Sans',monospace;font-size:13px;color:#1a1a1a;}
+
+    /* Result Table */
+    .res-table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0;}
+    .res-table th{text-align:left;padding:10px 14px;background:#faf7f0;border-bottom:2px solid #c9a961;color:#1a1a1a;font-weight:700;letter-spacing:.4px;font-size:12px;text-transform:uppercase;}
+    .res-table td{padding:10px 14px;border-bottom:1px solid #ece5d3;color:#555;font-family:'Encode Sans',monospace;font-size:13px;}
+    .res-table tr:last-child td{border-bottom:none;}
+    .res-table .num{text-align:right;}
+    .res-table .sig{color:#c9a961;font-weight:700;}
+
+    .report-block{background:#faf7f0;border:1px solid #ece5d3;padding:18px 22px;font-size:13.5px;color:#1a1a1a;line-height:1.95;white-space:pre-wrap;word-break:break-word;font-family:'Open Sans',sans-serif;}
+
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:0;}
+    .summary-item{background:#faf7f0;border:1px solid #ece5d3;padding:18px 16px;}
+    .summary-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:8px;text-transform:uppercase;}
+    .summary-value{font-size:14px;color:#1a1a1a;font-weight:600;line-height:1.5;}
+
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    .toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;padding:12px 22px;font-size:13px;letter-spacing:.5px;opacity:0;pointer-events:none;transition:.3s;z-index:99;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+    .err-msg{color:#b94a4a;font-size:13px;margin-top:8px;background:#fdf3f3;border:1px solid #f0d6d6;border-left:3px solid #b94a4a;padding:10px 14px;}
+
+    @media print{
+      .page-hero,.progress-wrap,.form-nav,.footer,.main-header,.utility-bar{display:none !important;}
+      .form-step{display:none !important;}
+      .form-step[data-step="4"]{display:block !important;border:none;padding:0;}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Quantitative Analysis Suite</span>
+      </div>
+      <div class="eyebrow gold">QUANTITATIVE · ANALYSIS</div>
+      <h1>Quantitative Analysis Suite</h1>
+      <p class="lead">
+        一站式量化研究分析工具，支援描述統計、組間檢驗、相關與迴歸建模、生存分析以及時間序列分析。
+        上傳 CSV 數據後選擇分析模組，工具會在瀏覽器本地完成計算，並輸出可下載的結果表格與
+        APA 風格的方法描述與結果解釋。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">📊 描述統計</span>
+        <span class="pill">🧪 統計檢驗</span>
+        <span class="pill">📈 模型分析</span>
+        <span class="pill">📋 報告輸出</span>
+        <span class="pill">🔒 本地計算</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="assessment-section">
+    <div class="container narrow">
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps">
+          <span class="step active" data-step="1"><b>01</b> 數據導入</span>
+          <span class="step" data-step="2"><b>02</b> 分析類型</span>
+          <span class="step" data-step="3"><b>03</b> 變量配置</span>
+          <span class="step" data-step="4"><b>04</b> 結果報告</span>
+        </div>
+      </div>
+
+      <form id="analysisForm" autocomplete="off">
+
+        <!-- ========== STEP 1: DATA ========== -->
+        <div class="form-step active" data-step="1">
+          <div class="step-num">PART 01</div>
+          <h2>數據導入</h2>
+          <p class="step-desc">支持 CSV 文件上傳或直接粘貼數據（首行需為變量名稱）。也可使用內建範例數據快速體驗。</p>
+
+          <div class="field">
+            <label>方式 1 · 上傳 CSV 文件</label>
+            <input type="file" id="csvFile" accept=".csv,.txt">
+          </div>
+
+          <div class="field">
+            <label>方式 2 · 直接粘貼（CSV 格式，逗號或 Tab 分隔）</label>
+            <textarea id="csvPaste" rows="6" placeholder="age,sex,group,score&#10;23,M,A,85&#10;25,F,B,78&#10;..."></textarea>
+          </div>
+
+          <div class="field">
+            <label>方式 3 · 載入範例數據</label>
+            <div class="radio-grid three">
+              <label class="radio-card"><input type="radio" name="sample" value="clinical"><span>臨床對照<small>group/age/bp/outcome</small></span></label>
+              <label class="radio-card"><input type="radio" name="sample" value="survival"><span>生存數據<small>time/event/treat/age</small></span></label>
+              <label class="radio-card"><input type="radio" name="sample" value="timeseries"><span>時間序列<small>date/value</small></span></label>
+            </div>
+          </div>
+
+          <div class="hint-box">
+            <strong>提示　</strong>
+            數值變量請使用阿拉伯數字；類別變量可使用文字（如 M/F）；缺失值留空或 NA。
+            導入後會自動識別變量類型（連續/分類）。
+          </div>
+
+          <div id="dataPreview"></div>
+          <div id="dataError" class="err-msg" style="display:none;"></div>
+        </div>
+
+        <!-- ========== STEP 2: ANALYSIS TYPE ========== -->
+        <div class="form-step" data-step="2">
+          <div class="step-num">PART 02</div>
+          <h2>分析類型</h2>
+          <p class="step-desc">選擇本次要執行的分析模組，第三步會根據此選項顯示對應的變量配置。</p>
+
+          <div class="field">
+            <label>① 描述統計 Descriptive Statistics</label>
+            <div class="radio-grid">
+              <label class="radio-card"><input type="radio" name="analysis" value="desc_continuous"><span>連續變量<small>均值、SD、中位數、IQR</small></span></label>
+              <label class="radio-card"><input type="radio" name="analysis" value="desc_categorical"><span>分類變量<small>頻數、百分比</small></span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>② 統計檢驗 Statistical Tests</label>
+            <div class="radio-grid">
+              <label class="radio-card"><input type="radio" name="analysis" value="ttest"><span>t 檢驗<small>單樣本/獨立/配對</small></span></label>
+              <label class="radio-card"><input type="radio" name="analysis" value="anova"><span>ANOVA<small>單因素方差分析</small></span></label>
+              <label class="radio-card"><input type="radio" name="analysis" value="chisq"><span>卡方檢驗<small>列聯表獨立性</small></span></label>
+              <label class="radio-card"><input type="radio" name="analysis" value="nonparam"><span>非參數檢驗<small>Mann-Whitney/Kruskal-Wallis</small></span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>③ 模型分析 Model Analysis</label>
+            <div class="radio-grid">
+              <label class="radio-card"><input type="radio" name="analysis" value="correlation"><span>相關分析<small>Pearson / Spearman</small></span></label>
+              <label class="radio-card"><input type="radio" name="analysis" value="linear"><span>線性迴歸<small>OLS 多元</small></span></label>
+              <label class="radio-card"><input type="radio" name="analysis" value="logistic"><span>Logistic 迴歸<small>二分類結局</small></span></label>
+              <label class="radio-card"><input type="radio" name="analysis" value="cox"><span>Cox 迴歸<small>生存分析</small></span></label>
+              <label class="radio-card"><input type="radio" name="analysis" value="timeseries"><span>時間序列<small>趨勢/自相關/AR(1)</small></span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 3: VARIABLE CONFIG ========== -->
+        <div class="form-step" data-step="3">
+          <div class="step-num">PART 03</div>
+          <h2>變量配置</h2>
+          <p class="step-desc">根據選擇的分析類型，配置對應的變量與參數。</p>
+
+          <div id="configContainer"></div>
+          <div id="configError" class="err-msg" style="display:none;"></div>
+        </div>
+
+        <!-- ========== STEP 4: RESULTS ========== -->
+        <div class="form-step" data-step="4">
+          <div class="step-num">PART 04</div>
+          <h2>結果報告</h2>
+          <p class="step-desc">本工具於瀏覽器本地完成計算。結果可下載為 CSV、複製為文字報告或列印為 PDF。</p>
+
+          <div id="resultPanel" class="result-panel">
+            <div class="method-card">
+              <div class="method-eyebrow">METHOD</div>
+              <h3 class="method-name" id="mName">--</h3>
+              <div class="method-en" id="mEn">--</div>
+              <p class="method-summary" id="mSummary">--</p>
+            </div>
+
+            <div class="result-section">
+              <h3>📋 分析配置摘要</h3>
+              <div class="summary-grid" id="summaryGrid"></div>
+            </div>
+
+            <div class="result-section">
+              <h3>📊 結果表格</h3>
+              <div id="resultTables"></div>
+            </div>
+
+            <div class="result-section">
+              <h3>🧠 結果解釋</h3>
+              <div id="resultInterpret"></div>
+            </div>
+
+            <div class="result-section">
+              <h3>📝 方法描述（APA 風格，可複製進論文）</h3>
+              <div class="report-block" id="methodReport">--</div>
+            </div>
+
+            <div class="result-section disclaimer">
+              <strong>免責聲明　</strong>
+              本工具計算結果僅作教學與初步探索用途。Cox 迴歸與時間序列為簡化實現，
+              複雜研究設計（多重比較校正、混合效應、競爭風險、缺失資料、模型診斷等）
+              請使用 R / Python / SPSS / SAS 等專業軟件並結合統計學家共同決策。
+            </div>
+          </div>
+
+          <div class="form-nav" style="margin-top:8px;">
+            <button type="button" class="btn-ghost-dark" id="downloadBtn">⬇ 下載 CSV 表格</button>
+            <button type="button" class="btn-ghost-dark" id="copyBtn">📋 複製文字報告</button>
+            <button type="button" class="btn-ghost-dark" onclick="window.print()">🖨️ 列印 / PDF</button>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button type="button" id="prevBtn" class="btn-ghost-dark" disabled>← 上一步</button>
+          <button type="button" id="resetBtn" class="btn-ghost-dark">清空重選</button>
+          <button type="button" id="nextBtn" class="btn-purple">下一步 →</button>
+          <button type="button" id="runBtn" class="btn-purple" style="display:none;">執行分析 →</button>
+        </div>
+      </form>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast">已複製到剪貼板</div>
+
+  <script src="assets/js/quant-analysis.js"></script>
+</body>
+</html>
