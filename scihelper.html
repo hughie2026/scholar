@@ -160,6 +160,7 @@
   .footer{background:#1a1a1a;color:#bbb;padding:60px 0 0;margin-top:60px;}
   .footer-top{display:grid;grid-template-columns:2fr 1fr;gap:40px;padding-bottom:40px;}
   @media(max-width:700px){.footer-top{grid-template-columns:1fr;}}
+  .footer .brand{text-decoration:none;}
   .footer .brand-line1{color:#fff;}
   .footer .brand-line2{color:#888;}
   .footer-brand p{color:#888;font-size:13px;margin-top:14px;}
@@ -190,7 +191,7 @@
 
 <header class="main-header">
   <div class="container header-inner">
-    <a href="#" class="brand">
+    <a href="index.html" class="brand">
       <div class="brand-w">H</div>
       <div class="brand-text">
         <span class="brand-line1">Hughie's</span>
@@ -198,10 +199,10 @@
       </div>
     </a>
     <nav class="primary-nav">
-      <a href="#">Home</a>
-      <a href="#">About</a>
-      <a href="#" class="active">Tools</a>
-      <a href="#">Contact</a>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="tools.html" class="active">Tools</a>
+      <a href="contact.html">Contact</a>
     </nav>
   </div>
 </header>
@@ -209,8 +210,8 @@
 <section class="page-hero">
   <div class="container">
     <div class="breadcrumb">
-      <a href="#">Home</a><span class="bc-sep">›</span>
-      <a href="#">Tools</a><span class="bc-sep">›</span>
+      <a href="index.html">Home</a><span class="bc-sep">›</span>
+      <a href="tools.html">Tools</a><span class="bc-sep">›</span>
       <span>SCI / SSCI Paper Writing Assistant</span>
     </div>
     <div class="eyebrow gold">ACADEMIC WRITING · STEP-BY-STEP</div>
@@ -838,18 +839,18 @@
 <footer class="footer">
   <div class="container footer-top">
     <div class="footer-brand">
-      <div class="brand">
+      <a href="index.html" class="brand">
         <div class="brand-w">H</div>
         <div class="brand-text"><span class="brand-line1">Hughie's</span><span class="brand-line2">Online Laboratory</span></div>
-      </div>
+      </a>
       <p>An open research toolkit for everyone.</p>
     </div>
     <div class="footer-contact">
       <h5>Quick Links</h5>
-      <div class="contact-item"><a href="#">Home</a></div>
-      <div class="contact-item"><a href="#">About the Lab</a></div>
-      <div class="contact-item"><a href="#">All Tools</a></div>
-      <div class="contact-item"><a href="#">Contact</a></div>
+      <div class="contact-item"><a href="index.html">Home</a></div>
+      <div class="contact-item"><a href="about.html">About the Lab</a></div>
+      <div class="contact-item"><a href="tools.html">All Tools</a></div>
+      <div class="contact-item"><a href="contact.html">Contact</a></div>
     </div>
   </div>
   <div class="footer-bottom">
@@ -874,7 +875,6 @@ const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); updateProgress(); }
 
 function bindInputs(){
-  // text / textarea / number with data-key
   document.querySelectorAll('[data-key]').forEach(el=>{
     const k = el.dataset.key;
     if(state[k] !== undefined) el.value = state[k];
@@ -894,7 +894,6 @@ function bindInputs(){
       cc.textContent = n + ' 字';
     }
   });
-  // radios
   document.querySelectorAll('input[type=radio]').forEach(r=>{
     const name = r.name;
     if(state[name] === r.value) r.checked = true;
@@ -976,7 +975,6 @@ document.querySelectorAll('[data-copy]').forEach(b=>{
 
 /* ---------- Progress ---------- */
 function updateProgress(){
-  // 每個步驟若有任一關鍵欄位被填寫就視為「進行中」，必填若都填寫則「完成」
   const steps = ['positioning','title','abstract','intro','literature','methods','results','discussion','conclusion'];
   const required = {
     positioning: ['pos_field','pos_journal','pos_contrib'],
@@ -1244,10 +1242,8 @@ function escapeHtml(s){
 }
 
 document.getElementById('pvGenBtn').addEventListener('click', ()=>{
-  // 取得標題
   let title = (state.pv_title||'').trim();
   if(!title){
-    // 從 Step 02 第一個候選回推
     const iv = state.ti_iv, dv = state.ti_dv, pop = state.ti_pop, design = state.ti_design;
     if(iv && dv && pop) title = `The effect of ${iv} on ${dv} among ${pop}${design? ': '+capitalize(design):''}`;
     else title = '[Untitled Manuscript]';
@@ -1316,7 +1312,6 @@ document.getElementById('pvImportFile').addEventListener('change', e=>{
       Object.keys(state).forEach(k=>delete state[k]);
       Object.assign(state, data);
       saveState();
-      // refresh UI
       document.querySelectorAll('[data-key]').forEach(el=>{ el.value = state[el.dataset.key] || ''; });
       document.querySelectorAll('input[type=radio]').forEach(r=>{ r.checked = (state[r.name] === r.value); });
       showToast('已匯入存檔');
