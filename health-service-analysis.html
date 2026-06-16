@@ -21,124 +21,123 @@
     .meta-pills .pill{background:#fff;border:1px solid #ece5d3;padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;}
     .eyebrow.gold{color:#c9a961;font-size:11px;letter-spacing:1.8px;font-weight:700;text-transform:uppercase;}
 
-    /* Tabs */
-    .tools-section{padding:60px 0;background:#fff;}
-    .tools-section .narrow{max-width:960px;margin:0 auto;}
-    .tool-tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid #ece5d3;margin-bottom:36px;}
-    .tab-btn{
+    /* HSA Tabs */
+    .hsa-section{padding:60px 0;background:#fff;}
+    .hsa-section .narrow{max-width:960px;margin:0 auto;}
+    .hsa-tabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid #ece5d3;margin-bottom:36px;}
+    .hsa-tab-btn{
       flex:1;min-width:140px;background:transparent;border:none;cursor:pointer;
       padding:18px 14px;font-family:'Encode Sans',sans-serif;font-size:12px;
       letter-spacing:1.2px;font-weight:700;color:#888;text-transform:uppercase;
       border-bottom:3px solid transparent;transition:.2s;
     }
-    .tab-btn b{display:block;font-size:11px;color:#bbb;margin-bottom:4px;letter-spacing:1.5px;}
-    .tab-btn:hover{color:#1a1a1a;}
-    .tab-btn:hover b{color:#c9a961;}
-    .tab-btn.active{color:#1a1a1a;border-bottom-color:#c9a961;}
-    .tab-btn.active b{color:#c9a961;}
+    .hsa-tab-btn b{display:block;font-size:11px;color:#bbb;margin-bottom:4px;letter-spacing:1.5px;}
+    .hsa-tab-btn:hover{color:#1a1a1a;}
+    .hsa-tab-btn:hover b{color:#c9a961;}
+    .hsa-tab-btn.active{color:#1a1a1a;border-bottom-color:#c9a961;}
+    .hsa-tab-btn.active b{color:#c9a961;}
 
-    /* Panel */
-    .tool-panel{display:none;}
-    .tool-panel.active{display:block;}
+    /* Panel - using hsa- prefix to avoid global CSS collision */
+    .hsa-panel{display:none;}
+    .hsa-panel.active{display:block;}
 
-    /* Form Card */
-    .form-step{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:42px 38px;margin-bottom:24px;}
-    .step-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
-    .form-step h2{font-size:28px;color:#1a1a1a;margin:0 0 10px;line-height:1.3;}
-    .step-desc{font-size:14px;color:#888;margin:0 0 32px;line-height:1.75;}
+    /* Form Card - renamed from form-step */
+    .hsa-card{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:42px 38px;margin-bottom:24px;display:block;}
+    .hsa-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
+    .hsa-card h2{font-size:28px;color:#1a1a1a;margin:0 0 10px;line-height:1.3;}
+    .hsa-desc{font-size:14px;color:#888;margin:0 0 32px;line-height:1.75;}
 
     /* Fields */
-    .field{margin-bottom:24px;}
-    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
-    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-    .field-row.three{grid-template-columns:1fr 1fr 1fr;}
-    @media(max-width:600px){.field-row,.field-row.three{grid-template-columns:1fr;gap:0;}}
-    .field input[type="number"],.field input[type="text"],.field select,.field textarea{
+    .hsa-field{margin-bottom:24px;}
+    .hsa-field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .hsa-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    .hsa-row.three{grid-template-columns:1fr 1fr 1fr;}
+    @media(max-width:600px){.hsa-row,.hsa-row.three{grid-template-columns:1fr;gap:0;}}
+    .hsa-field input[type="number"],.hsa-field input[type="text"],.hsa-field select,.hsa-field textarea{
       width:100%;padding:12px 14px;font-size:14px;border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
       font-family:inherit;outline:none;transition:.2s;border-radius:0;box-sizing:border-box;
     }
-    .field textarea{resize:vertical;min-height:80px;}
-    .field input:focus,.field select:focus,.field textarea:focus{border-color:#c9a961;}
-    .field-help{font-size:12px;color:#888;margin-top:6px;line-height:1.6;}
+    .hsa-field textarea{resize:vertical;min-height:80px;}
+    .hsa-field input:focus,.hsa-field select:focus,.hsa-field textarea:focus{border-color:#c9a961;}
+    .hsa-help{font-size:12px;color:#888;margin-top:6px;line-height:1.6;}
 
     /* Checkbox / Radio cards */
-    .check-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-    .check-grid.three{grid-template-columns:1fr 1fr 1fr;}
-    @media(max-width:600px){.check-grid,.check-grid.three{grid-template-columns:1fr;}}
-    .check-card{cursor:pointer;}
-    .check-card input{display:none;}
-    .check-card span{display:block;padding:14px 18px;border:1px solid #ece5d3;background:#fff;color:#555;font-size:14px;line-height:1.55;transition:.2s;}
-    .check-card span small{display:block;color:#888;font-size:12px;margin-top:4px;letter-spacing:.2px;}
-    .check-card:hover span{border-color:#d4c5a0;}
-    .check-card input:checked + span{border-color:#c9a961;color:#1a1a1a;background:#faf7f0;font-weight:600;}
-    .check-card input:checked + span small{color:#c9a961;font-weight:600;}
-    .radio-row{display:flex;gap:12px;flex-wrap:wrap;}
-    .radio-btn{flex:1;min-width:110px;cursor:pointer;}
-    .radio-btn input{display:none;}
-    .radio-btn span{display:block;text-align:center;padding:12px 18px;border:1px solid #ece5d3;background:#fff;color:#555;font-size:14px;transition:.2s;}
-    .radio-btn:hover span{border-color:#d4c5a0;}
-    .radio-btn input:checked + span{border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;}
+    .hsa-check-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .hsa-check-grid.three{grid-template-columns:1fr 1fr 1fr;}
+    @media(max-width:600px){.hsa-check-grid,.hsa-check-grid.three{grid-template-columns:1fr;}}
+    .hsa-check-card{cursor:pointer;}
+    .hsa-check-card input{display:none;}
+    .hsa-check-card span{display:block;padding:14px 18px;border:1px solid #ece5d3;background:#fff;color:#555;font-size:14px;line-height:1.55;transition:.2s;}
+    .hsa-check-card span small{display:block;color:#888;font-size:12px;margin-top:4px;letter-spacing:.2px;}
+    .hsa-check-card:hover span{border-color:#d4c5a0;}
+    .hsa-check-card input:checked + span{border-color:#c9a961;color:#1a1a1a;background:#faf7f0;font-weight:600;}
+    .hsa-check-card input:checked + span small{color:#c9a961;font-weight:600;}
+    .hsa-radio-row{display:flex;gap:12px;flex-wrap:wrap;}
+    .hsa-radio-btn{flex:1;min-width:110px;cursor:pointer;}
+    .hsa-radio-btn input{display:none;}
+    .hsa-radio-btn span{display:block;text-align:center;padding:12px 18px;border:1px solid #ece5d3;background:#fff;color:#555;font-size:14px;transition:.2s;}
+    .hsa-radio-btn:hover span{border-color:#d4c5a0;}
+    .hsa-radio-btn input:checked + span{border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;}
 
     /* Hint */
-    .hint-box{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:14px 18px;font-size:13px;color:#555;line-height:1.75;margin-top:12px;}
-    .hint-box strong{color:#c9a961;letter-spacing:.5px;}
+    .hsa-hint{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:14px 18px;font-size:13px;color:#555;line-height:1.75;margin-top:12px;}
+    .hsa-hint strong{color:#c9a961;letter-spacing:.5px;}
 
     /* Buttons */
-    .form-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;flex-wrap:wrap;}
-    .btn-purple,.btn-ghost-dark{
+    .hsa-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;flex-wrap:wrap;}
+    .hsa-btn-gold,.hsa-btn-ghost{
       font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;
       font-weight:700;padding:14px 28px;border:1px solid;cursor:pointer;
       transition:.2s;text-transform:uppercase;border-radius:0;
     }
-    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
-    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
-    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
-    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .hsa-btn-gold{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .hsa-btn-gold:hover{background:#b8985a;border-color:#b8985a;}
+    .hsa-btn-ghost{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .hsa-btn-ghost:hover{background:#1a1a1a;color:#fff;}
 
     /* Result */
-    .tool-result{display:none;}
-    .tool-result.show{display:block;}
-    .method-card{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:36px;margin-bottom:24px;}
-    .method-eyebrow{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;text-transform:uppercase;margin-bottom:10px;}
-    .method-name{font-family:'Encode Sans',sans-serif;font-size:30px;color:#1a1a1a;font-weight:700;line-height:1.25;margin:0 0 6px;}
-    .method-en{font-size:14px;color:#888;letter-spacing:.4px;margin-bottom:18px;}
-    .method-summary{font-size:14px;color:#555;line-height:1.85;margin:0;}
-    .alt-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
-    .alt-list .tag{font-size:12px;letter-spacing:.4px;color:#555;background:#fff;border:1px solid #ece5d3;padding:6px 12px;}
-    .alt-list .tag.gold{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .hsa-result{display:none;}
+    .hsa-result.show{display:block;}
+    .hsa-method-card{background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:36px;margin-bottom:24px;}
+    .hsa-method-eyebrow{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;text-transform:uppercase;margin-bottom:10px;}
+    .hsa-method-name{font-family:'Encode Sans',sans-serif;font-size:30px;color:#1a1a1a;font-weight:700;line-height:1.25;margin:0 0 6px;}
+    .hsa-method-en{font-size:14px;color:#888;letter-spacing:.4px;margin-bottom:18px;}
+    .hsa-method-summary{font-size:14px;color:#555;line-height:1.85;margin:0;}
+    .hsa-alt-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+    .hsa-tag{font-size:12px;letter-spacing:.4px;color:#555;background:#fff;border:1px solid #ece5d3;padding:6px 12px;}
+    .hsa-tag.gold{background:#c9a961;color:#fff;border-color:#c9a961;}
 
-    .result-section{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:28px 32px;margin-bottom:20px;}
-    .result-section h3{font-size:18px;color:#1a1a1a;margin:0 0 18px;font-weight:700;}
-    .result-section ul{padding-left:20px;line-height:1.95;color:#555;font-size:14px;margin:0;}
-    .result-section li{margin-bottom:6px;}
-    .result-section li em{color:#888;font-style:normal;}
-    .result-section code{background:#faf7f0;border:1px solid #ece5d3;padding:2px 6px;font-family:'Encode Sans',sans-serif;font-size:13px;color:#1a1a1a;}
-    .report-block{background:#faf7f0;border:1px solid #ece5d3;padding:18px 20px;font-family:'Encode Sans',sans-serif;font-size:13px;color:#1a1a1a;line-height:1.85;white-space:pre-wrap;word-break:break-word;}
+    .hsa-result-section{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:28px 32px;margin-bottom:20px;}
+    .hsa-result-section h3{font-size:18px;color:#1a1a1a;margin:0 0 18px;font-weight:700;}
+    .hsa-result-section ul{padding-left:20px;line-height:1.95;color:#555;font-size:14px;margin:0;}
+    .hsa-result-section li{margin-bottom:6px;}
+    .hsa-result-section li em{color:#888;font-style:normal;}
+    .hsa-result-section code{background:#faf7f0;border:1px solid #ece5d3;padding:2px 6px;font-family:'Encode Sans',sans-serif;font-size:13px;color:#1a1a1a;}
+    .hsa-report{background:#faf7f0;border:1px solid #ece5d3;padding:18px 20px;font-family:'Encode Sans',sans-serif;font-size:13px;color:#1a1a1a;line-height:1.85;white-space:pre-wrap;word-break:break-word;}
 
-    .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:8px;}
-    .summary-item{background:#faf7f0;border:1px solid #ece5d3;padding:18px 16px;}
-    .summary-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:8px;text-transform:uppercase;}
-    .summary-value{font-size:14px;color:#1a1a1a;font-weight:600;line-height:1.5;}
+    .hsa-summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:8px;}
+    .hsa-summary-item{background:#faf7f0;border:1px solid #ece5d3;padding:18px 16px;}
+    .hsa-summary-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:8px;text-transform:uppercase;}
+    .hsa-summary-value{font-size:14px;color:#1a1a1a;font-weight:600;line-height:1.5;}
 
-    /* Bars (used in 满意度 / 成本结构) */
-    .bar-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
-    .bar-label{flex:0 0 130px;font-size:13px;color:#1a1a1a;font-weight:600;}
-    .bar-track{flex:1;height:18px;background:#f5efde;border:1px solid #ece5d3;position:relative;overflow:hidden;}
-    .bar-fill{height:100%;background:#c9a961;transition:width .5s ease;}
-    .bar-fill.warn{background:#d4955a;}
-    .bar-fill.danger{background:#c46b4d;}
-    .bar-value{flex:0 0 80px;text-align:right;font-size:13px;color:#555;font-weight:600;}
+    .hsa-bar-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+    .hsa-bar-label{flex:0 0 130px;font-size:13px;color:#1a1a1a;font-weight:600;}
+    .hsa-bar-track{flex:1;height:18px;background:#f5efde;border:1px solid #ece5d3;position:relative;overflow:hidden;}
+    .hsa-bar-fill{height:100%;background:#c9a961;transition:width .5s ease;}
+    .hsa-bar-fill.warn{background:#d4955a;}
+    .hsa-bar-fill.danger{background:#c46b4d;}
+    .hsa-bar-value{flex:0 0 90px;text-align:right;font-size:13px;color:#555;font-weight:600;}
 
-    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
-    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+    .hsa-disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .hsa-disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
 
     /* Toast */
-    .toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;padding:12px 22px;font-size:13px;letter-spacing:.5px;opacity:0;pointer-events:none;transition:.3s;z-index:99;}
-    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .hsa-toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(20px);background:#1a1a1a;color:#fff;padding:12px 22px;font-size:13px;letter-spacing:.5px;opacity:0;pointer-events:none;transition:.3s;z-index:99;}
+    .hsa-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
     @media print{
-      .page-hero,.tool-tabs,.form-step,.form-nav,.footer,.main-header,.utility-bar{display:none !important;}
-      .tool-result{display:block !important;}
+      .page-hero,.hsa-tabs,.hsa-card,.hsa-nav,.footer,.main-header,.utility-bar{display:none !important;}
+      .hsa-result{display:block !important;}
     }
   </style>
 </head>
@@ -192,30 +191,30 @@
     </div>
   </section>
 
-  <section class="tools-section">
+  <section class="hsa-section">
     <div class="container narrow">
 
-      <div class="tool-tabs" id="toolTabs">
-        <button class="tab-btn active" data-tab="needs"><b>01</b>需求分析</button>
-        <button class="tab-btn" data-tab="followup"><b>02</b>慢病隨訪</button>
-        <button class="tab-btn" data-tab="education"><b>03</b>健康教育</button>
-        <button class="tab-btn" data-tab="satisfaction"><b>04</b>滿意度</button>
-        <button class="tab-btn" data-tab="cost"><b>05</b>成本人資</button>
+      <div class="hsa-tabs" id="hsaTabs">
+        <button class="hsa-tab-btn active" data-tab="needs"><b>01</b>需求分析</button>
+        <button class="hsa-tab-btn" data-tab="followup"><b>02</b>慢病隨訪</button>
+        <button class="hsa-tab-btn" data-tab="education"><b>03</b>健康教育</button>
+        <button class="hsa-tab-btn" data-tab="satisfaction"><b>04</b>滿意度</button>
+        <button class="hsa-tab-btn" data-tab="cost"><b>05</b>成本人資</button>
       </div>
 
       <!-- ============== 01 需求分析 ============== -->
-      <div class="tool-panel active" data-panel="needs">
-        <div class="form-step">
-          <div class="step-num">TOOL 01</div>
+      <div class="hsa-panel active" data-panel="needs">
+        <div class="hsa-card">
+          <div class="hsa-num">TOOL 01</div>
           <h2>健康服務需求分析</h2>
-          <p class="step-desc">輸入目標人群基本特徵與主要健康問題，估算服務需求等級、優先方向與年度服務量。</p>
+          <p class="hsa-desc">輸入目標人群基本特徵與主要健康問題，估算服務需求等級、優先方向與年度服務量。</p>
 
-          <div class="field-row">
-            <div class="field">
+          <div class="hsa-row">
+            <div class="hsa-field">
               <label>目標人群規模（人）</label>
               <input type="number" id="n_population" min="1" placeholder="如 10000">
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>區域類型</label>
               <select id="n_region">
                 <option value="urban">城市社區</option>
@@ -226,95 +225,95 @@
             </div>
           </div>
 
-          <div class="field-row three">
-            <div class="field">
+          <div class="hsa-row three">
+            <div class="hsa-field">
               <label>≥65 歲人群比例 (%)</label>
               <input type="number" id="n_elderly" min="0" max="100" step="0.1" placeholder="如 18">
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>慢病患病率 (%)</label>
               <input type="number" id="n_chronic" min="0" max="100" step="0.1" placeholder="如 25">
-              <div class="field-help">高血壓、糖尿病等已知慢病合計</div>
+              <div class="hsa-help">高血壓、糖尿病等已知慢病合計</div>
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>現有服務覆蓋率 (%)</label>
               <input type="number" id="n_coverage" min="0" max="100" step="0.1" placeholder="如 40">
             </div>
           </div>
 
-          <div class="field">
+          <div class="hsa-field">
             <label>主要健康問題（可多選，至少 1 項）</label>
-            <div class="check-grid">
-              <label class="check-card"><input type="checkbox" name="n_issue" value="慢病管理"><span>慢病管理<small>高血壓 / 糖尿病 / COPD</small></span></label>
-              <label class="check-card"><input type="checkbox" name="n_issue" value="老年照護"><span>老年照護<small>失能 / 認知 / 跌倒預防</small></span></label>
-              <label class="check-card"><input type="checkbox" name="n_issue" value="婦幼保健"><span>婦幼保健<small>孕產 / 兒童體檢 / 接種</small></span></label>
-              <label class="check-card"><input type="checkbox" name="n_issue" value="心理健康"><span>心理健康<small>抑鬱 / 焦慮 / 壓力</small></span></label>
-              <label class="check-card"><input type="checkbox" name="n_issue" value="傳染病防控"><span>傳染病防控<small>呼吸道 / 腸道 / 媒介</small></span></label>
-              <label class="check-card"><input type="checkbox" name="n_issue" value="健康行為"><span>健康行為<small>戒煙 / 飲食 / 運動</small></span></label>
+            <div class="hsa-check-grid">
+              <label class="hsa-check-card"><input type="checkbox" name="n_issue" value="慢病管理"><span>慢病管理<small>高血壓 / 糖尿病 / COPD</small></span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="n_issue" value="老年照護"><span>老年照護<small>失能 / 認知 / 跌倒預防</small></span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="n_issue" value="婦幼保健"><span>婦幼保健<small>孕產 / 兒童體檢 / 接種</small></span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="n_issue" value="心理健康"><span>心理健康<small>抑鬱 / 焦慮 / 壓力</small></span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="n_issue" value="傳染病防控"><span>傳染病防控<small>呼吸道 / 腸道 / 媒介</small></span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="n_issue" value="健康行為"><span>健康行為<small>戒煙 / 飲食 / 運動</small></span></label>
             </div>
           </div>
 
-          <div class="field">
+          <div class="hsa-field">
             <label>當地經濟水平</label>
-            <div class="radio-row">
-              <label class="radio-btn"><input type="radio" name="n_econ" value="low"><span>較低</span></label>
-              <label class="radio-btn"><input type="radio" name="n_econ" value="medium" checked><span>中等</span></label>
-              <label class="radio-btn"><input type="radio" name="n_econ" value="high"><span>較高</span></label>
+            <div class="hsa-radio-row">
+              <label class="hsa-radio-btn"><input type="radio" name="n_econ" value="low"><span>較低</span></label>
+              <label class="hsa-radio-btn"><input type="radio" name="n_econ" value="medium" checked><span>中等</span></label>
+              <label class="hsa-radio-btn"><input type="radio" name="n_econ" value="high"><span>較高</span></label>
             </div>
           </div>
 
-          <div class="form-nav">
-            <button type="button" class="btn-ghost-dark" data-reset="needs">清空</button>
-            <button type="button" class="btn-purple" data-action="needs">生成需求分析 →</button>
+          <div class="hsa-nav">
+            <button type="button" class="hsa-btn-ghost" data-reset="needs">清空</button>
+            <button type="button" class="hsa-btn-gold" data-action="needs">生成需求分析 →</button>
           </div>
         </div>
-        <div class="tool-result" id="needsResult"></div>
+        <div class="hsa-result" id="needsResult"></div>
       </div>
 
       <!-- ============== 02 慢病随访 ============== -->
-      <div class="tool-panel" data-panel="followup">
-        <div class="form-step">
-          <div class="step-num">TOOL 02</div>
+      <div class="hsa-panel" data-panel="followup">
+        <div class="hsa-card">
+          <div class="hsa-num">TOOL 02</div>
           <h2>慢性病隨訪計劃設計</h2>
-          <p class="step-desc">根據慢病類型、病情分級與控制狀態，輸出標準化隨訪頻率、檢查項目與干預清單。</p>
+          <p class="hsa-desc">根據慢病類型、病情分級與控制狀態，輸出標準化隨訪頻率、檢查項目與干預清單。</p>
 
-          <div class="field">
+          <div class="hsa-field">
             <label>慢病類型</label>
-            <div class="check-grid three">
-              <label class="check-card"><input type="radio" name="f_disease" value="hypertension" checked><span>高血壓</span></label>
-              <label class="check-card"><input type="radio" name="f_disease" value="diabetes"><span>2 型糖尿病</span></label>
-              <label class="check-card"><input type="radio" name="f_disease" value="chd"><span>冠心病</span></label>
-              <label class="check-card"><input type="radio" name="f_disease" value="copd"><span>慢阻肺 (COPD)</span></label>
-              <label class="check-card"><input type="radio" name="f_disease" value="stroke"><span>腦卒中後</span></label>
-              <label class="check-card"><input type="radio" name="f_disease" value="ckd"><span>慢性腎病</span></label>
+            <div class="hsa-check-grid three">
+              <label class="hsa-check-card"><input type="radio" name="f_disease" value="hypertension" checked><span>高血壓</span></label>
+              <label class="hsa-check-card"><input type="radio" name="f_disease" value="diabetes"><span>2 型糖尿病</span></label>
+              <label class="hsa-check-card"><input type="radio" name="f_disease" value="chd"><span>冠心病</span></label>
+              <label class="hsa-check-card"><input type="radio" name="f_disease" value="copd"><span>慢阻肺 (COPD)</span></label>
+              <label class="hsa-check-card"><input type="radio" name="f_disease" value="stroke"><span>腦卒中後</span></label>
+              <label class="hsa-check-card"><input type="radio" name="f_disease" value="ckd"><span>慢性腎病</span></label>
             </div>
           </div>
 
-          <div class="field-row">
-            <div class="field">
+          <div class="hsa-row">
+            <div class="hsa-field">
               <label>病情分級</label>
-              <div class="radio-row">
-                <label class="radio-btn"><input type="radio" name="f_grade" value="1" checked><span>1 級（輕）</span></label>
-                <label class="radio-btn"><input type="radio" name="f_grade" value="2"><span>2 級（中）</span></label>
-                <label class="radio-btn"><input type="radio" name="f_grade" value="3"><span>3 級（重）</span></label>
+              <div class="hsa-radio-row">
+                <label class="hsa-radio-btn"><input type="radio" name="f_grade" value="1" checked><span>1 級（輕）</span></label>
+                <label class="hsa-radio-btn"><input type="radio" name="f_grade" value="2"><span>2 級（中）</span></label>
+                <label class="hsa-radio-btn"><input type="radio" name="f_grade" value="3"><span>3 級（重）</span></label>
               </div>
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>當前控制狀態</label>
-              <div class="radio-row">
-                <label class="radio-btn"><input type="radio" name="f_control" value="good" checked><span>達標</span></label>
-                <label class="radio-btn"><input type="radio" name="f_control" value="poor"><span>未達標</span></label>
-                <label class="radio-btn"><input type="radio" name="f_control" value="unstable"><span>不穩定</span></label>
+              <div class="hsa-radio-row">
+                <label class="hsa-radio-btn"><input type="radio" name="f_control" value="good" checked><span>達標</span></label>
+                <label class="hsa-radio-btn"><input type="radio" name="f_control" value="poor"><span>未達標</span></label>
+                <label class="hsa-radio-btn"><input type="radio" name="f_control" value="unstable"><span>不穩定</span></label>
               </div>
             </div>
           </div>
 
-          <div class="field-row">
-            <div class="field">
+          <div class="hsa-row">
+            <div class="hsa-field">
               <label>管理患者人數</label>
               <input type="number" id="f_patients" min="1" placeholder="如 200">
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>主要年齡段</label>
               <select id="f_age">
                 <option value="adult">中青年（18-64）</option>
@@ -324,35 +323,35 @@
             </div>
           </div>
 
-          <div class="field">
+          <div class="hsa-field">
             <label>合併症情況（可多選）</label>
-            <div class="check-grid three">
-              <label class="check-card"><input type="checkbox" name="f_comorb" value="hyperlipidemia"><span>血脂異常</span></label>
-              <label class="check-card"><input type="checkbox" name="f_comorb" value="obesity"><span>肥胖</span></label>
-              <label class="check-card"><input type="checkbox" name="f_comorb" value="smoking"><span>吸煙</span></label>
-              <label class="check-card"><input type="checkbox" name="f_comorb" value="depression"><span>抑鬱情緒</span></label>
-              <label class="check-card"><input type="checkbox" name="f_comorb" value="kidney"><span>腎功能異常</span></label>
-              <label class="check-card"><input type="checkbox" name="f_comorb" value="none"><span>無</span></label>
+            <div class="hsa-check-grid three">
+              <label class="hsa-check-card"><input type="checkbox" name="f_comorb" value="hyperlipidemia"><span>血脂異常</span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="f_comorb" value="obesity"><span>肥胖</span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="f_comorb" value="smoking"><span>吸煙</span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="f_comorb" value="depression"><span>抑鬱情緒</span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="f_comorb" value="kidney"><span>腎功能異常</span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="f_comorb" value="none"><span>無</span></label>
             </div>
           </div>
 
-          <div class="form-nav">
-            <button type="button" class="btn-ghost-dark" data-reset="followup">清空</button>
-            <button type="button" class="btn-purple" data-action="followup">生成隨訪計劃 →</button>
+          <div class="hsa-nav">
+            <button type="button" class="hsa-btn-ghost" data-reset="followup">清空</button>
+            <button type="button" class="hsa-btn-gold" data-action="followup">生成隨訪計劃 →</button>
           </div>
         </div>
-        <div class="tool-result" id="followupResult"></div>
+        <div class="hsa-result" id="followupResult"></div>
       </div>
 
       <!-- ============== 03 健康教育 ============== -->
-      <div class="tool-panel" data-panel="education">
-        <div class="form-step">
-          <div class="step-num">TOOL 03</div>
+      <div class="hsa-panel" data-panel="education">
+        <div class="hsa-card">
+          <div class="hsa-num">TOOL 03</div>
           <h2>健康教育干預設計</h2>
-          <p class="step-desc">根據目標人群、主題、預算與週期，推薦傳播策略組合、實施頻率與評估指標。</p>
+          <p class="hsa-desc">根據目標人群、主題、預算與週期，推薦傳播策略組合、實施頻率與評估指標。</p>
 
-          <div class="field-row">
-            <div class="field">
+          <div class="hsa-row">
+            <div class="hsa-field">
               <label>目標人群</label>
               <select id="e_audience">
                 <option value="general">一般社區居民</option>
@@ -363,7 +362,7 @@
                 <option value="workplace">職業人群</option>
               </select>
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>干預週期</label>
               <select id="e_duration">
                 <option value="short">短期（1-3 個月）</option>
@@ -373,28 +372,28 @@
             </div>
           </div>
 
-          <div class="field">
+          <div class="hsa-field">
             <label>健康教育主題</label>
-            <div class="check-grid three">
-              <label class="check-card"><input type="radio" name="e_topic" value="diet" checked><span>合理膳食</span></label>
-              <label class="check-card"><input type="radio" name="e_topic" value="exercise"><span>身體活動</span></label>
-              <label class="check-card"><input type="radio" name="e_topic" value="smoking"><span>戒煙限酒</span></label>
-              <label class="check-card"><input type="radio" name="e_topic" value="chronic"><span>慢病自管理</span></label>
-              <label class="check-card"><input type="radio" name="e_topic" value="mental"><span>心理健康</span></label>
-              <label class="check-card"><input type="radio" name="e_topic" value="infection"><span>傳染病預防</span></label>
+            <div class="hsa-check-grid three">
+              <label class="hsa-check-card"><input type="radio" name="e_topic" value="diet" checked><span>合理膳食</span></label>
+              <label class="hsa-check-card"><input type="radio" name="e_topic" value="exercise"><span>身體活動</span></label>
+              <label class="hsa-check-card"><input type="radio" name="e_topic" value="smoking"><span>戒煙限酒</span></label>
+              <label class="hsa-check-card"><input type="radio" name="e_topic" value="chronic"><span>慢病自管理</span></label>
+              <label class="hsa-check-card"><input type="radio" name="e_topic" value="mental"><span>心理健康</span></label>
+              <label class="hsa-check-card"><input type="radio" name="e_topic" value="infection"><span>傳染病預防</span></label>
             </div>
           </div>
 
-          <div class="field-row three">
-            <div class="field">
+          <div class="hsa-row three">
+            <div class="hsa-field">
               <label>覆蓋人數（人）</label>
               <input type="number" id="e_size" min="1" placeholder="如 500">
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>可用預算（元）</label>
               <input type="number" id="e_budget" min="0" placeholder="如 30000">
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>實施人員配備</label>
               <select id="e_staff">
                 <option value="low">薄弱（&lt; 2 人）</option>
@@ -404,43 +403,43 @@
             </div>
           </div>
 
-          <div class="field">
+          <div class="hsa-field">
             <label>已具備的傳播渠道（可多選）</label>
-            <div class="check-grid three">
-              <label class="check-card"><input type="checkbox" name="e_channel" value="leaflet"><span>宣傳冊 / 海報</span></label>
-              <label class="check-card"><input type="checkbox" name="e_channel" value="lecture"><span>講座 / 課堂</span></label>
-              <label class="check-card"><input type="checkbox" name="e_channel" value="wechat"><span>微信群 / 公眾號</span></label>
-              <label class="check-card"><input type="checkbox" name="e_channel" value="video"><span>短視頻</span></label>
-              <label class="check-card"><input type="checkbox" name="e_channel" value="peer"><span>同伴小組</span></label>
-              <label class="check-card"><input type="checkbox" name="e_channel" value="onsite"><span>義診 / 入戶</span></label>
+            <div class="hsa-check-grid three">
+              <label class="hsa-check-card"><input type="checkbox" name="e_channel" value="leaflet"><span>宣傳冊 / 海報</span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="e_channel" value="lecture"><span>講座 / 課堂</span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="e_channel" value="wechat"><span>微信群 / 公眾號</span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="e_channel" value="video"><span>短視頻</span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="e_channel" value="peer"><span>同伴小組</span></label>
+              <label class="hsa-check-card"><input type="checkbox" name="e_channel" value="onsite"><span>義診 / 入戶</span></label>
             </div>
           </div>
 
-          <div class="form-nav">
-            <button type="button" class="btn-ghost-dark" data-reset="education">清空</button>
-            <button type="button" class="btn-purple" data-action="education">生成干預方案 →</button>
+          <div class="hsa-nav">
+            <button type="button" class="hsa-btn-ghost" data-reset="education">清空</button>
+            <button type="button" class="hsa-btn-gold" data-action="education">生成干預方案 →</button>
           </div>
         </div>
-        <div class="tool-result" id="educationResult"></div>
+        <div class="hsa-result" id="educationResult"></div>
       </div>
 
       <!-- ============== 04 满意度 ============== -->
-      <div class="tool-panel" data-panel="satisfaction">
-        <div class="form-step">
-          <div class="step-num">TOOL 04</div>
+      <div class="hsa-panel" data-panel="satisfaction">
+        <div class="hsa-card">
+          <div class="hsa-num">TOOL 04</div>
           <h2>健康服務質量滿意度分析</h2>
-          <p class="step-desc">輸入各維度平均評分（1-5 分），系統將計算綜合滿意度、識別短板維度並輸出改進優先級。</p>
+          <p class="hsa-desc">輸入各維度平均評分（1-5 分），系統將計算綜合滿意度、識別短板維度並輸出改進優先級。</p>
 
-          <div class="field-row three">
-            <div class="field">
+          <div class="hsa-row three">
+            <div class="hsa-field">
               <label>調查樣本量</label>
               <input type="number" id="s_n" min="1" placeholder="如 320">
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>有效回收率 (%)</label>
               <input type="number" id="s_response" min="0" max="100" step="0.1" placeholder="如 85">
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>投訴率 (‰)</label>
               <input type="number" id="s_complaint" min="0" step="0.01" placeholder="如 1.2">
             </div>
@@ -448,62 +447,62 @@
 
           <p style="font-size:13px;color:#888;margin:24px 0 14px;letter-spacing:.3px;">— 各維度平均評分（1-5 分） —</p>
 
-          <div class="field-row three">
-            <div class="field"><label>可及性</label><input type="number" id="s_access" min="1" max="5" step="0.01" placeholder="4.20"><div class="field-help">就診距離 / 等候時間</div></div>
-            <div class="field"><label>響應性</label><input type="number" id="s_response_d" min="1" max="5" step="0.01" placeholder="4.10"><div class="field-help">投訴處理速度</div></div>
-            <div class="field"><label>技術質量</label><input type="number" id="s_tech" min="1" max="5" step="0.01" placeholder="4.30"><div class="field-help">診療準確性</div></div>
+          <div class="hsa-row three">
+            <div class="hsa-field"><label>可及性</label><input type="number" id="s_access" min="1" max="5" step="0.01" placeholder="4.20"><div class="hsa-help">就診距離 / 等候時間</div></div>
+            <div class="hsa-field"><label>響應性</label><input type="number" id="s_response_d" min="1" max="5" step="0.01" placeholder="4.10"><div class="hsa-help">投訴處理速度</div></div>
+            <div class="hsa-field"><label>技術質量</label><input type="number" id="s_tech" min="1" max="5" step="0.01" placeholder="4.30"><div class="hsa-help">診療準確性</div></div>
           </div>
-          <div class="field-row three">
-            <div class="field"><label>人文關懷</label><input type="number" id="s_care" min="1" max="5" step="0.01" placeholder="4.00"><div class="field-help">溝通態度 / 隱私保護</div></div>
-            <div class="field"><label>環境設施</label><input type="number" id="s_env" min="1" max="5" step="0.01" placeholder="3.90"><div class="field-help">候診環境 / 衛生</div></div>
-            <div class="field"><label>價格費用</label><input type="number" id="s_price" min="1" max="5" step="0.01" placeholder="3.70"><div class="field-help">費用合理性</div></div>
-          </div>
-
-          <div class="field-row">
-            <div class="field"><label>淨推薦比例 NPS：推薦者佔比 (%)</label><input type="number" id="s_promoter" min="0" max="100" step="0.1" placeholder="如 55"></div>
-            <div class="field"><label>淨推薦比例 NPS：貶損者佔比 (%)</label><input type="number" id="s_detractor" min="0" max="100" step="0.1" placeholder="如 12"></div>
+          <div class="hsa-row three">
+            <div class="hsa-field"><label>人文關懷</label><input type="number" id="s_care" min="1" max="5" step="0.01" placeholder="4.00"><div class="hsa-help">溝通態度 / 隱私保護</div></div>
+            <div class="hsa-field"><label>環境設施</label><input type="number" id="s_env" min="1" max="5" step="0.01" placeholder="3.90"><div class="hsa-help">候診環境 / 衛生</div></div>
+            <div class="hsa-field"><label>價格費用</label><input type="number" id="s_price" min="1" max="5" step="0.01" placeholder="3.70"><div class="hsa-help">費用合理性</div></div>
           </div>
 
-          <div class="form-nav">
-            <button type="button" class="btn-ghost-dark" data-reset="satisfaction">清空</button>
-            <button type="button" class="btn-purple" data-action="satisfaction">生成滿意度報告 →</button>
+          <div class="hsa-row">
+            <div class="hsa-field"><label>淨推薦比例 NPS：推薦者佔比 (%)</label><input type="number" id="s_promoter" min="0" max="100" step="0.1" placeholder="如 55"></div>
+            <div class="hsa-field"><label>淨推薦比例 NPS：貶損者佔比 (%)</label><input type="number" id="s_detractor" min="0" max="100" step="0.1" placeholder="如 12"></div>
+          </div>
+
+          <div class="hsa-nav">
+            <button type="button" class="hsa-btn-ghost" data-reset="satisfaction">清空</button>
+            <button type="button" class="hsa-btn-gold" data-action="satisfaction">生成滿意度報告 →</button>
           </div>
         </div>
-        <div class="tool-result" id="satisfactionResult"></div>
+        <div class="hsa-result" id="satisfactionResult"></div>
       </div>
 
       <!-- ============== 05 成本人资 ============== -->
-      <div class="tool-panel" data-panel="cost">
-        <div class="form-step">
-          <div class="step-num">TOOL 05</div>
+      <div class="hsa-panel" data-panel="cost">
+        <div class="hsa-card">
+          <div class="hsa-num">TOOL 05</div>
           <h2>健康項目成本與人資估計</h2>
-          <p class="step-desc">輸入項目規模、人員配置與物資單價，估算總成本、人月需求、人均成本及成本結構。</p>
+          <p class="hsa-desc">輸入項目規模、人員配置與物資單價，估算總成本、人月需求、人均成本及成本結構。</p>
 
-          <div class="field-row three">
-            <div class="field">
+          <div class="hsa-row three">
+            <div class="hsa-field">
               <label>項目名稱</label>
               <input type="text" id="c_name" placeholder="如 社區高血壓管理項目">
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>服務對象人數</label>
               <input type="number" id="c_target" min="1" placeholder="如 500">
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>項目週期（月）</label>
               <input type="number" id="c_months" min="1" placeholder="如 12">
             </div>
           </div>
 
-          <div class="field-row three">
-            <div class="field">
+          <div class="hsa-row three">
+            <div class="hsa-field">
               <label>人均年服務頻次（次）</label>
               <input type="number" id="c_freq" min="0" placeholder="如 6">
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>單次服務時長（分鐘）</label>
               <input type="number" id="c_duration" min="0" placeholder="如 30">
             </div>
-            <div class="field">
+            <div class="hsa-field">
               <label>人均物資成本（元/人次）</label>
               <input type="number" id="c_material" min="0" step="0.01" placeholder="如 15">
             </div>
@@ -511,36 +510,36 @@
 
           <p style="font-size:13px;color:#888;margin:24px 0 14px;letter-spacing:.3px;">— 人員配置與月薪（元） —</p>
 
-          <div class="field-row three">
-            <div class="field"><label>醫生人數</label><input type="number" id="c_doc_n" min="0" value="0"></div>
-            <div class="field"><label>醫生月薪</label><input type="number" id="c_doc_s" min="0" placeholder="如 12000"></div>
-            <div class="field"><label>護士人數</label><input type="number" id="c_nur_n" min="0" value="0"></div>
+          <div class="hsa-row three">
+            <div class="hsa-field"><label>醫生人數</label><input type="number" id="c_doc_n" min="0" value="0"></div>
+            <div class="hsa-field"><label>醫生月薪</label><input type="number" id="c_doc_s" min="0" placeholder="如 12000"></div>
+            <div class="hsa-field"><label>護士人數</label><input type="number" id="c_nur_n" min="0" value="0"></div>
           </div>
-          <div class="field-row three">
-            <div class="field"><label>護士月薪</label><input type="number" id="c_nur_s" min="0" placeholder="如 8000"></div>
-            <div class="field"><label>公衛/防保人數</label><input type="number" id="c_ph_n" min="0" value="0"></div>
-            <div class="field"><label>公衛月薪</label><input type="number" id="c_ph_s" min="0" placeholder="如 7000"></div>
+          <div class="hsa-row three">
+            <div class="hsa-field"><label>護士月薪</label><input type="number" id="c_nur_s" min="0" placeholder="如 8000"></div>
+            <div class="hsa-field"><label>公衛/防保人數</label><input type="number" id="c_ph_n" min="0" value="0"></div>
+            <div class="hsa-field"><label>公衛月薪</label><input type="number" id="c_ph_s" min="0" placeholder="如 7000"></div>
           </div>
-          <div class="field-row three">
-            <div class="field"><label>管理人員人數</label><input type="number" id="c_mgr_n" min="0" value="0"></div>
-            <div class="field"><label>管理人員月薪</label><input type="number" id="c_mgr_s" min="0" placeholder="如 10000"></div>
-            <div class="field"><label>志願者/兼職人月補助</label><input type="number" id="c_vol" min="0" placeholder="如 2000"></div>
+          <div class="hsa-row three">
+            <div class="hsa-field"><label>管理人員人數</label><input type="number" id="c_mgr_n" min="0" value="0"></div>
+            <div class="hsa-field"><label>管理人員月薪</label><input type="number" id="c_mgr_s" min="0" placeholder="如 10000"></div>
+            <div class="hsa-field"><label>志願者/兼職人月補助</label><input type="number" id="c_vol" min="0" placeholder="如 2000"></div>
           </div>
 
           <p style="font-size:13px;color:#888;margin:24px 0 14px;letter-spacing:.3px;">— 其他投入 —</p>
 
-          <div class="field-row three">
-            <div class="field"><label>設備一次性投入（元）</label><input type="number" id="c_equip" min="0" placeholder="如 50000"></div>
-            <div class="field"><label>場地租金（元/月）</label><input type="number" id="c_rent" min="0" placeholder="如 5000"></div>
-            <div class="field"><label>培訓 + 宣傳預算（元）</label><input type="number" id="c_train" min="0" placeholder="如 20000"></div>
+          <div class="hsa-row three">
+            <div class="hsa-field"><label>設備一次性投入（元）</label><input type="number" id="c_equip" min="0" placeholder="如 50000"></div>
+            <div class="hsa-field"><label>場地租金（元/月）</label><input type="number" id="c_rent" min="0" placeholder="如 5000"></div>
+            <div class="hsa-field"><label>培訓 + 宣傳預算（元）</label><input type="number" id="c_train" min="0" placeholder="如 20000"></div>
           </div>
 
-          <div class="form-nav">
-            <button type="button" class="btn-ghost-dark" data-reset="cost">清空</button>
-            <button type="button" class="btn-purple" data-action="cost">生成成本估算 →</button>
+          <div class="hsa-nav">
+            <button type="button" class="hsa-btn-ghost" data-reset="cost">清空</button>
+            <button type="button" class="hsa-btn-gold" data-action="cost">生成成本估算 →</button>
           </div>
         </div>
-        <div class="tool-result" id="costResult"></div>
+        <div class="hsa-result" id="costResult"></div>
       </div>
 
     </div>
@@ -574,8 +573,697 @@
     </div>
   </footer>
 
-  <div id="toast" class="toast">已複製到剪貼板</div>
+  <div id="hsaToast" class="hsa-toast">已複製到剪貼板</div>
 
-  <script src="assets/js/health-service.js"></script>
+  <script>
+  /* ============================================================
+   * Health Service Analysis Toolkit (inline JS)
+   * Hughie's Online Lab
+   * ============================================================ */
+  (function () {
+    'use strict';
+
+    // ---------- Tab switching ----------
+    const tabs = document.querySelectorAll('.hsa-tab-btn');
+    const panels = document.querySelectorAll('.hsa-panel');
+    tabs.forEach(t => t.addEventListener('click', () => {
+      tabs.forEach(x => x.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      t.classList.add('active');
+      document.querySelector('.hsa-panel[data-panel="' + t.dataset.tab + '"]').classList.add('active');
+    }));
+
+    // ---------- Toast ----------
+    const toast = document.getElementById('hsaToast');
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // ---------- Helpers ----------
+    function num(id, def) {
+      def = def || 0;
+      const el = document.getElementById(id);
+      if (!el) return def;
+      const v = parseFloat(el.value);
+      return isNaN(v) ? def : v;
+    }
+    function val(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+    function getRadio(name) {
+      const el = document.querySelector('input[name="' + name + '"]:checked');
+      return el ? el.value : null;
+    }
+    function getChecks(name) {
+      return Array.from(document.querySelectorAll('input[name="' + name + '"]:checked')).map(e => e.value);
+    }
+    function fmt(n, d) {
+      if (d === undefined) d = 0;
+      if (!isFinite(n)) return '--';
+      return Number(n).toLocaleString('zh-CN', { minimumFractionDigits: d, maximumFractionDigits: d });
+    }
+    function pct(n) { return (n * 100).toFixed(1) + '%'; }
+
+    function renderResult(containerId, html) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = html +
+        '<div class="hsa-nav" style="margin-top:8px;">' +
+          '<button type="button" class="hsa-btn-ghost copy-btn">📋 一鍵複製報告</button>' +
+          '<button type="button" class="hsa-btn-ghost" onclick="window.print()">🖨️ 打印 / PDF</button>' +
+        '</div>';
+      el.classList.add('show');
+      const cb = el.querySelector('.copy-btn');
+      cb.addEventListener('click', () => {
+        const block = el.querySelector('.hsa-report');
+        const text = block ? block.innerText : el.innerText;
+        navigator.clipboard.writeText(text).then(() => showToast('已複製到剪貼板'));
+      });
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ============================================================
+    // 01 需求分析
+    // ============================================================
+    function analyzeNeeds() {
+      const pop = num('n_population');
+      const region = val('n_region');
+      const elderly = num('n_elderly');
+      const chronic = num('n_chronic');
+      const coverage = num('n_coverage');
+      const issues = getChecks('n_issue');
+      const econ = getRadio('n_econ') || 'medium';
+
+      if (!pop || pop < 1) return showToast('請輸入目標人群規模');
+      if (issues.length === 0) return showToast('請至少選擇 1 項主要健康問題');
+
+      const regionFactor = { urban: 1.0, rural: 1.15, mixed: 1.05, remote: 1.25 }[region];
+      const econFactor = { low: 1.2, medium: 1.0, high: 0.9 }[econ];
+      const gap = Math.max(0, (100 - coverage) / 100);
+      const burdenIndex = (chronic * 0.5 + elderly * 0.5) / 100;
+      const score = Math.min(100, Math.round((30 + burdenIndex * 50 + gap * 25 + (issues.length - 1) * 3) * regionFactor * econFactor));
+
+      let level = '低';
+      if (score >= 75) level = '高';
+      else if (score >= 55) level = '中-高';
+      else if (score >= 35) level = '中等';
+      else level = '較低';
+
+      const chronicPatients = Math.round(pop * chronic / 100);
+      const elderlyPop = Math.round(pop * elderly / 100);
+      const annualVisits = Math.round(pop * (1.5 + burdenIndex * 3) * regionFactor);
+      const followupVisits = Math.round(chronicPatients * 4);
+      const educationSessions = Math.max(12, Math.round(pop / 1000) * 4);
+
+      const priorityMap = {
+        '慢病管理': chronic * 1.2 + elderly * 0.5,
+        '老年照護': elderly * 1.5,
+        '婦幼保健': econ === 'low' ? 25 : 15,
+        '心理健康': 18,
+        '傳染病防控': region === 'remote' || region === 'rural' ? 22 : 14,
+        '健康行為': 15
+      };
+      const priorities = issues.map(i => ({ name: i, weight: priorityMap[i] || 10 }))
+        .sort((a, b) => b.weight - a.weight);
+
+      const recommendedPackage = [];
+      if (issues.indexOf('慢病管理') >= 0) recommendedPackage.push('家庭醫生簽約 + 慢病分級隨訪');
+      if (issues.indexOf('老年照護') >= 0) recommendedPackage.push('老年人健康體檢（每年 1 次） + 失能評估');
+      if (issues.indexOf('婦幼保健') >= 0) recommendedPackage.push('孕產婦系統管理 + 0-6 歲兒童保健');
+      if (issues.indexOf('心理健康') >= 0) recommendedPackage.push('社區心理篩查 + 轉診綠色通道');
+      if (issues.indexOf('傳染病防控') >= 0) recommendedPackage.push('預防接種 + 傳染病監測上報');
+      if (issues.indexOf('健康行為') >= 0) recommendedPackage.push('健康促進活動 + 健康自管理小組');
+
+      const regionLabel = { urban: '城市', rural: '農村', mixed: '城鄉結合', remote: '偏遠' }[region];
+
+      const html =
+        '<div class="hsa-method-card">' +
+          '<div class="hsa-method-eyebrow">RECOMMENDED PRIORITY</div>' +
+          '<h3 class="hsa-method-name">綜合需求等級：' + level + '</h3>' +
+          '<div class="hsa-method-en">Comprehensive Need Score = ' + score + ' / 100</div>' +
+          '<p class="hsa-method-summary">基於人群規模 ' + fmt(pop) + ' 人、慢病患病率 ' + chronic + '%、老年比例 ' + elderly + '%、現有服務覆蓋率 ' + coverage + '% 的綜合測算，該人群的健康服務需求等級為 <strong>' + level + '</strong>。建議將「<strong>' + priorities[0].name + '</strong>」作為首要服務方向。</p>' +
+          '<div class="hsa-alt-list">' + priorities.map((p, i) => '<span class="hsa-tag ' + (i === 0 ? 'gold' : '') + '">' + (i + 1) + '. ' + p.name + '</span>').join('') + '</div>' +
+        '</div>' +
+        '<div class="hsa-result-section"><h3>🧾 你的選擇摘要</h3><div class="hsa-summary-grid">' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">人群規模</div><div class="hsa-summary-value">' + fmt(pop) + ' 人</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">區域類型</div><div class="hsa-summary-value">' + regionLabel + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">慢病患者估計</div><div class="hsa-summary-value">' + fmt(chronicPatients) + ' 人</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">老年人口估計</div><div class="hsa-summary-value">' + fmt(elderlyPop) + ' 人</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">服務缺口</div><div class="hsa-summary-value">' + (gap * 100).toFixed(0) + '%</div></div>' +
+        '</div></div>' +
+        '<div class="hsa-result-section"><h3>📊 年度服務量估算</h3><ul>' +
+          '<li>預計年門診量：<code>' + fmt(annualVisits) + '</code> 人次</li>' +
+          '<li>慢病隨訪量：<code>' + fmt(followupVisits) + '</code> 人次（' + fmt(chronicPatients) + ' 人 × 4 次/年）</li>' +
+          '<li>健康教育場次：<code>' + fmt(educationSessions) + '</code> 場/年</li>' +
+          '<li>建議重點覆蓋人群：老年人（' + fmt(elderlyPop) + ' 人）+ 慢病患者（' + fmt(chronicPatients) + ' 人）</li>' +
+        '</ul></div>' +
+        '<div class="hsa-result-section"><h3>✅ 推薦服務包</h3><ul>' +
+          recommendedPackage.map(p => '<li>' + p + '</li>').join('') +
+          '<li><em>所有服務均應結合家庭醫生簽約服務開展，並建立電子健康檔案。</em></li>' +
+        '</ul></div>' +
+        '<div class="hsa-result-section"><h3>📋 需求分析報告（可複製）</h3><div class="hsa-report">【健康服務需求分析報告】\n' +
+          '目標人群規模：' + fmt(pop) + ' 人 | 區域類型：' + regionLabel + '\n' +
+          '人群結構：≥65 歲 ' + elderly + '% | 慢病患病率 ' + chronic + '% | 現有服務覆蓋 ' + coverage + '%\n' +
+          '————————————————————————\n' +
+          '綜合需求評分：' + score + ' / 100（' + level + ' 需求）\n' +
+          '首要服務方向：' + priorities[0].name + '\n' +
+          '次要方向：' + (priorities.slice(1).map(p => p.name).join('、') || '無') + '\n' +
+          '————————————————————————\n' +
+          '年度服務量估算：\n' +
+          '- 門診量：' + fmt(annualVisits) + ' 人次\n' +
+          '- 慢病隨訪：' + fmt(followupVisits) + ' 人次\n' +
+          '- 健康教育：' + fmt(educationSessions) + ' 場\n' +
+          '————————————————————————\n' +
+          '建議服務包：\n' +
+          recommendedPackage.map((p, i) => (i + 1) + '. ' + p).join('\n') +
+        '</div></div>' +
+        '<div class="hsa-result-section"><h3>⚠️ 注意事項</h3><ul>' +
+          '<li>實際需求應結合<strong>實地調查</strong>（KAP 調查、入戶訪談）進一步確認</li>' +
+          '<li>慢病患病率建議使用最近 3 年的監測數據而非自報數據</li>' +
+          '<li>服務量估算為參考值，受季節、突發公共衛生事件影響較大</li>' +
+          '<li>應關注<em>未診斷</em>的潛在患者群體，建議開展機會性篩查</li>' +
+        '</ul></div>' +
+        '<div class="hsa-result-section hsa-disclaimer"><strong>免責聲明　</strong>本工具基於常用公衛經驗系數估算，實際規劃應結合本地衛生統計年鑑、財政能力及上級主管部門指導意見。</div>';
+
+      renderResult('needsResult', html);
+    }
+
+    // ============================================================
+    // 02 慢病随访
+    // ============================================================
+    function analyzeFollowup() {
+      const disease = getRadio('f_disease') || 'hypertension';
+      const grade = getRadio('f_grade') || '1';
+      const control = getRadio('f_control') || 'good';
+      const patients = num('f_patients');
+      const age = val('f_age');
+      const comorb = getChecks('f_comorb').filter(c => c !== 'none');
+
+      if (!patients || patients < 1) return showToast('請輸入患者人數');
+
+      const diseaseDB = {
+        hypertension: { name: '高血壓', en: 'Hypertension Management',
+          items: ['測量血壓（每次 2 次取均值）', '心率', '體重 / BMI', '用藥依從性詢問', '生活方式詢問（鈉攝入、運動、煙酒）'],
+          annualLab: '血脂、空腹血糖、尿常規、心電圖（每年 1 次）',
+          transfer: ['血壓持續 ≥180/110 mmHg', '出現靶器官損害', '懷疑繼發性高血壓', '妊娠合併高血壓']
+        },
+        diabetes: { name: '2 型糖尿病', en: 'Type 2 Diabetes Management',
+          items: ['空腹血糖 / 隨機血糖', '症狀詢問（多飲、多尿、低血糖事件）', '體重 / 腰圍', '用藥情況', '足部檢查'],
+          annualLab: 'HbA1c（每 3-6 個月）、血脂、肝腎功、尿微量白蛋白、眼底（每年）',
+          transfer: ['空腹血糖 ≥16.7 mmol/L 或反復低血糖', 'DKA / 高滲狀態', '足部潰瘍 / 視網膜病變進展', '腎功能急劇惡化']
+        },
+        chd: { name: '冠心病', en: 'Coronary Heart Disease Management',
+          items: ['心絞痛發作頻率', '血壓 / 心率', '用藥依從性（抗血小板、他汀）', '活動耐力評估'],
+          annualLab: '血脂（每 3 個月直至達標）、心電圖、必要時 BNP',
+          transfer: ['心絞痛頻發或加重', '心衰加重', '心電圖新發改變', '懷疑急性冠脈綜合徵']
+        },
+        copd: { name: '慢阻肺', en: 'COPD Management',
+          items: ['咳嗽 / 咳痰 / 氣促評估（mMRC）', 'CAT 評分', '急性加重次數', '吸入裝置使用培訓'],
+          annualLab: '肺功能（每年 1 次）、血氧飽和度',
+          transfer: ['急性加重需住院', '呼吸衰竭', 'SpO₂ < 90%', '咯血']
+        },
+        stroke: { name: '腦卒中後管理', en: 'Post-Stroke Management',
+          items: ['神經功能評估（NIHSS / mRS）', '吞嚥功能', '血壓 / 血糖 / 血脂', '康復進展', '抗血小板用藥'],
+          annualLab: '頸動脈超聲、心電圖、凝血功能',
+          transfer: ['症狀復發或加重', '深靜脈血栓', '癲癇發作', '吞嚥障礙加重致誤吸']
+        },
+        ckd: { name: '慢性腎病', en: 'Chronic Kidney Disease',
+          items: ['血壓', '水腫情況', '尿量', '飲食依從性（低鹽低蛋白）', '用藥（避免腎毒性藥物）'],
+          annualLab: 'eGFR、尿蛋白定量、電解質、血紅蛋白（每 3-6 個月）',
+          transfer: ['eGFR 急劇下降', '高鉀血症', '頑固性高血壓', '需腎臟替代治療評估']
+        }
+      };
+      const di = diseaseDB[disease];
+
+      const freqMap = {
+        '1': { good: 4, poor: 6, unstable: 8 },
+        '2': { good: 6, poor: 10, unstable: 12 },
+        '3': { good: 12, poor: 16, unstable: 24 }
+      };
+      let freq = freqMap[grade][control];
+      if (age === 'elderly') freq = Math.round(freq * 1.15);
+      if (comorb.length >= 2) freq += 2;
+
+      const intervalDays = Math.round(365 / freq);
+      const totalVisits = patients * freq;
+      const referralRate = control === 'unstable' ? 0.15 : control === 'poor' ? 0.08 : 0.03;
+      const referrals = Math.round(patients * referralRate);
+
+      const interventions = ['規範用藥指導與依從性監測', '生活方式干預（飲食、運動、戒煙限酒）', '健康自管理技能培訓'];
+      if (comorb.indexOf('hyperlipidemia') >= 0) interventions.push('血脂管理：他汀類藥物 + 低脂飲食');
+      if (comorb.indexOf('obesity') >= 0) interventions.push('體重管理：BMI 目標 18.5-23.9，腰圍男&lt;90cm 女&lt;85cm');
+      if (comorb.indexOf('smoking') >= 0) interventions.push('戒煙干預：5A 法（詢問、勸告、評估、幫助、安排）');
+      if (comorb.indexOf('depression') >= 0) interventions.push('心理篩查（PHQ-9）+ 必要時轉診');
+      if (comorb.indexOf('kidney') >= 0) interventions.push('腎功能保護：避免 NSAIDs、控制蛋白攝入');
+
+      const ctrlLabel = { good: '達標', poor: '未達標', unstable: '不穩定' }[control];
+      const ageLabel = { adult: '中青年', elderly: '老年', mixed: '混合' }[age];
+
+      const html =
+        '<div class="hsa-method-card">' +
+          '<div class="hsa-method-eyebrow">FOLLOW-UP PLAN</div>' +
+          '<h3 class="hsa-method-name">' + di.name + ' · ' + grade + ' 級 · ' + ctrlLabel + '</h3>' +
+          '<div class="hsa-method-en">' + di.en + ' | Visit Frequency: ' + freq + ' times/year</div>' +
+          '<p class="hsa-method-summary">建議每 <strong>' + intervalDays + ' 天</strong>隨訪 1 次，全年 <strong>' + freq + ' 次</strong>。全人群（' + fmt(patients) + ' 人）年隨訪總量約 <strong>' + fmt(totalVisits) + '</strong> 人次，預計需轉診上級醫院約 <strong>' + fmt(referrals) + '</strong> 人次。</p>' +
+        '</div>' +
+        '<div class="hsa-result-section"><h3>🧾 你的選擇摘要</h3><div class="hsa-summary-grid">' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">病種</div><div class="hsa-summary-value">' + di.name + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">分級 / 控制</div><div class="hsa-summary-value">' + grade + ' 級 / ' + ctrlLabel + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">患者數</div><div class="hsa-summary-value">' + fmt(patients) + ' 人</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">隨訪間隔</div><div class="hsa-summary-value">' + intervalDays + ' 天</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">年隨訪量</div><div class="hsa-summary-value">' + fmt(totalVisits) + ' 人次</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">合併症</div><div class="hsa-summary-value">' + (comorb.length || '無') + '</div></div>' +
+        '</div></div>' +
+        '<div class="hsa-result-section"><h3>📋 每次隨訪內容清單</h3><ul>' +
+          di.items.map(i => '<li>' + i + '</li>').join('') +
+          '<li><em>每年體檢項目：' + di.annualLab + '</em></li>' +
+        '</ul></div>' +
+        '<div class="hsa-result-section"><h3>💡 干預措施</h3><ul>' + interventions.map(i => '<li>' + i + '</li>').join('') + '</ul></div>' +
+        '<div class="hsa-result-section"><h3>🚑 轉診指徵</h3><ul>' + di.transfer.map(i => '<li>' + i + '</li>').join('') + '</ul></div>' +
+        '<div class="hsa-result-section"><h3>📋 隨訪計劃報告（可複製）</h3><div class="hsa-report">【' + di.name + ' 隨訪計劃】\n' +
+          '病情分級：' + grade + ' 級 | 控制狀態：' + ctrlLabel + '\n' +
+          '管理人數：' + fmt(patients) + ' 人 | 主要年齡段：' + ageLabel + '\n' +
+          '合併症：' + (comorb.length ? comorb.join('、') : '無') + '\n' +
+          '————————————————————————\n' +
+          '隨訪頻率：每 ' + intervalDays + ' 天 1 次（全年 ' + freq + ' 次）\n' +
+          '年隨訪總量：' + fmt(totalVisits) + ' 人次\n' +
+          '預計轉診：' + fmt(referrals) + ' 人次（' + (referralRate * 100).toFixed(1) + '%）\n' +
+          '————————————————————————\n' +
+          '隨訪內容：\n' + di.items.map((i, idx) => (idx + 1) + '. ' + i).join('\n') + '\n' +
+          '年度檢查：' + di.annualLab + '\n' +
+          '————————————————————————\n' +
+          '干預重點：\n' + interventions.map((i, idx) => (idx + 1) + '. ' + i.replace(/&lt;/g, '<')).join('\n') +
+        '</div></div>' +
+        '<div class="hsa-result-section hsa-disclaimer"><strong>免責聲明　</strong>本方案基於國家基本公共衛生服務規範與相關指南要點，臨床決策需結合個體化評估，重症與不穩定患者應及時轉診。</div>';
+
+      renderResult('followupResult', html);
+    }
+
+    // ============================================================
+    // 03 健康教育
+    // ============================================================
+    function analyzeEducation() {
+      const audience = val('e_audience');
+      const duration = val('e_duration');
+      const topic = getRadio('e_topic') || 'diet';
+      const size = num('e_size');
+      const budget = num('e_budget');
+      const staff = val('e_staff');
+      const channels = getChecks('e_channel');
+
+      if (!size || size < 1) return showToast('請輸入覆蓋人數');
+
+      const topicDB = {
+        diet: { name: '合理膳食干預', en: 'Healthy Diet Intervention',
+          core: ['每日蔬菜 ≥300g、水果 200-350g', '減鹽（&lt; 5g/日）、減油（25-30g/日）', '全穀物雜豆 50-150g/日', '優質蛋白：魚禽蛋瘦肉 120-200g/日'],
+          kpi: ['知曉率 ≥85%', '行為改變率 ≥40%', '高鹽飲食比例下降 15%']
+        },
+        exercise: { name: '身體活動促進', en: 'Physical Activity Promotion',
+          core: ['每週中等強度有氧運動 ≥150 分鐘', '每週 2 次抗阻訓練', '減少久坐：每小時起身活動', '老年人增加平衡訓練'],
+          kpi: ['規律運動者比例 ≥30%', 'BMI 改善率', '步數監測達標率']
+        },
+        smoking: { name: '戒煙限酒', en: 'Tobacco & Alcohol Control',
+          core: ['5A 法戒煙干預（詢問、勸告、評估、幫助、安排）', '尼古丁替代治療轉介', '男性飲酒 &lt; 25g 純酒精/日', '孕婦、青少年絕對戒酒'],
+          kpi: ['戒煙嘗試率 ≥30%', '6 個月持續戒煙率 ≥10%', '飲酒控制達標率']
+        },
+        chronic: { name: '慢病自管理', en: 'Chronic Disease Self-Management',
+          core: ['用藥依從性培訓', '症狀識別與應對', '家庭血壓 / 血糖監測技能', '應急聯絡與就醫指引'],
+          kpi: ['自管理小組覆蓋率', '依從性提升 20%', '急診就診次數下降']
+        },
+        mental: { name: '心理健康促進', en: 'Mental Health Promotion',
+          core: ['壓力應對技巧訓練', 'PHQ-9 / GAD-7 篩查', '社會支持網絡建立', '專業轉介綠色通道'],
+          kpi: ['篩查覆蓋率 ≥60%', '主動求助意願提升', '輕中度症狀緩解率']
+        },
+        infection: { name: '傳染病預防', en: 'Infectious Disease Prevention',
+          core: ['手衛生 + 咳嗽禮儀', '疫苗接種知識', '高風險場所防護', '可疑症狀及時就醫'],
+          kpi: ['知曉率 ≥90%', '疫苗接種率提升', '聚集性事件下降']
+        }
+      };
+      const ti = topicDB[topic];
+
+      const budgetPerPerson = budget / size;
+      let strategy;
+      if (budgetPerPerson >= 100 && staff !== 'low') {
+        strategy = { mass: 30, group: 40, individual: 30, label: '深度組合（個體 + 小組為主）' };
+      } else if (budgetPerPerson >= 30) {
+        strategy = { mass: 50, group: 35, individual: 15, label: '均衡組合' };
+      } else {
+        strategy = { mass: 70, group: 25, individual: 5, label: '大眾傳播為主' };
+      }
+
+      const freqByDuration = {
+        short: { mass: '每週 1 次', group: '每 2 週 1 次', individual: '按需' },
+        medium: { mass: '每月 2 次', group: '每月 1 次', individual: '每月 1 次重點對象' },
+        long: { mass: '每月 1-2 次', group: '每月 1 次', individual: '每季度 1 次' }
+      }[duration];
+
+      const recommendedChannels = [];
+      if (channels.indexOf('wechat') >= 0) recommendedChannels.push('微信群推送：每週 2-3 條圖文，固定時間');
+      else recommendedChannels.push('🆕 建議建立微信群作為日常推送渠道');
+      if (channels.indexOf('lecture') >= 0) recommendedChannels.push('講座：每月 1 場，主題遞進，提前 1 週宣傳');
+      else recommendedChannels.push('🆕 建議每月組織 1 場專題講座');
+      if (channels.indexOf('peer') >= 0) recommendedChannels.push('同伴小組：8-12 人/組，培養患者領袖');
+      if (channels.indexOf('video') >= 0) recommendedChannels.push('短視頻：1-3 分鐘為主，方言版本提升老年人接受度');
+      if (channels.indexOf('onsite') >= 0) recommendedChannels.push('入戶 / 義診：重點覆蓋失能、獨居老人');
+      if (channels.indexOf('leaflet') >= 0) recommendedChannels.push('宣傳冊：作為入戶時的留存材料');
+
+      const eventPlan = {
+        short: '第 1 月：基線調查 + 啟動 → 第 2 月：核心知識普及 → 第 3 月：技能培訓 + 終末評估',
+        medium: '第 1 月：基線調查 + 啟動會 → 第 2-3 月：核心知識普及（大眾傳播） → 第 4-6 月：技能培訓（小組） → 第 7-9 月：行為強化 → 第 10-11 月：個體化指導 → 第 12 月：終末評估',
+        long: '採用螺旋式設計：每 6 個月為一週期，包含「啟動 - 知識 - 技能 - 行為 - 評估」5 個階段，週期間進行教材迭代'
+      }[duration];
+
+      const audLabel = { general: '一般居民', elderly: '老年人', chronic: '慢病患者', women: '育齡婦女', children: '兒童青少年', workplace: '職業人群' }[audience];
+      const durLabel = { short: '1-3 月', medium: '3-12 月', long: '>12 月' }[duration];
+
+      const html =
+        '<div class="hsa-method-card">' +
+          '<div class="hsa-method-eyebrow">EDUCATION DESIGN</div>' +
+          '<h3 class="hsa-method-name">' + ti.name + '</h3>' +
+          '<div class="hsa-method-en">' + ti.en + ' | ' + ({ short: '短期', medium: '中期', long: '長期' }[duration]) + '干預 · ' + strategy.label + '</div>' +
+          '<p class="hsa-method-summary">面向 <strong>' + audLabel + '</strong>（' + fmt(size) + ' 人）的健康教育干預，建議採用「<strong>' + strategy.mass + '% 大眾傳播 + ' + strategy.group + '% 小組活動 + ' + strategy.individual + '% 個體咨詢</strong>」的組合策略。人均預算 <strong>' + fmt(budgetPerPerson, 1) + ' 元</strong>，整體屬於' + (budgetPerPerson >= 100 ? '充足' : budgetPerPerson >= 30 ? '常規' : '緊縮') + '水平。</p>' +
+        '</div>' +
+        '<div class="hsa-result-section"><h3>🧾 你的選擇摘要</h3><div class="hsa-summary-grid">' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">主題</div><div class="hsa-summary-value">' + ti.name + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">目標人群</div><div class="hsa-summary-value">' + audLabel + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">覆蓋規模</div><div class="hsa-summary-value">' + fmt(size) + ' 人</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">總預算</div><div class="hsa-summary-value">¥ ' + fmt(budget) + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">人均預算</div><div class="hsa-summary-value">¥ ' + fmt(budgetPerPerson, 1) + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">週期</div><div class="hsa-summary-value">' + durLabel + '</div></div>' +
+        '</div></div>' +
+        '<div class="hsa-result-section"><h3>📊 策略組合與頻率</h3>' +
+          '<div class="hsa-bar-row"><div class="hsa-bar-label">大眾傳播</div><div class="hsa-bar-track"><div class="hsa-bar-fill" style="width:' + strategy.mass + '%"></div></div><div class="hsa-bar-value">' + strategy.mass + '%</div></div>' +
+          '<div class="hsa-bar-row"><div class="hsa-bar-label">小組活動</div><div class="hsa-bar-track"><div class="hsa-bar-fill" style="width:' + strategy.group + '%"></div></div><div class="hsa-bar-value">' + strategy.group + '%</div></div>' +
+          '<div class="hsa-bar-row"><div class="hsa-bar-label">個體咨詢</div><div class="hsa-bar-track"><div class="hsa-bar-fill" style="width:' + strategy.individual + '%"></div></div><div class="hsa-bar-value">' + strategy.individual + '%</div></div>' +
+          '<ul style="margin-top:18px;">' +
+            '<li>大眾傳播頻率：<code>' + freqByDuration.mass + '</code></li>' +
+            '<li>小組活動頻率：<code>' + freqByDuration.group + '</code></li>' +
+            '<li>個體咨詢頻率：<code>' + freqByDuration.individual + '</code></li>' +
+          '</ul>' +
+        '</div>' +
+        '<div class="hsa-result-section"><h3>📚 核心知識要點</h3><ul>' + ti.core.map(i => '<li>' + i + '</li>').join('') + '</ul></div>' +
+        '<div class="hsa-result-section"><h3>📡 渠道組合建議</h3><ul>' + recommendedChannels.map(i => '<li>' + i + '</li>').join('') + '</ul></div>' +
+        '<div class="hsa-result-section"><h3>📅 階段實施計劃</h3><ul><li>' + eventPlan + '</li><li><em>每階段結束需進行小型評估，根據反饋調整內容與形式</em></li></ul></div>' +
+        '<div class="hsa-result-section"><h3>🎯 評估指標 (KPI)</h3><ul>' + ti.kpi.map(i => '<li>' + i + '</li>').join('') +
+          '<li>覆蓋率：實際參與人數 / 計劃覆蓋 × 100%</li>' +
+          '<li>滿意度：≥80% 對干預內容滿意</li>' +
+          '<li>知識測驗：前後對比平均分提升 ≥20%</li>' +
+        '</ul></div>' +
+        '<div class="hsa-result-section"><h3>📋 干預方案報告（可複製）</h3><div class="hsa-report">【' + ti.name + ' 干預方案】\n' +
+          '目標人群：' + audLabel + ' | 規模：' + fmt(size) + ' 人\n' +
+          '週期：' + durLabel + ' | 預算：¥' + fmt(budget) + '（人均 ¥' + fmt(budgetPerPerson, 1) + '）\n' +
+          '————————————————————————\n' +
+          '策略組合：大眾傳播 ' + strategy.mass + '% + 小組活動 ' + strategy.group + '% + 個體咨詢 ' + strategy.individual + '%\n' +
+          '實施頻率：大眾 ' + freqByDuration.mass + ' | 小組 ' + freqByDuration.group + ' | 個體 ' + freqByDuration.individual + '\n' +
+          '————————————————————————\n' +
+          '核心信息：\n' + ti.core.map((c, i) => (i + 1) + '. ' + c.replace(/&lt;/g, '<')).join('\n') + '\n' +
+          '————————————————————————\n' +
+          '階段計劃：\n' + eventPlan + '\n' +
+          '————————————————————————\n' +
+          '評估 KPI：\n' + ti.kpi.map((k, i) => (i + 1) + '. ' + k).join('\n') +
+        '</div></div>' +
+        '<div class="hsa-result-section hsa-disclaimer"><strong>免責聲明　</strong>方案參考《全民健康生活方式行動》《WS/T 公衛系列規範》編制，具體實施需結合本地文化、語言、宗教習慣調整。</div>';
+
+      renderResult('educationResult', html);
+    }
+
+    // ============================================================
+    // 04 满意度
+    // ============================================================
+    function analyzeSatisfaction() {
+      const n = num('s_n');
+      const response = num('s_response');
+      const complaint = num('s_complaint');
+      const dimensions = [
+        { key: 'access', label: '可及性', val: num('s_access') },
+        { key: 'response', label: '響應性', val: num('s_response_d') },
+        { key: 'tech', label: '技術質量', val: num('s_tech') },
+        { key: 'care', label: '人文關懷', val: num('s_care') },
+        { key: 'env', label: '環境設施', val: num('s_env') },
+        { key: 'price', label: '價格費用', val: num('s_price') }
+      ];
+
+      if (!n || n < 1) return showToast('請輸入調查樣本量');
+      if (dimensions.some(d => d.val < 1 || d.val > 5)) return showToast('請輸入所有維度評分（1-5 分）');
+
+      const weights = { access: 0.15, response: 0.15, tech: 0.25, care: 0.20, env: 0.10, price: 0.15 };
+      const overall = dimensions.reduce((s, d) => s + d.val * weights[d.key], 0);
+      const simple = dimensions.reduce((s, d) => s + d.val, 0) / dimensions.length;
+
+      let level, levelEn;
+      if (overall >= 4.5) { level = '優秀'; levelEn = 'Excellent'; }
+      else if (overall >= 4.0) { level = '良好'; levelEn = 'Good'; }
+      else if (overall >= 3.5) { level = '一般'; levelEn = 'Fair'; }
+      else { level = '待改進'; levelEn = 'Needs Improvement'; }
+
+      const sorted = dimensions.slice().sort((a, b) => b.val - a.val);
+      const strengths = sorted.slice(0, 2);
+      const weaknesses = sorted.slice(-2).reverse();
+
+      const priority = dimensions.map(d => ({
+        key: d.key, label: d.label, val: d.val,
+        gap: 5 - d.val, urgency: (5 - d.val) * weights[d.key] * 100
+      })).sort((a, b) => b.urgency - a.urgency);
+
+      const promoter = num('s_promoter');
+      const detractor = num('s_detractor');
+      const nps = promoter - detractor;
+      let npsLevel = '尚可';
+      if (nps >= 50) npsLevel = '優秀';
+      else if (nps >= 30) npsLevel = '良好';
+      else if (nps < 0) npsLevel = '較差';
+
+      let complaintAssess = '正常';
+      if (complaint > 5) complaintAssess = '偏高，需重點關注';
+      else if (complaint > 2) complaintAssess = '中等，建議分析投訴內容';
+
+      function suggest(key) {
+        return {
+          access: '優化排班、增設預約渠道、設立綠色通道、改善交通指引',
+          response: '建立投訴 24 小時響應機制、設置首問負責制、定期開展溝通培訓',
+          tech: '加強繼續醫學教育、引入臨床路徑、開展疑難病例討論、定期質控檢查',
+          care: '推行「以患者為中心」溝通培訓、保護患者隱私、增加陪伴與心理支持',
+          env: '改善候診環境、增加休息設施、加強清潔消毒、設置便民措施',
+          price: '加強費用公示、推進醫保政策宣傳、提供費用預估、開展醫療救助對接'
+        }[key];
+      }
+
+      const html =
+        '<div class="hsa-method-card">' +
+          '<div class="hsa-method-eyebrow">SATISFACTION REPORT</div>' +
+          '<h3 class="hsa-method-name">綜合滿意度 ' + overall.toFixed(2) + ' / 5.00</h3>' +
+          '<div class="hsa-method-en">Overall Satisfaction = ' + level + ' (' + levelEn + ') | NPS = ' + nps.toFixed(0) + ' (' + npsLevel + ')</div>' +
+          '<p class="hsa-method-summary">基於 ' + fmt(n) + ' 份有效問卷的加權測算，整體滿意度為 <strong>' + overall.toFixed(2) + '</strong> 分，屬於<strong>「' + level + '」</strong>水平。其中強項為「<strong>' + strengths.map(s => s.label).join('、') + '</strong>」，需重點改進的維度為「<strong>' + weaknesses.map(w => w.label).join('、') + '</strong>」。</p>' +
+          '<div class="hsa-alt-list">' +
+            '<span class="hsa-tag gold">加權均分 ' + overall.toFixed(2) + '</span>' +
+            '<span class="hsa-tag">算術均分 ' + simple.toFixed(2) + '</span>' +
+            '<span class="hsa-tag">NPS ' + nps.toFixed(0) + '</span>' +
+            '<span class="hsa-tag">投訴率 ' + complaint.toFixed(2) + '‰</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="hsa-result-section"><h3>🧾 調查概覽</h3><div class="hsa-summary-grid">' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">樣本量</div><div class="hsa-summary-value">' + fmt(n) + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">回收率</div><div class="hsa-summary-value">' + response + '%</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">投訴率</div><div class="hsa-summary-value">' + complaint.toFixed(2) + '‰<br><small style="color:#888;font-weight:400;">(' + complaintAssess + ')</small></div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">滿意度等級</div><div class="hsa-summary-value">' + level + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">NPS 等級</div><div class="hsa-summary-value">' + npsLevel + '</div></div>' +
+        '</div></div>' +
+        '<div class="hsa-result-section"><h3>📊 各維度評分對比</h3>' +
+          dimensions.map(d => {
+            const cls = d.val < 3.5 ? 'danger' : d.val < 4 ? 'warn' : '';
+            return '<div class="hsa-bar-row"><div class="hsa-bar-label">' + d.label + '</div><div class="hsa-bar-track"><div class="hsa-bar-fill ' + cls + '" style="width:' + (d.val / 5 * 100).toFixed(1) + '%"></div></div><div class="hsa-bar-value">' + d.val.toFixed(2) + ' / 5.00</div></div>';
+          }).join('') +
+          '<p style="margin-top:14px;font-size:12px;color:#888;">權重：技術質量 25% | 人文關懷 20% | 可及性 15% | 響應性 15% | 價格 15% | 環境 10%</p>' +
+        '</div>' +
+        '<div class="hsa-result-section"><h3>💪 強項維度</h3><ul>' + strengths.map(s => '<li><strong>' + s.label + '</strong>（' + s.val.toFixed(2) + ' 分）：建議保持並提煉為服務亮點對外宣傳</li>').join('') + '</ul></div>' +
+        '<div class="hsa-result-section"><h3>⚠️ 短板維度與改進優先級</h3><ul>' +
+          priority.slice(0, 3).map((p, i) => '<li><strong>P' + (i + 1) + '　' + p.label + '</strong>（當前 ' + p.val.toFixed(2) + ' / 差距 ' + p.gap.toFixed(2) + ' / 緊迫度指數 ' + p.urgency.toFixed(1) + '）：' + suggest(p.key) + '</li>').join('') +
+        '</ul></div>' +
+        '<div class="hsa-result-section"><h3>📋 滿意度報告（可複製）</h3><div class="hsa-report">【健康服務質量滿意度分析報告】\n' +
+          '樣本量：' + fmt(n) + ' | 回收率：' + response + '% | 投訴率：' + complaint.toFixed(2) + '‰\n' +
+          '————————————————————————\n' +
+          '綜合加權滿意度：' + overall.toFixed(2) + ' / 5.00（' + level + '）\n' +
+          '算術平均：' + simple.toFixed(2) + '\n' +
+          'NPS：' + nps.toFixed(0) + '（推薦者 ' + promoter + '% - 貶損者 ' + detractor + '%）\n' +
+          '————————————————————————\n' +
+          '各維度評分：\n' +
+          dimensions.map(d => '- ' + d.label + '：' + d.val.toFixed(2)).join('\n') + '\n' +
+          '————————————————————————\n' +
+          '強項：' + strengths.map(s => s.label + '(' + s.val.toFixed(2) + ')').join('、') + '\n' +
+          '短板：' + weaknesses.map(w => w.label + '(' + w.val.toFixed(2) + ')').join('、') + '\n' +
+          '————————————————————————\n' +
+          '改進優先級（前 3）：\n' +
+          priority.slice(0, 3).map((p, i) => 'P' + (i + 1) + ' ' + p.label + '（緊迫度 ' + p.urgency.toFixed(1) + '）').join('\n') +
+        '</div></div>' +
+        '<div class="hsa-result-section"><h3>💡 通用改進建議</h3><ul>' +
+          '<li>建立「滿意度月報」制度，將數據納入績效考核</li>' +
+          '<li>針對短板維度設立 PDCA 改進小組，3 個月為一週期</li>' +
+          '<li>低分問卷（總分 &lt; 3）100% 回訪，分析具體原因</li>' +
+          '<li>NPS &lt; 30 時應啟動專項服務體驗優化計劃</li>' +
+          '<li>定期召開患者代表座談會，獲取定性反饋補充量化數據</li>' +
+        '</ul></div>' +
+        '<div class="hsa-result-section hsa-disclaimer"><strong>免責聲明　</strong>權重設置可結合機構戰略調整，建議至少每年複核一次。樣本量 &lt; 100 時結果不夠穩健，應擴大調查或合併分析。</div>';
+
+      renderResult('satisfactionResult', html);
+    }
+
+    // ============================================================
+    // 05 成本人资
+    // ============================================================
+    function analyzeCost() {
+      const name = val('c_name') || '本健康項目';
+      const target = num('c_target');
+      const months = num('c_months');
+      const freq = num('c_freq');
+      const duration = num('c_duration');
+      const material = num('c_material');
+
+      const docN = num('c_doc_n'), docS = num('c_doc_s');
+      const nurN = num('c_nur_n'), nurS = num('c_nur_s');
+      const phN = num('c_ph_n'), phS = num('c_ph_s');
+      const mgrN = num('c_mgr_n'), mgrS = num('c_mgr_s');
+      const vol = num('c_vol');
+
+      const equip = num('c_equip');
+      const rent = num('c_rent');
+      const train = num('c_train');
+
+      if (!target || !months) return showToast('請填寫服務對象人數與項目週期');
+      if (docN + nurN + phN + mgrN === 0) return showToast('請至少配置 1 名專業人員');
+
+      const laborCost = (docN * docS + nurN * nurS + phN * phS + mgrN * mgrS + vol) * months;
+      const totalServices = target * freq;
+      const materialCost = freq > 0 ? totalServices * material : target * material;
+      const rentCost = rent * months;
+      const directCost = laborCost + materialCost + equip + rentCost + train;
+      const indirectCost = directCost * 0.10;
+      const contingency = directCost * 0.05;
+      const totalCost = directCost + indirectCost + contingency;
+
+      const perCapita = totalCost / target;
+      const totalStaff = docN + nurN + phN + mgrN;
+      const personMonths = totalStaff * months;
+      const workMinutesNeeded = totalServices * duration;
+      const availableMinutes = personMonths * 22 * 8 * 60 * 0.7;
+      const utilization = availableMinutes > 0 ? workMinutesNeeded / availableMinutes : 0;
+
+      const structure = [
+        { label: '人力成本', value: laborCost, color: '' },
+        { label: '物資成本', value: materialCost, color: '' },
+        { label: '設備投入', value: equip, color: '' },
+        { label: '場地租金', value: rentCost, color: '' },
+        { label: '培訓宣傳', value: train, color: '' },
+        { label: '管理費用', value: indirectCost, color: 'warn' },
+        { label: '不可預見', value: contingency, color: 'warn' }
+      ];
+
+      const risks = [];
+      if (utilization > 0.95) risks.push('⚠️ 人力負荷過高（>95%），存在加班風險，建議增加 ' + Math.ceil(totalStaff * (utilization - 0.85)) + ' 人或減少服務頻次');
+      else if (utilization > 0.85) risks.push('🟡 人力使用率較高（>85%），需注意排班與輪休');
+      else if (utilization < 0.5 && utilization > 0) risks.push('💡 人力使用率偏低（<50%），可優化人員結構或擴大服務範圍');
+
+      const laborRatio = laborCost / totalCost;
+      if (laborRatio < 0.4) risks.push('💡 人力成本佔比偏低（<40%），健康服務通常為勞動密集型，請覆核人員配置是否充足');
+      if (laborRatio > 0.75) risks.push('🟡 人力成本佔比偏高（>75%），可考慮引入志願者、信息化降本');
+      if (perCapita > 500) risks.push('💰 人均成本偏高，建議優化服務流程或擴大覆蓋規模以攤薄成本');
+      if (equip > directCost * 0.3) risks.push('💡 設備投入佔比較高，可考慮租賃、合作或分期採購');
+
+      const personDetail = [];
+      if (docN > 0) personDetail.push('<li>醫生：' + docN + ' 人 × ¥' + fmt(docS) + '/月 × ' + months + ' 月 = <code>¥' + fmt(docN * docS * months) + '</code></li>');
+      if (nurN > 0) personDetail.push('<li>護士：' + nurN + ' 人 × ¥' + fmt(nurS) + '/月 × ' + months + ' 月 = <code>¥' + fmt(nurN * nurS * months) + '</code></li>');
+      if (phN > 0) personDetail.push('<li>公衛人員：' + phN + ' 人 × ¥' + fmt(phS) + '/月 × ' + months + ' 月 = <code>¥' + fmt(phN * phS * months) + '</code></li>');
+      if (mgrN > 0) personDetail.push('<li>管理人員：' + mgrN + ' 人 × ¥' + fmt(mgrS) + '/月 × ' + months + ' 月 = <code>¥' + fmt(mgrN * mgrS * months) + '</code></li>');
+      if (vol > 0) personDetail.push('<li>志願者/兼職補助：¥' + fmt(vol) + '/月 × ' + months + ' 月 = <code>¥' + fmt(vol * months) + '</code></li>');
+
+      const html =
+        '<div class="hsa-method-card">' +
+          '<div class="hsa-method-eyebrow">COST ESTIMATION</div>' +
+          '<h3 class="hsa-method-name">¥ ' + fmt(totalCost) + '</h3>' +
+          '<div class="hsa-method-en">' + name + ' | ' + months + ' 個月 | ' + fmt(target) + ' 人 | 人均 ¥' + fmt(perCapita, 1) + '</div>' +
+          '<p class="hsa-method-summary">項目總成本估算 <strong>¥ ' + fmt(totalCost) + '</strong>，其中直接成本 ¥' + fmt(directCost) + '、管理費用 ¥' + fmt(indirectCost) + '、不可預見費 ¥' + fmt(contingency) + '。人月需求 <strong>' + fmt(personMonths) + '</strong>，當前人力使用率 <strong>' + pct(utilization) + '</strong>，' + (utilization > 0.95 ? '<strong style="color:#c46b4d;">已超負荷</strong>' : utilization > 0.85 ? '接近上限' : utilization > 0.5 ? '處於合理區間' : '較為寬鬆') + '。</p>' +
+        '</div>' +
+        '<div class="hsa-result-section"><h3>🧾 項目概覽</h3><div class="hsa-summary-grid">' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">總成本</div><div class="hsa-summary-value">¥ ' + fmt(totalCost) + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">人均成本</div><div class="hsa-summary-value">¥ ' + fmt(perCapita, 1) + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">總人月</div><div class="hsa-summary-value">' + fmt(personMonths) + ' 人月</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">總服務量</div><div class="hsa-summary-value">' + fmt(totalServices) + ' 人次</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">人力使用率</div><div class="hsa-summary-value">' + pct(utilization) + '</div></div>' +
+          '<div class="hsa-summary-item"><div class="hsa-summary-label">人力佔比</div><div class="hsa-summary-value">' + pct(laborRatio) + '</div></div>' +
+        '</div></div>' +
+        '<div class="hsa-result-section"><h3>📊 成本結構分解</h3>' +
+          structure.map(s => '<div class="hsa-bar-row"><div class="hsa-bar-label">' + s.label + '</div><div class="hsa-bar-track"><div class="hsa-bar-fill ' + s.color + '" style="width:' + (s.value / totalCost * 100).toFixed(1) + '%"></div></div><div class="hsa-bar-value">¥' + fmt(s.value) + ' (' + (s.value / totalCost * 100).toFixed(1) + '%)</div></div>').join('') +
+        '</div>' +
+        '<div class="hsa-result-section"><h3>👥 人員配置明細</h3><ul>' + personDetail.join('') + '<li><em>專業人員合計：' + totalStaff + ' 人</em></li></ul></div>' +
+        '<div class="hsa-result-section"><h3>⚠️ 風險與優化建議</h3><ul>' +
+          (risks.length ? risks.map(r => '<li>' + r + '</li>').join('') : '<li>✅ 各項指標處於合理區間，建議按計劃推進並預留至少 5% 機動經費</li>') +
+          '<li><em>建議按月進行成本-產出復盤，動態調整人員與物資投入</em></li>' +
+        '</ul></div>' +
+        '<div class="hsa-result-section"><h3>📋 成本估算報告（可複製）</h3><div class="hsa-report">【' + name + ' · 成本與人資估算】\n' +
+          '項目週期：' + months + ' 個月 | 服務對象：' + fmt(target) + ' 人 | 人均年服務頻次：' + freq + ' 次\n' +
+          '————————————————————————\n' +
+          '總成本：¥ ' + fmt(totalCost) + '\n' +
+          '  直接成本：¥ ' + fmt(directCost) + '\n' +
+          '    - 人力成本：¥ ' + fmt(laborCost) + ' (' + (laborCost / totalCost * 100).toFixed(1) + '%)\n' +
+          '    - 物資成本：¥ ' + fmt(materialCost) + ' (' + (materialCost / totalCost * 100).toFixed(1) + '%)\n' +
+          '    - 設備投入：¥ ' + fmt(equip) + '\n' +
+          '    - 場地租金：¥ ' + fmt(rentCost) + '\n' +
+          '    - 培訓宣傳：¥ ' + fmt(train) + '\n' +
+          '  管理費用 (10%)：¥ ' + fmt(indirectCost) + '\n' +
+          '  不可預見 (5%)：¥ ' + fmt(contingency) + '\n' +
+          '————————————————————————\n' +
+          '關鍵指標：\n' +
+          '- 人均成本：¥ ' + fmt(perCapita, 2) + '\n' +
+          '- 總服務量：' + fmt(totalServices) + ' 人次\n' +
+          '- 單次服務成本：¥ ' + (freq > 0 ? fmt(totalCost / totalServices, 2) : '--') + '\n' +
+          '- 人力使用率：' + pct(utilization) + '\n' +
+          '- 總人月需求：' + fmt(personMonths) + ' 人月\n' +
+          '————————————————————————\n' +
+          '人員配置：\n' +
+          '- 醫生 ' + docN + ' | 護士 ' + nurN + ' | 公衛 ' + phN + ' | 管理 ' + mgrN + '\n' +
+          '- 合計 ' + totalStaff + ' 人，專業人員配比 1 : ' + (totalStaff > 0 ? Math.round(target / totalStaff) : '--') + '（人員 : 服務對象）' +
+        '</div></div>' +
+        '<div class="hsa-result-section hsa-disclaimer"><strong>免責聲明　</strong>本估算基於輸入參數的線性測算，未考慮通脹、季節性波動、突發事件等因素。正式預算編制請結合本地物價、財務制度與審計要求。</div>';
+
+      renderResult('costResult', html);
+    }
+
+    // ============================================================
+    // Bind buttons
+    // ============================================================
+    document.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        try {
+          if (action === 'needs') analyzeNeeds();
+          else if (action === 'followup') analyzeFollowup();
+          else if (action === 'education') analyzeEducation();
+          else if (action === 'satisfaction') analyzeSatisfaction();
+          else if (action === 'cost') analyzeCost();
+        } catch (e) {
+          console.error(e);
+          showToast('計算出錯：請檢查輸入');
+        }
+      });
+    });
+
+    // Reset
+    document.querySelectorAll('[data-reset]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panel = btn.closest('.hsa-panel');
+        panel.querySelectorAll('input, select, textarea').forEach(el => {
+          if (el.type === 'radio' || el.type === 'checkbox') el.checked = el.defaultChecked;
+          else el.value = el.defaultValue || '';
+        });
+        const result = panel.querySelector('.hsa-result');
+        if (result) {
+          result.classList.remove('show');
+          result.innerHTML = '';
+        }
+        showToast('已清空');
+      });
+    });
+
+  })();
+  </script>
+
 </body>
 </html>
