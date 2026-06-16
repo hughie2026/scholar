@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
@@ -125,62 +125,6 @@
     .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
     .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
 
-    /* Checklist */
-    .checklist-list{margin-top:8px;}
-    .checklist-domain{margin-bottom:28px;}
-    .checklist-domain:last-child{margin-bottom:0;}
-    .checklist-domain-title{
-      font-size:12px;letter-spacing:1.4px;color:#c9a961;font-weight:700;
-      text-transform:uppercase;margin:0 0 14px;padding-bottom:10px;
-      border-bottom:1px solid #ece5d3;
-    }
-    .cl-item{padding:18px 0;border-bottom:1px solid #f3ecdb;}
-    .cl-item:last-child{border-bottom:none;}
-    .cl-item-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px;}
-    .cl-num{font-family:'Encode Sans',sans-serif;font-weight:700;font-size:14px;color:#c9a961;flex-shrink:0;min-width:28px;}
-    .cl-text{font-size:14px;color:#1a1a1a;line-height:1.65;flex:1;min-width:0;}
-    .cl-text small{display:block;color:#888;font-size:12px;font-weight:400;margin-top:3px;line-height:1.6;}
-    .cl-controls{display:flex;gap:6px;flex-wrap:wrap;margin-left:42px;margin-bottom:8px;}
-    .cl-radio{cursor:pointer;}
-    .cl-radio input{display:none;}
-    .cl-radio span{
-      display:block;padding:5px 12px;border:1px solid #ece5d3;background:#fff;
-      font-size:12px;color:#555;letter-spacing:.4px;transition:.2s;
-    }
-    .cl-radio:hover span{border-color:#d4c5a0;}
-    .cl-radio input:checked + span{border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;}
-    .cl-note{margin-left:42px;}
-    .cl-note textarea{
-      width:100%;padding:8px 10px;font-size:13px;border:1px solid #ece5d3;
-      background:#fff;font-family:inherit;outline:none;min-height:42px;
-      resize:vertical;border-radius:0;line-height:1.55;box-sizing:border-box;
-    }
-    .cl-note textarea:focus{border-color:#c9a961;}
-
-    .score-bar{
-      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
-      padding:14px 18px;display:flex;justify-content:space-between;align-items:center;
-      flex-wrap:wrap;gap:12px;margin:8px 0 28px;
-    }
-    .score-bar .score-text{font-size:13px;color:#555;}
-    .score-bar .score-num{
-      font-family:'Encode Sans',sans-serif;font-weight:700;
-      font-size:20px;color:#c9a961;margin:0 4px;
-    }
-    .score-bar .score-actions{display:flex;gap:8px;flex-wrap:wrap;}
-    .score-bar .score-actions button{
-      font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.2px;
-      padding:8px 14px;border:1px solid #1a1a1a;background:transparent;
-      color:#1a1a1a;cursor:pointer;font-weight:700;text-transform:uppercase;
-    }
-    .score-bar .score-actions button:hover{background:#1a1a1a;color:#fff;}
-
-    @media(max-width:600px){
-      .score-bar{flex-direction:column;align-items:stretch;}
-      .score-bar .score-text{text-align:center;}
-      .score-bar .score-actions{justify-content:center;}
-    }
-
     /* IP slider */
     .ip-slider{margin-bottom:22px;}
     .ip-slider > label{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:8px;}
@@ -196,10 +140,9 @@
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
     @media print{
-      .page-hero, .module-tabs, .module-nav-title, .footer, .main-header, .utility-bar, .btn-row, .score-bar .score-actions{display:none !important;}
+      .page-hero, .module-tabs, .module-nav-title, .footer, .main-header, .utility-bar, .btn-row{display:none !important;}
       .module-panel{display:none !important;}
       .module-panel.active{display:block !important;}
-      .score-bar{position:static;}
     }
   </style>
 </head>
@@ -239,13 +182,12 @@
       <div class="eyebrow gold">QUALITATIVE · METHODS &amp; REPORTING</div>
       <h1>Qualitative Research Toolkit</h1>
       <p class="lead">
-        為質性研究者準備的整合工具箱。從研究設計取向、訪談與焦點團體大綱、抽樣策略、資訊力說明，
-        到 COREQ、SRQR、CASP、JBI、ENTREQ 與 GRADE-CERQual 等報告與品質評估清單，一站式完成。
+        為質性研究者準備的整合工具箱。從研究設計取向、訪談與焦點團體大綱、抽樣策略，
+        到資訊力（Information Power）樣本量估算，一站式完成。
         所有計算皆在本地進行，可一鍵複製或列印為 PDF。
       </p>
       <div class="meta-pills">
-        <span class="pill">🧭 11 個模組</span>
-        <span class="pill">📋 五份國際清單</span>
+        <span class="pill">🧭 5 個模組</span>
         <span class="pill">🧪 含產出模板</span>
         <span class="pill">🔒 本地計算</span>
         <span class="pill">📖 教學用途</span>
@@ -263,12 +205,6 @@
         <button class="module-tab" data-module="fgd"><span class="tab-num">03 · GUIDE</span><span class="tab-title">焦點團體提綱</span><span class="tab-desc">含暖身、規則、核心議題</span></button>
         <button class="module-tab" data-module="sampling"><span class="tab-num">04 · SAMPLE</span><span class="tab-title">抽樣策略助手</span><span class="tab-desc">立意/最大差異/雪球等</span></button>
         <button class="module-tab" data-module="ip"><span class="tab-num">05 · POWER</span><span class="tab-title">資訊力說明</span><span class="tab-desc">Malterud 五維度評估</span></button>
-        <button class="module-tab" data-module="coreq"><span class="tab-num">06 · CHECKLIST</span><span class="tab-title">COREQ 32 項</span><span class="tab-desc">訪談與焦點團體報告</span></button>
-        <button class="module-tab" data-module="srqr"><span class="tab-num">07 · CHECKLIST</span><span class="tab-title">SRQR 21 項</span><span class="tab-desc">通用質性研究報告</span></button>
-        <button class="module-tab" data-module="casp"><span class="tab-num">08 · APPRAISAL</span><span class="tab-title">CASP 質性版</span><span class="tab-desc">10 題批判性評讀</span></button>
-        <button class="module-tab" data-module="jbi"><span class="tab-num">09 · APPRAISAL</span><span class="tab-title">JBI 質性版</span><span class="tab-desc">10 題嚴謹性評估</span></button>
-        <button class="module-tab" data-module="entreq"><span class="tab-num">10 · SYNTHESIS</span><span class="tab-title">ENTREQ 21 項</span><span class="tab-desc">質性綜合報告透明度</span></button>
-        <button class="module-tab" data-module="cerqual"><span class="tab-num">11 · CONFIDENCE</span><span class="tab-title">GRADE-CERQual</span><span class="tab-desc">綜合發現信心評估</span></button>
       </div>
 
       <!-- ===================== MODULE 1: DESIGN ===================== -->
@@ -582,130 +518,6 @@
           <div class="result-section disclaimer"><strong>提醒　</strong>「資訊力」是樣本充足性的相對性概念，最終仍需在資料蒐集中以 saturation / sufficiency 動態判斷。</div>
           <div class="btn-row">
             <button type="button" class="btn-ghost-dark" id="ipCopyBtn">📋 複製敘述</button>
-            <button type="button" class="btn-ghost-dark" onclick="window.print()">🖨️ 列印 / PDF</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===================== MODULE 6: COREQ ===================== -->
-      <div class="module-panel" id="m-coreq">
-        <div class="tool-card">
-          <div class="step-num">MODULE 06</div>
-          <h2>COREQ 32 項清單</h2>
-          <p class="step-desc">Tong, Sainsbury &amp; Craig (2007) 提出，用於訪談與焦點團體質性研究的報告完整度自評。</p>
-          <div class="score-bar">
-            <div class="score-text">已回答 <span class="score-num" id="coreqAnswered">0</span> / 32 ｜ 達標 <span class="score-num" id="coreqYes">0</span> 項</div>
-            <div class="score-actions">
-              <button data-cl="coreq" data-act="copy">複製摘要</button>
-              <button data-cl="coreq" data-act="reset">清空</button>
-              <button onclick="window.print()">列印</button>
-            </div>
-          </div>
-          <div id="coreqList" class="checklist-list"></div>
-        </div>
-      </div>
-
-      <!-- ===================== MODULE 7: SRQR ===================== -->
-      <div class="module-panel" id="m-srqr">
-        <div class="tool-card">
-          <div class="step-num">MODULE 07</div>
-          <h2>SRQR 21 項清單</h2>
-          <p class="step-desc">O'Brien et al. (2014) 提出的通用質性研究報告標準（Standards for Reporting Qualitative Research）。</p>
-          <div class="score-bar">
-            <div class="score-text">已回答 <span class="score-num" id="srqrAnswered">0</span> / 21 ｜ 達標 <span class="score-num" id="srqrYes">0</span> 項</div>
-            <div class="score-actions">
-              <button data-cl="srqr" data-act="copy">複製摘要</button>
-              <button data-cl="srqr" data-act="reset">清空</button>
-              <button onclick="window.print()">列印</button>
-            </div>
-          </div>
-          <div id="srqrList" class="checklist-list"></div>
-        </div>
-      </div>
-
-      <!-- ===================== MODULE 8: CASP ===================== -->
-      <div class="module-panel" id="m-casp">
-        <div class="tool-card">
-          <div class="step-num">MODULE 08</div>
-          <h2>CASP 質性研究批判性評讀</h2>
-          <p class="step-desc">Critical Appraisal Skills Programme (CASP) 質性版，10 項用於系統性評估質性研究的可信度與相關性。</p>
-          <div class="score-bar">
-            <div class="score-text">已回答 <span class="score-num" id="caspAnswered">0</span> / 10 ｜ Yes <span class="score-num" id="caspYes">0</span> 項</div>
-            <div class="score-actions">
-              <button data-cl="casp" data-act="copy">複製摘要</button>
-              <button data-cl="casp" data-act="reset">清空</button>
-              <button onclick="window.print()">列印</button>
-            </div>
-          </div>
-          <div id="caspList" class="checklist-list"></div>
-        </div>
-      </div>
-
-      <!-- ===================== MODULE 9: JBI ===================== -->
-      <div class="module-panel" id="m-jbi">
-        <div class="tool-card">
-          <div class="step-num">MODULE 09</div>
-          <h2>JBI 質性研究嚴謹性評估</h2>
-          <p class="step-desc">Joanna Briggs Institute 質性研究核對表，10 項聚焦於哲學立場、方法一致性與研究者反思。</p>
-          <div class="score-bar">
-            <div class="score-text">已回答 <span class="score-num" id="jbiAnswered">0</span> / 10 ｜ Yes <span class="score-num" id="jbiYes">0</span> 項</div>
-            <div class="score-actions">
-              <button data-cl="jbi" data-act="copy">複製摘要</button>
-              <button data-cl="jbi" data-act="reset">清空</button>
-              <button onclick="window.print()">列印</button>
-            </div>
-          </div>
-          <div id="jbiList" class="checklist-list"></div>
-        </div>
-      </div>
-
-      <!-- ===================== MODULE 10: ENTREQ ===================== -->
-      <div class="module-panel" id="m-entreq">
-        <div class="tool-card">
-          <div class="step-num">MODULE 10</div>
-          <h2>ENTREQ 21 項清單</h2>
-          <p class="step-desc">Tong et al. (2012) 提出，用於增進質性研究綜合報告（synthesis）透明度的 21 項清單。</p>
-          <div class="score-bar">
-            <div class="score-text">已回答 <span class="score-num" id="entreqAnswered">0</span> / 21 ｜ 達標 <span class="score-num" id="entreqYes">0</span> 項</div>
-            <div class="score-actions">
-              <button data-cl="entreq" data-act="copy">複製摘要</button>
-              <button data-cl="entreq" data-act="reset">清空</button>
-              <button onclick="window.print()">列印</button>
-            </div>
-          </div>
-          <div id="entreqList" class="checklist-list"></div>
-        </div>
-      </div>
-
-      <!-- ===================== MODULE 11: CERQual ===================== -->
-      <div class="module-panel" id="m-cerqual">
-        <div class="tool-card">
-          <div class="step-num">MODULE 11</div>
-          <h2>GRADE-CERQual 信心評估</h2>
-          <p class="step-desc">針對單一綜合發現（review finding），從四個面向評估其證據信心，並得出總體信心等級（高/中/低/極低）。</p>
-
-          <div class="field"><label>綜合發現（Finding）</label><textarea id="cq_finding" placeholder="例：醫護人員在末期病人決策中經常感受到道德壓力，主要源自家屬期望與臨床判斷之間的落差。"></textarea></div>
-          <div class="field"><label>納入研究數量</label><input type="number" id="cq_n" min="1" placeholder="例：8"></div>
-
-          <div id="cqDomains"></div>
-
-          <div class="btn-row">
-            <button type="button" class="btn-purple" id="cqRunBtn">產生信心評估 →</button>
-            <button type="button" class="btn-ghost-dark" id="cqResetBtn">清空</button>
-          </div>
-        </div>
-
-        <div id="cqResult" style="display:none;">
-          <div class="method-card">
-            <div class="method-eyebrow">OVERALL CONFIDENCE</div>
-            <h3 class="method-name" id="cqLevel">--</h3>
-            <div class="method-en" id="cqLevelEn">--</div>
-            <p class="method-summary" id="cqLevelDesc">--</p>
-          </div>
-          <div class="result-section"><h3>📋 證據概況表（Evidence Profile）</h3><div class="report-block" id="cqProfile">--</div></div>
-          <div class="result-section disclaimer"><strong>提醒　</strong>CERQual 信心等級為定性判斷，需團隊共識與書面說明每個面向的依據。</div>
-          <div class="btn-row">
-            <button type="button" class="btn-ghost-dark" id="cqCopyBtn">📋 複製報告</button>
             <button type="button" class="btn-ghost-dark" onclick="window.print()">🖨️ 列印 / PDF</button>
           </div>
         </div>
