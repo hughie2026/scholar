@@ -12,18 +12,43 @@
     .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
     .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:720px;}
 
-    .tools-section{padding:70px 0;}
+    /* 分類快速導航 */
+    .category-nav{background:#fff;border-bottom:1px solid #ece5d3;position:sticky;top:0;z-index:50;}
+    .category-nav-inner{display:flex;flex-wrap:wrap;gap:0;padding:0;}
+    .category-nav a{flex:1;min-width:160px;text-align:center;padding:18px 14px;font-size:12px;letter-spacing:1.5px;color:#555;text-decoration:none;font-weight:600;text-transform:uppercase;border-right:1px solid #ece5d3;transition:background .2s ease, color .2s ease;}
+    .category-nav a:last-child{border-right:none;}
+    .category-nav a:hover{background:#faf7f0;color:#c9a961;}
+    .category-nav a .cn{display:block;font-size:13px;letter-spacing:.5px;color:#1a1a1a;margin-top:4px;text-transform:none;font-weight:700;}
+    .category-nav a:hover .cn{color:#c9a961;}
+    @media(max-width:860px){
+      .category-nav{position:static;}
+      .category-nav a{min-width:50%;border-bottom:1px solid #ece5d3;}
+      .category-nav a:nth-last-child(-n+2){border-bottom:none;}
+      .category-nav a:nth-child(2n){border-right:none;}
+    }
+
+    /* 工具搜尋框 */
+    .tool-filter{padding:30px 0 0;background:#faf7f0;}
+    .tool-filter .filter-box{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #ece5d3;padding:14px 20px;max-width:560px;}
+    .tool-filter .filter-box svg{flex-shrink:0;color:#c9a961;}
+    .tool-filter input{flex:1;border:none;outline:none;font-size:15px;color:#1a1a1a;font-family:inherit;background:transparent;}
+    .tool-filter input::placeholder{color:#999;}
+    .tool-filter .filter-hint{font-size:12px;color:#888;margin-top:10px;letter-spacing:.5px;}
+
+    .tools-section{padding:70px 0;scroll-margin-top:70px;}
     .tools-section + .tools-section{border-top:1px solid #ece5d3;}
     .section-light-bg{background:#faf7f0;}
 
     .section-head{display:grid;grid-template-columns:1fr 1.3fr;gap:60px;align-items:end;margin-bottom:40px;}
     .section-head h2{font-size:32px;margin:8px 0 0;color:#1a1a1a;}
     .section-head .desc{color:#555;line-height:1.85;font-size:15px;}
+    .section-head .count{font-size:13px;color:#c9a961;font-weight:700;letter-spacing:1.5px;margin-top:8px;}
     @media(max-width:860px){.section-head{grid-template-columns:1fr;gap:20px;}}
 
     .tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;}
     .tool-card{background:#fff;border:1px solid #ece5d3;border-top:3px solid #c9a961;padding:30px 28px;display:flex;flex-direction:column;transition:transform .25s ease, box-shadow .25s ease;}
     .tool-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(26,26,26,.06);}
+    .tool-card.hidden{display:none;}
     .tool-card .num{font-size:13px;color:#c9a961;font-weight:700;letter-spacing:1.5px;}
     .tool-card .tag{display:inline-block;font-size:11px;letter-spacing:1.2px;color:#8a7a4a;background:#faf3df;padding:4px 10px;border-radius:2px;margin-left:8px;font-weight:600;text-transform:uppercase;}
     .tool-card h4{font-size:19px;color:#1a1a1a;margin:12px 0 10px;line-height:1.35;}
@@ -33,6 +58,9 @@
     .tool-card .open-link{font-size:13px;font-weight:700;letter-spacing:1.5px;color:#1a1a1a;text-decoration:none;border-bottom:1px solid #c9a961;padding-bottom:3px;align-self:flex-start;transition:color .2s ease;}
     .tool-card .open-link:hover{color:#c9a961;}
     .tool-card .open-link::after{content:" →";color:#c9a961;}
+
+    .empty-state{text-align:center;padding:60px 20px;color:#888;font-size:15px;display:none;}
+    .empty-state.show{display:block;}
 
     .notice-box{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:24px 28px;margin-top:40px;}
     .notice-box h5{font-size:13px;letter-spacing:1.5px;color:#c9a961;margin:0 0 8px;font-weight:700;}
@@ -75,23 +103,56 @@
     </div>
   </section>
 
+  <!-- 工具搜尋 -->
+  <section class="tool-filter">
+    <div class="container">
+      <div class="filter-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="toolSearch" placeholder="輸入關鍵字搜尋工具，例如：樣本量、PRISMA、ROC、效應量…" autocomplete="off">
+      </div>
+      <div class="filter-hint">支援中文名稱、英文標籤、工具描述的即時模糊匹配</div>
+    </div>
+  </section>
+
+  <!-- 分類快速導航 -->
+  <nav class="category-nav">
+    <div class="container category-nav-inner">
+      <a href="#cat-01">CATEGORY 01<span class="cn">健康評估</span></a>
+      <a href="#cat-02">CATEGORY 02<span class="cn">研究流程與規劃</span></a>
+      <a href="#cat-03">CATEGORY 03<span class="cn">系統綜述與報告</span></a>
+      <a href="#cat-04">CATEGORY 04<span class="cn">統計方法與分析</span></a>
+      <a href="#cat-05">CATEGORY 05<span class="cn">數據處理與管理</span></a>
+    </div>
+  </nav>
+
+  <!-- 找不到結果的提示 -->
+  <div class="container">
+    <div class="empty-state" id="emptyState">
+      暫無符合「<span id="emptyKeyword"></span>」的工具，試試其他關鍵字。
+    </div>
+  </div>
+
   <!-- 第一組：健康評估工具 -->
-  <section class="tools-section">
+  <section class="tools-section" id="cat-01">
     <div class="container">
       <div class="section-head">
         <div>
           <div class="eyebrow">CATEGORY 01</div>
           <h2>健康評估工具</h2>
+          <div class="count">4 TOOLS</div>
         </div>
         <div class="desc">
-          基於國際指南與標準量表搭建的線上計算器，協助理解個體健康風險、健康素養水平，
+          基於國際指南與標準量表搭建的線上計算器，協助理解個體健康風險、健康素養水平、健康行為傾向，
           以及國際旅行中可能涉及的健康注意事項。所有計算邏輯皆在頁面註明出處。
         </div>
       </div>
 
       <div class="tool-grid">
 
-        <div class="tool-card">
+        <div class="tool-card" data-keywords="ascvd 動脈粥樣硬化 心血管 風險 cardiovascular risk acc aha 一級預防">
           <div>
             <span class="num">01</span>
             <span class="tag">Cardiovascular</span>
@@ -108,7 +169,7 @@
           <a class="open-link" href="ascvd-risk-calculator.html">OPEN TOOL</a>
         </div>
 
-        <div class="tool-card">
+        <div class="tool-card" data-keywords="健康素養 literacy 量表 自評 健康行為">
           <div>
             <span class="num">02</span>
             <span class="tag">Literacy</span>
@@ -125,7 +186,7 @@
           <a class="open-link" href="health-literacy-assessment.html">OPEN TOOL</a>
         </div>
 
-        <div class="tool-card">
+        <div class="tool-card" data-keywords="旅遊 travel 國際 疫苗 健康參考 出行">
           <div>
             <span class="num">03</span>
             <span class="tag">Travel</span>
@@ -142,17 +203,35 @@
           <a class="open-link" href="international-travel-health.html">OPEN TOOL</a>
         </div>
 
+        <div class="tool-card" data-keywords="健康行為 量表 工具箱 scale toolkit hbm tpb 自我效能 計畫行為">
+          <div>
+            <span class="num">04</span>
+            <span class="tag">Behavior Scale</span>
+          </div>
+          <h4>健康行為量表工具箱</h4>
+          <p>
+            匯總常用的健康行為理論量表（如健康信念模型、計畫行為理論、自我效能等），
+            提供題項預覽、計分規則與引用文獻參考，方便研究選用與量表比較。
+          </p>
+          <div class="meta">
+            <span>Health Behavior</span>
+            <span>Scale Library</span>
+          </div>
+          <a class="open-link" href="health-behavior-scale-toolkit.html">OPEN TOOL</a>
+        </div>
+
       </div>
     </div>
   </section>
 
   <!-- 第二組：研究流程與規劃工具 -->
-  <section class="tools-section section-light-bg">
+  <section class="tools-section section-light-bg" id="cat-02">
     <div class="container">
       <div class="section-head">
         <div>
           <div class="eyebrow">CATEGORY 02</div>
-          <h2>研究流程與規劃工具</h2>
+          <h2>研究流程與規劃</h2>
+          <div class="count">4 TOOLS</div>
         </div>
         <div class="desc">
           面向研究流程中的常見場景，從倫理申請、文獻檢索，到研究生階段的成長規劃與學科趨勢梳理，
@@ -162,9 +241,9 @@
 
       <div class="tool-grid">
 
-        <div class="tool-card">
+        <div class="tool-card" data-keywords="倫理 ethics irb 知情同意 申請 文件 草稿">
           <div>
-            <span class="num">04</span>
+            <span class="num">05</span>
             <span class="tag">Ethics</span>
           </div>
           <h4>研究倫理申請文件生成器</h4>
@@ -179,9 +258,9 @@
           <a class="open-link" href="research-ethics-application-generator.html">OPEN TOOL</a>
         </div>
 
-        <div class="tool-card">
+        <div class="tool-card" data-keywords="文獻檢索 search pico spider 布林 pubmed web of science 檢索式">
           <div>
-            <span class="num">05</span>
+            <span class="num">06</span>
             <span class="tag">Search</span>
           </div>
           <h4>文獻檢索式生成器</h4>
@@ -196,9 +275,9 @@
           <a class="open-link" href="literature-search-builder.html">OPEN TOOL</a>
         </div>
 
-        <div class="tool-card">
+        <div class="tool-card" data-keywords="研究生 成長 規劃 career 職涯 里程碑">
           <div>
-            <span class="num">06</span>
+            <span class="num">07</span>
             <span class="tag">Growth</span>
           </div>
           <h4>研究生成長規劃工具</h4>
@@ -213,9 +292,9 @@
           <a class="open-link" href="researcher-growth.html">OPEN TOOL</a>
         </div>
 
-        <div class="tool-card">
+        <div class="tool-card" data-keywords="學術趨勢 hospitality 公共衛生 旅遊 款待 熱點">
           <div>
-            <span class="num">07</span>
+            <span class="num">08</span>
             <span class="tag">Trends</span>
           </div>
           <h4>學術研究趨勢</h4>
@@ -234,26 +313,116 @@
     </div>
   </section>
 
-  <!-- 第三組：統計與數據工具 -->
-  <section class="tools-section">
+  <!-- 第三組：系統綜述與報告規範 -->
+  <section class="tools-section" id="cat-03">
     <div class="container">
       <div class="section-head">
         <div>
           <div class="eyebrow">CATEGORY 03</div>
-          <h2>統計與數據工具</h2>
+          <h2>系統綜述與報告規範</h2>
+          <div class="count">3 TOOLS</div>
         </div>
         <div class="desc">
-          覆蓋研究設計與數據處理階段的常見任務，包括樣本量估算、量表信度檢驗，
-          以及含個人資訊資料的匿名化處理。所有運算皆在瀏覽器本地完成，原始數據不會離開使用者的設備。
+          覆蓋系統綜述與循證研究中的常見任務，包括 PRISMA 流程圖繪製、報告清單核對、
+          以及證據質量評級。輔助提升綜述類研究的透明度與報告完整性。
         </div>
       </div>
 
       <div class="tool-grid">
 
-        <div class="tool-card">
+        <div class="tool-card" data-keywords="prisma 系統綜述 流程圖 systematic review flow diagram 篩選">
           <div>
-            <span class="num">08</span>
-            <span class="tag">Statistics</span>
+            <span class="num">09</span>
+            <span class="tag">Systematic Review</span>
+          </div>
+          <h4>PRISMA 流程圖生成器</h4>
+          <p>
+            依據 PRISMA 2020 規範，依序填入文獻識別、去重、篩選與納入排除的數量，
+            自動生成可下載的系統綜述流程圖，方便插入論文與綜述報告中。
+          </p>
+          <div class="meta">
+            <span>Evidence Synthesis</span>
+            <span>Diagram Tool</span>
+          </div>
+          <a class="open-link" href="prisma-flow-generator.html">OPEN TOOL</a>
+        </div>
+
+        <div class="tool-card" data-keywords="checklist 清單 報告 consort strobe prisma 規範 reporting">
+          <div>
+            <span class="num">10</span>
+            <span class="tag">Checklist</span>
+          </div>
+          <h4>研究報告清單檢查器</h4>
+          <p>
+            內建 CONSORT、STROBE、PRISMA 等常見研究報告規範清單，
+            逐條核對研究稿件的覆蓋情況，輔助投稿前自查與報告完整性提升。
+          </p>
+          <div class="meta">
+            <span>Reporting Standards</span>
+            <span>Quality Tool</span>
+          </div>
+          <a class="open-link" href="checklist-checker.html">OPEN TOOL</a>
+        </div>
+
+        <div class="tool-card" data-keywords="grade 證據質量 evidence 推薦強度 摘要表 summary of findings">
+          <div>
+            <span class="num">11</span>
+            <span class="tag">Evidence Quality</span>
+          </div>
+          <h4>GRADE 證據質量摘要表生成器</h4>
+          <p>
+            按照 GRADE 工作組的方法學框架，協助對結局指標逐項評估證據質量，
+            生成結構化的證據摘要表（Summary of Findings），輔助系統綜述與臨床指南撰寫。
+          </p>
+          <div class="meta">
+            <span>Evidence Synthesis</span>
+            <span>Quality Rating</span>
+          </div>
+          <a class="open-link" href="grade-tool.html">OPEN TOOL</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 第四組：統計方法與分析 -->
+  <section class="tools-section section-light-bg" id="cat-04">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">CATEGORY 04</div>
+          <h2>統計方法與分析</h2>
+          <div class="count">5 TOOLS</div>
+        </div>
+        <div class="desc">
+          覆蓋研究設計與量化分析階段的常見任務，從統計方法選擇、樣本量估算，到信度檢驗、
+          診斷效能評估與效應量轉換。所有運算皆在瀏覽器本地完成，原始數據不會離開使用者的設備。
+        </div>
+      </div>
+
+      <div class="tool-grid">
+
+        <div class="tool-card" data-keywords="統計方法 選擇器 method selector t檢驗 anova 卡方 回歸 決策樹">
+          <div>
+            <span class="num">12</span>
+            <span class="tag">Method Selector</span>
+          </div>
+          <h4>統計方法選擇器</h4>
+          <p>
+            以決策樹的方式，根據研究問題、變項類型、組數與分布假設，
+            推薦合適的統計檢驗方法（t 檢驗、ANOVA、卡方、回歸等），並附帶適用條件與替代方法說明。
+          </p>
+          <div class="meta">
+            <span>Study Design</span>
+            <span>Decision Tree</span>
+          </div>
+          <a class="open-link" href="statistics-methods.html">OPEN TOOL</a>
+        </div>
+
+        <div class="tool-card" data-keywords="樣本量 sample size 計算 效應量 檢驗效能 power">
+          <div>
+            <span class="num">13</span>
+            <span class="tag">Sample Size</span>
           </div>
           <h4>樣本量計算器</h4>
           <p>
@@ -267,9 +436,9 @@
           <a class="open-link" href="sample-size-calculator.html">OPEN TOOL</a>
         </div>
 
-        <div class="tool-card">
+        <div class="tool-card" data-keywords="信度 reliability cronbach alpha 量表 內部一致性 psychometrics">
           <div>
-            <span class="num">09</span>
+            <span class="num">14</span>
             <span class="tag">Reliability</span>
           </div>
           <h4>問卷信度分析器</h4>
@@ -284,9 +453,81 @@
           <a class="open-link" href="reliability-analyzer.html">OPEN TOOL</a>
         </div>
 
-        <div class="tool-card">
+        <div class="tool-card" data-keywords="roc auc 截斷值 youden 診斷 敏感度 特異度 cutoff">
           <div>
-            <span class="num">10</span>
+            <span class="num">15</span>
+            <span class="tag">Diagnostic</span>
+          </div>
+          <h4>ROC / AUC 與最佳截斷值計算器</h4>
+          <p>
+            輸入連續型診斷指標與金標準分類數據，繪製 ROC 曲線並計算 AUC，
+            依據 Youden 指數推薦最佳截斷值，並輸出對應的敏感度、特異度與預測值。
+          </p>
+          <div class="meta">
+            <span>Diagnostic Test</span>
+            <span>Calculator</span>
+          </div>
+          <a class="open-link" href="roc-auc.html">OPEN TOOL</a>
+        </div>
+
+        <div class="tool-card" data-keywords="效應量 effect size cohen d r odds ratio 轉換 converter">
+          <div>
+            <span class="num">16</span>
+            <span class="tag">Effect Size</span>
+          </div>
+          <h4>效應量轉換器</h4>
+          <p>
+            支援 Cohen's d、Hedges' g、相關係數 r、Odds Ratio 等常見效應量之間的相互轉換，
+            方便整合異質性研究結果，輔助 meta 分析與證據綜合。
+          </p>
+          <div class="meta">
+            <span>Meta-analysis</span>
+            <span>Converter</span>
+          </div>
+          <a class="open-link" href="effect-size-converter.html">OPEN TOOL</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 第五組：數據處理與管理 -->
+  <section class="tools-section" id="cat-05">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">CATEGORY 05</div>
+          <h2>數據處理與管理</h2>
+          <div class="count">2 TOOLS</div>
+        </div>
+        <div class="desc">
+          面向數據清洗、預處理與隱私保護的常見任務。協助識別缺失值與異常值的處理策略，
+          以及為含個人資訊的研究數據提供匿名化方案參考。
+        </div>
+      </div>
+
+      <div class="tool-grid">
+
+        <div class="tool-card" data-keywords="缺失值 missing 異常值 outlier 數據清洗 preprocessing 插補">
+          <div>
+            <span class="num">17</span>
+            <span class="tag">Data Cleaning</span>
+          </div>
+          <h4>缺失值與異常值處理助手</h4>
+          <p>
+            針對上傳的數據集，識別缺失值的分布類型（MCAR / MAR / MNAR）與異常值候選，
+            並依據變項特性推薦插補方法（均值、回歸、多重插補等）與處理策略。
+          </p>
+          <div class="meta">
+            <span>Data Preprocessing</span>
+            <span>Helper Tool</span>
+          </div>
+          <a class="open-link" href="missing-outlier.html">OPEN TOOL</a>
+        </div>
+
+        <div class="tool-card" data-keywords="匿名化 隱私 privacy 去識別化 dmp 個資 敏感欄位">
+          <div>
+            <span class="num">18</span>
             <span class="tag">Privacy</span>
           </div>
           <h4>匿名化工具生成器</h4>
@@ -341,5 +582,50 @@
   </footer>
 
   <script src="assets/js/main.js"></script>
+
+  <!-- 工具搜尋 / 過濾邏輯 -->
+  <script>
+    (function(){
+      const input = document.getElementById('toolSearch');
+      const cards = document.querySelectorAll('.tool-card');
+      const sections = document.querySelectorAll('.tools-section');
+      const emptyState = document.getElementById('emptyState');
+      const emptyKeyword = document.getElementById('emptyKeyword');
+
+      if(!input) return;
+
+      function normalize(s){
+        return (s || '').toLowerCase().trim();
+      }
+
+      input.addEventListener('input', function(){
+        const q = normalize(input.value);
+        let totalVisible = 0;
+
+        cards.forEach(card => {
+          const text = normalize(
+            (card.dataset.keywords || '') + ' ' +
+            card.textContent
+          );
+          const match = q === '' || text.indexOf(q) !== -1;
+          card.classList.toggle('hidden', !match);
+          if(match) totalVisible++;
+        });
+
+        // 若整個分類無可見卡片，隱藏該 section
+        sections.forEach(sec => {
+          const visibleInSec = sec.querySelectorAll('.tool-card:not(.hidden)').length;
+          sec.style.display = visibleInSec === 0 ? 'none' : '';
+        });
+
+        if(totalVisible === 0 && q !== ''){
+          emptyKeyword.textContent = input.value;
+          emptyState.classList.add('show');
+        } else {
+          emptyState.classList.remove('show');
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
