@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROC / AUC 與最佳截斷值計算器 · Hughie's Online Lab</title>
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ========== Base (inline subset, matches style.css) ========== */
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Open Sans',sans-serif;color:#1a1a1a;background:#fff;line-height:1.6;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;text-decoration:none;}
+    .container{max-width:1180px;margin:0 auto;padding:0 28px;}
+    .eyebrow{font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:2.4px;font-weight:700;text-transform:uppercase;color:#888;}
+    .eyebrow.gold{color:#c9a961;}
+
+    /* Utility bar */
+    .utility-bar{background:#1a1a1a;color:#bbb;font-size:11px;letter-spacing:1.5px;}
+    .utility-inner{padding:10px 28px;text-align:center;}
+
+    /* Header */
+    .main-header{border-bottom:1px solid #ece5d3;background:#fff;}
+    .header-inner{display:flex;justify-content:space-between;align-items:center;padding:22px 28px;}
+    .brand{display:flex;align-items:center;gap:14px;}
+    .brand-w{width:42px;height:42px;background:#c9a961;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Encode Sans',sans-serif;font-size:22px;font-weight:700;}
+    .brand-text{display:flex;flex-direction:column;line-height:1.1;}
+    .brand-line1{font-family:'Encode Sans',sans-serif;font-size:18px;font-weight:700;color:#1a1a1a;}
+    .brand-line2{font-size:11px;letter-spacing:1.5px;color:#888;text-transform:uppercase;}
+    .primary-nav{display:flex;gap:30px;}
+    .primary-nav a{font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;font-weight:600;color:#555;text-transform:uppercase;transition:.2s;}
+    .primary-nav a:hover{color:#c9a961;}
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{background:#fff;border:1px solid #ece5d3;padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;}
+
+    /* Main Section */
+    .tool-section{padding:60px 0 80px;background:#fff;}
+    .tool-section .narrow{max-width:1080px;margin:0 auto;}
+
+    /* Card / Panel */
+    .panel{background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:36px 38px;margin-bottom:24px;}
+    .panel h2{font-size:24px;color:#1a1a1a;margin:0 0 8px;line-height:1.3;}
+    .panel .step-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;text-transform:uppercase;font-family:'Encode Sans',sans-serif;}
+    .panel .desc{font-size:14px;color:#888;margin:0 0 26px;line-height:1.75;}
+
+    /* Form fields */
+    .field{margin-bottom:22px;}
+    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .field > .hint{font-size:12px;color:#888;margin-top:6px;line-height:1.6;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:680px){.field-row{grid-template-columns:1fr;gap:0;}}
+
+    .field input[type="text"],
+    .field input[type="number"],
+    .field textarea,
+    .field select{
+      width:100%;padding:12px 14px;font-size:14px;
+      border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+      font-family:inherit;outline:none;transition:.2s;border-radius:0;
+    }
+    .field textarea{font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:13px;line-height:1.6;resize:vertical;}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:#c9a961;}
+
+    /* Buttons */
+    .btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;}
+    .btn-purple,.btn-ghost-dark,.btn-ghost-gold{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;
+      font-weight:700;padding:13px 22px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .btn-ghost-gold{background:transparent;color:#c9a961;border-color:#c9a961;}
+    .btn-ghost-gold:hover{background:#c9a961;color:#fff;}
+
+    /* Format note box */
+    .format-note{background:#faf7f0;border:1px solid #ece5d3;padding:18px 22px;font-size:13px;color:#555;line-height:1.85;}
+    .format-note code{background:#fff;border:1px solid #ece5d3;padding:1px 6px;font-size:12px;}
+    .format-note strong{color:#c9a961;letter-spacing:1px;}
+
+    /* Result */
+    .result-head{text-align:center;padding-bottom:30px;margin-bottom:26px;border-bottom:1px solid #ece5d3;}
+    .result-head h2{font-size:32px;color:#1a1a1a;margin:10px 0 14px;line-height:1.25;}
+    .result-head p{color:#555;font-size:15px;line-height:1.7;max-width:620px;margin:0 auto;}
+
+    .score-card{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:32px 36px;display:grid;grid-template-columns:1fr 1fr;gap:36px;
+      margin-bottom:24px;
+    }
+    @media(max-width:760px){.score-card{grid-template-columns:1fr;gap:18px;}}
+    .score-num{font-family:'Encode Sans',sans-serif;font-size:60px;color:#c9a961;font-weight:700;line-height:1;}
+    .score-num small{font-size:16px;color:#888;font-weight:400;margin-left:4px;}
+    .score-label{font-size:11px;letter-spacing:1.8px;color:#1a1a1a;margin-top:10px;font-weight:700;text-transform:uppercase;}
+    .score-sub{font-size:13px;color:#555;margin-top:14px;line-height:1.7;}
+
+    .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;}
+    .metric{background:#faf7f0;border:1px solid #ece5d3;padding:18px 14px;text-align:center;}
+    .metric-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:8px;text-transform:uppercase;}
+    .metric-value{font-family:'Encode Sans',sans-serif;font-size:24px;color:#1a1a1a;font-weight:700;line-height:1;}
+    .metric-value small{font-size:12px;color:#888;font-weight:400;margin-left:2px;}
+
+    /* Chart */
+    .chart-wrap{background:#fff;border:1px solid #ece5d3;padding:18px;text-align:center;}
+    #rocCanvas{max-width:100%;height:auto;display:block;margin:0 auto;background:#fff;}
+
+    /* Table */
+    .table-wrap{overflow-x:auto;border:1px solid #ece5d3;}
+    table.cutoff-table{width:100%;border-collapse:collapse;font-size:13px;}
+    table.cutoff-table th,table.cutoff-table td{padding:10px 14px;text-align:right;border-bottom:1px solid #ece5d3;}
+    table.cutoff-table th{background:#faf7f0;font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.2px;color:#c9a961;font-weight:700;text-transform:uppercase;text-align:right;}
+    table.cutoff-table th:first-child,table.cutoff-table td:first-child{text-align:left;}
+    table.cutoff-table tr.optimal{background:#faf7f0;}
+    table.cutoff-table tr.optimal td{font-weight:700;color:#1a1a1a;}
+
+    .section-title{font-size:18px;color:#1a1a1a;margin:0 0 18px;font-weight:700;}
+
+    .toast{
+      position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);
+      background:#1a1a1a;color:#fff;padding:12px 22px;font-size:13px;letter-spacing:.5px;
+      opacity:0;transition:.3s;pointer-events:none;z-index:999;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+    .alert{background:#fff7f0;border:1px solid #f0d9b5;color:#8a5a1f;padding:12px 16px;font-size:13px;line-height:1.7;margin-bottom:16px;}
+
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    /* Footer */
+    .footer{background:#1a1a1a;color:#bbb;margin-top:40px;}
+    .footer-top{display:grid;grid-template-columns:2fr 1fr;gap:40px;padding:50px 28px 30px;}
+    @media(max-width:680px){.footer-top{grid-template-columns:1fr;}}
+    .footer-brand .brand-w{background:#c9a961;}
+    .footer-brand .brand-line1{color:#fff;}
+    .footer-brand .brand-line2{color:#888;}
+    .footer-brand p{margin-top:14px;font-size:13px;color:#888;}
+    .footer-contact h5{font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;color:#fff;margin-bottom:14px;text-transform:uppercase;}
+    .contact-item{font-size:13px;margin-bottom:8px;}
+    .contact-item a{color:#bbb;transition:.2s;}
+    .contact-item a:hover{color:#c9a961;}
+    .footer-bottom{border-top:1px solid #333;}
+    .footer-bottom-inner{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;font-size:11px;color:#666;letter-spacing:.5px;flex-wrap:wrap;gap:8px;}
+
+    /* Visibility helper */
+    .hidden{display:none !important;}
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>ROC / AUC Calculator</span>
+      </div>
+      <div class="eyebrow gold">DIAGNOSTIC · BIOSTATISTICS</div>
+      <h1>ROC / AUC 與最佳截斷值計算器</h1>
+      <p class="lead">
+        將真實結局（0 / 1）與對應的預測分數或檢測值貼上，工具會自動繪製 ROC 曲線、
+        計算 AUC，並依 Youden 指數搜尋最佳截斷值，同時輸出敏感度、特異度、
+        陽性預測值（PPV）與陰性預測值（NPV）。所有計算均在瀏覽器本地完成，
+        資料不會上傳。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">📥 CSV 文本貼入</span>
+        <span class="pill">📈 ROC 曲線繪製</span>
+        <span class="pill">🎯 Youden 最佳截斷</span>
+        <span class="pill">🔒 本地計算</span>
+        <span class="pill">⬇ 圖表 / 表格匯出</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="tool-section">
+    <div class="container narrow">
+
+      <!-- ====== STEP 1: Data Input ====== -->
+      <div class="panel">
+        <div class="step-num">PART 01 · DATA INPUT</div>
+        <h2>輸入資料</h2>
+        <p class="desc">支援兩種貼入方式，二擇一即可。資料量越大，曲線越平滑。</p>
+
+        <div class="format-note" style="margin-bottom:24px;">
+          <strong>資料格式說明　</strong><br>
+          ・方式一（兩欄分別貼入）：<code>真實結局</code> 為 0 / 1（1 代表陽性／患病），
+          <code>預測分數</code> 為任意連續數值（如機率、生物標誌物濃度、模型輸出 logit 等）。<br>
+          ・方式二（CSV 貼入）：每列一筆樣本，欄位以逗號 / 分號 / Tab / 空白分隔，
+          支援含表頭的兩欄資料，例如 <code>label,score</code>。<br>
+          ・小數點請用 <code>.</code>，列數需一致。空白與非數值列會被自動忽略。
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>真實結局（每列一個 0 或 1）</label>
+            <textarea id="labelInput" rows="10" placeholder="0&#10;1&#10;0&#10;1&#10;1"></textarea>
+          </div>
+          <div class="field">
+            <label>預測分數 / 檢測值（每列一個數值）</label>
+            <textarea id="scoreInput" rows="10" placeholder="0.12&#10;0.85&#10;0.34&#10;0.78&#10;0.92"></textarea>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>或：CSV 文本（兩欄；第一欄結局、第二欄分數）</label>
+          <textarea id="csvInput" rows="6" placeholder="label,score&#10;0,0.12&#10;1,0.85&#10;0,0.34&#10;1,0.78"></textarea>
+          <div class="hint">貼入 CSV 後可直接點「開始分析」，工具會優先解析 CSV。</div>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn-purple" id="runBtn">開始分析</button>
+          <button type="button" class="btn-ghost-dark" id="sampleBtn">載入示例資料</button>
+          <button type="button" class="btn-ghost-dark" id="clearBtn">清除全部</button>
+        </div>
+      </div>
+
+      <!-- ====== Result ====== -->
+      <div id="resultPanel" class="hidden">
+
+        <div class="panel">
+          <div class="result-head">
+            <div class="eyebrow gold">YOUR RESULTS</div>
+            <h2>分析結果</h2>
+            <p id="resultMeta">--</p>
+          </div>
+
+          <div class="score-card">
+            <div>
+              <div class="score-num"><span id="aucVal">--</span></div>
+              <div class="score-label">AUC（曲線下面積）</div>
+              <div class="score-sub" id="aucInterpret">--</div>
+            </div>
+            <div>
+              <div class="score-num"><span id="cutoffVal">--</span></div>
+              <div class="score-label">最佳截斷值（Youden 法）</div>
+              <div class="score-sub" id="cutoffInterpret">--</div>
+            </div>
+          </div>
+
+          <h3 class="section-title">📐 最佳截斷下的診斷指標</h3>
+          <div class="metric-grid">
+            <div class="metric">
+              <div class="metric-label">敏感度</div>
+              <div class="metric-value"><span id="senVal">--</span><small>%</small></div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">特異度</div>
+              <div class="metric-value"><span id="speVal">--</span><small>%</small></div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Youden Index</div>
+              <div class="metric-value"><span id="youdenVal">--</span></div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">PPV</div>
+              <div class="metric-value"><span id="ppvVal">--</span><small>%</small></div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">NPV</div>
+              <div class="metric-value"><span id="npvVal">--</span><small>%</small></div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">準確度</div>
+              <div class="metric-value"><span id="accVal">--</span><small>%</small></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 class="section-title">📈 ROC 曲線</h3>
+          <div class="chart-wrap">
+            <canvas id="rocCanvas" width="720" height="540"></canvas>
+          </div>
+          <div class="btn-row" style="margin-top:18px;">
+            <button type="button" class="btn-ghost-gold" id="downloadChartBtn">下載 ROC 圖（PNG）</button>
+            <button type="button" class="btn-ghost-gold" id="exportCsvBtn">匯出截斷值表（CSV）</button>
+            <button type="button" class="btn-ghost-gold" id="copyResultBtn">一鍵複製分析結果</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 class="section-title">📊 各截斷值下的指標表（節選）</h3>
+          <p class="desc" style="margin-bottom:18px;">
+            為避免過長，下表預設顯示最多 30 列；完整資料請使用「匯出截斷值表」下載。
+            最佳截斷值該列以米金底色標示。
+          </p>
+          <div class="table-wrap">
+            <table class="cutoff-table" id="cutoffTable">
+              <thead>
+                <tr>
+                  <th>截斷值</th>
+                  <th>TP</th>
+                  <th>FP</th>
+                  <th>TN</th>
+                  <th>FN</th>
+                  <th>敏感度</th>
+                  <th>特異度</th>
+                  <th>Youden</th>
+                  <th>PPV</th>
+                  <th>NPV</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel disclaimer">
+          <strong>使用聲明　</strong>
+          本工具僅供方法學學習與探索性 / 初步分析使用，不構成任何臨床診斷或科研發表的最終結論。
+          正式研究建議使用 R（pROC、OptimalCutpoints）或 Python（scikit-learn）並報告
+          AUC 95% 信賴區間、不同最佳截斷準則（Youden / 距離法 / 成本加權）以及交叉驗證結果。
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="assets/js/roc-auc.js"></script>
+</body>
+</html>
