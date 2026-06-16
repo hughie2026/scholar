@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistical Method Selector · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+
+    /* Breadcrumb */
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+
+    /* Meta pills */
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{
+      background:#fff;border:1px solid #ece5d3;
+      padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;
+    }
+
+    /* Section */
+    .assessment-section{padding:70px 0;background:#fff;}
+    .assessment-section .narrow{max-width:840px;margin:0 auto;}
+
+    /* Progress */
+    .progress-wrap{margin-bottom:36px;}
+    .progress-bar{height:3px;background:#ece5d3;overflow:hidden;}
+    .progress-fill{height:100%;background:#c9a961;width:25%;transition:width .4s ease;}
+    .progress-steps{display:flex;justify-content:space-between;margin-top:16px;gap:8px;flex-wrap:wrap;}
+    .progress-steps .step{font-size:11px;letter-spacing:1.2px;color:#bbb;font-weight:600;text-transform:uppercase;}
+    .progress-steps .step b{display:block;font-size:14px;color:#ccc;margin-bottom:3px;font-weight:700;}
+    .progress-steps .step.active{color:#1a1a1a;}
+    .progress-steps .step.active b{color:#c9a961;}
+    .progress-steps .step.done{color:#555;}
+    .progress-steps .step.done b{color:#c9a961;}
+
+    /* Form Step Card */
+    .form-step{display:none;background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;padding:42px 38px;}
+    .form-step.active{display:block;}
+    .step-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
+    .form-step h2{font-size:28px;color:#1a1a1a;margin:0 0 10px;line-height:1.3;}
+    .step-desc{font-size:14px;color:#888;margin:0 0 32px;line-height:1.75;}
+
+    /* Fields */
+    .field{margin-bottom:24px;}
+    .field.hidden{display:none;}
+    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:600px){.field-row{grid-template-columns:1fr;gap:0;}}
+
+    .field input[type="number"],
+    .field input[type="text"],
+    .field select{
+      width:100%;padding:12px 14px;font-size:14px;
+      border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+      font-family:inherit;outline:none;transition:.2s;border-radius:0;
+    }
+    .field input:focus, .field select:focus{border-color:#c9a961;}
+
+    /* Card-style radio (1 column wide) */
+    .radio-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    @media(max-width:600px){.radio-grid{grid-template-columns:1fr;}}
+    .radio-card{cursor:pointer;}
+    .radio-card input{display:none;}
+    .radio-card span{
+      display:block;padding:14px 18px;
+      border:1px solid #ece5d3;background:#fff;color:#555;
+      font-size:14px;line-height:1.55;transition:.2s;
+    }
+    .radio-card span small{display:block;color:#888;font-size:12px;margin-top:4px;letter-spacing:.2px;}
+    .radio-card:hover span{border-color:#d4c5a0;}
+    .radio-card input:checked + span{
+      border-color:#c9a961;color:#1a1a1a;background:#faf7f0;font-weight:600;
+    }
+    .radio-card input:checked + span small{color:#c9a961;font-weight:600;}
+
+    /* Inline radio row */
+    .radio-row{display:flex;gap:12px;flex-wrap:wrap;}
+    .radio-btn{flex:1;min-width:120px;cursor:pointer;}
+    .radio-btn input{display:none;}
+    .radio-btn span{
+      display:block;text-align:center;padding:12px 18px;
+      border:1px solid #ece5d3;background:#fff;color:#555;
+      font-size:14px;transition:.2s;
+    }
+    .radio-btn:hover span{border-color:#d4c5a0;}
+    .radio-btn input:checked + span{
+      border-color:#c9a961;color:#c9a961;background:#faf7f0;font-weight:600;
+    }
+
+    /* Hint box inside step */
+    .hint-box{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:14px 18px;font-size:13px;color:#555;line-height:1.75;margin-top:8px;
+    }
+    .hint-box strong{color:#c9a961;letter-spacing:.5px;}
+
+    /* Form Navigation */
+    .form-nav{display:flex;justify-content:space-between;gap:12px;margin-top:32px;flex-wrap:wrap;}
+    .btn-purple, .btn-ghost-dark{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;
+      font-weight:700;padding:14px 28px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .btn-ghost-dark:disabled{opacity:.35;cursor:not-allowed;}
+    .btn-ghost-dark:disabled:hover{background:transparent;color:#1a1a1a;}
+
+    /* Result */
+    .result-panel{background:transparent;}
+    .result-head{text-align:center;padding:0 0 36px;margin-bottom:30px;border-bottom:1px solid #ece5d3;}
+    .result-head h2{font-size:36px;color:#1a1a1a;margin:10px 0 14px;line-height:1.2;}
+    .result-head p{color:#555;font-size:15px;line-height:1.7;max-width:560px;margin:0 auto;}
+
+    .method-card{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:36px;margin-bottom:24px;
+    }
+    .method-eyebrow{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;text-transform:uppercase;margin-bottom:10px;}
+    .method-name{font-family:'Encode Sans',sans-serif;font-size:32px;color:#1a1a1a;font-weight:700;line-height:1.25;margin:0 0 6px;}
+    .method-en{font-size:14px;color:#888;letter-spacing:.4px;margin-bottom:18px;}
+    .method-summary{font-size:14px;color:#555;line-height:1.85;margin:0;}
+
+    .alt-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+    .alt-list .tag{
+      font-size:12px;letter-spacing:.4px;color:#555;background:#fff;
+      border:1px solid #ece5d3;padding:6px 12px;
+    }
+
+    .result-section{
+      background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:28px 32px;margin-bottom:20px;
+    }
+    .result-section h3{font-size:18px;color:#1a1a1a;margin:0 0 18px;font-weight:700;}
+    .result-section ul{padding-left:20px;line-height:1.95;color:#555;font-size:14px;margin:0;}
+    .result-section li{margin-bottom:6px;}
+    .result-section li em{color:#888;font-style:normal;}
+    .result-section code{
+      background:#faf7f0;border:1px solid #ece5d3;padding:2px 6px;
+      font-family:'Encode Sans',sans-serif;font-size:13px;color:#1a1a1a;
+    }
+    .report-block{
+      background:#faf7f0;border:1px solid #ece5d3;padding:18px 20px;
+      font-family:'Encode Sans',sans-serif;font-size:13px;color:#1a1a1a;
+      line-height:1.85;white-space:pre-wrap;word-break:break-word;
+    }
+
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px;}
+    .summary-item{background:#faf7f0;border:1px solid #ece5d3;padding:18px 16px;}
+    .summary-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:8px;text-transform:uppercase;}
+    .summary-value{font-size:14px;color:#1a1a1a;font-weight:600;line-height:1.5;}
+
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    /* Toast */
+    .toast{
+      position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(20px);
+      background:#1a1a1a;color:#fff;padding:12px 22px;font-size:13px;letter-spacing:.5px;
+      opacity:0;pointer-events:none;transition:.3s;z-index:99;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+    /* Eyebrow override (gold) */
+    .eyebrow.gold{color:#c9a961;}
+
+    @media print{
+      .page-hero, .progress-wrap, .form-nav, .footer, .main-header, .utility-bar{display:none !important;}
+      .form-step{display:none !important;}
+      .result-panel{display:block !important;}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Statistical Method Selector</span>
+      </div>
+      <div class="eyebrow gold">STATISTICS · METHODS</div>
+      <h1>Statistical Method Selector</h1>
+      <p class="lead">
+        為研究生與初學者準備的統計方法檢索助手。依次回答研究目的、變量類型與設計特徵，
+        即可獲得推薦方法、適用條件、前提假設、結果報告格式以及常見錯誤提醒。
+        本工具不替代專業統計建議，正式分析請結合研究設計與統計學家共同確認。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">⏱ 約 2 分鐘</span>
+        <span class="pill">🧪 4 步流程</span>
+        <span class="pill">📋 含報告模板</span>
+        <span class="pill">🔒 本地計算</span>
+        <span class="pill">📖 教學用途</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="assessment-section">
+    <div class="container narrow">
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-steps">
+          <span class="step active" data-step="1"><b>01</b> 研究目的</span>
+          <span class="step" data-step="2"><b>02</b> 變量類型</span>
+          <span class="step" data-step="3"><b>03</b> 設計細節</span>
+          <span class="step" data-step="4"><b>04</b> 推薦結果</span>
+        </div>
+      </div>
+
+      <form id="selectorForm" autocomplete="off">
+
+        <!-- ========== STEP 1 ========== -->
+        <div class="form-step active" data-step="1">
+          <div class="step-num">PART 01</div>
+          <h2>研究目的</h2>
+          <p class="step-desc">先想清楚你的研究問題屬於哪一類，後續題目會根據此選項自動調整。</p>
+
+          <div class="field">
+            <label>本次分析的核心目的是？</label>
+            <div class="radio-grid" id="purposeGrid">
+              <label class="radio-card"><input type="radio" name="purpose" value="group_compare" required><span>組間比較<small>檢驗多組之間的均值/比例差異</small></span></label>
+              <label class="radio-card"><input type="radio" name="purpose" value="correlation"><span>相關分析<small>研究兩個變量間的相關強度</small></span></label>
+              <label class="radio-card"><input type="radio" name="purpose" value="prediction"><span>預測模型<small>用一個或多個變量預測結果</small></span></label>
+              <label class="radio-card"><input type="radio" name="purpose" value="survival"><span>生存分析<small>關注「事件發生時間」結局</small></span></label>
+              <label class="radio-card"><input type="radio" name="purpose" value="diagnostic"><span>診斷效能<small>評估某指標區分疾病的能力</small></span></label>
+              <label class="radio-card"><input type="radio" name="purpose" value="repeated"><span>重複測量<small>同一對象多時點測量同一指標</small></span></label>
+            </div>
+          </div>
+
+          <div class="hint-box">
+            <strong>提示　</strong>
+            如果你不確定，可以先寫出你的研究問題：「我想比較 / 預測 / 觀察…」這通常能直接對應到上面的某一類。
+          </div>
+        </div>
+
+        <!-- ========== STEP 2 ========== -->
+        <div class="form-step" data-step="2">
+          <div class="step-num">PART 02</div>
+          <h2>變量類型</h2>
+          <p class="step-desc">確認你的因變量（結局變量）與自變量（暴露/分組）的數據類型。</p>
+
+          <div class="field" id="dvField">
+            <label>因變量（結局變量）類型</label>
+            <div class="radio-grid">
+              <label class="radio-card"><input type="radio" name="dvType" value="continuous" required><span>連續變量<small>身高、血壓、評分</small></span></label>
+              <label class="radio-card"><input type="radio" name="dvType" value="binary"><span>二分類變量<small>是/否、患病/未患</small></span></label>
+              <label class="radio-card"><input type="radio" name="dvType" value="multi_cat"><span>多分類無序變量<small>血型、職業類別</small></span></label>
+              <label class="radio-card"><input type="radio" name="dvType" value="ordinal"><span>有序分類變量<small>分期、Likert 量表</small></span></label>
+              <label class="radio-card"><input type="radio" name="dvType" value="time"><span>時間結局變量<small>生存時間 + 事件狀態</small></span></label>
+            </div>
+          </div>
+
+          <div class="field" id="ivField">
+            <label>自變量（暴露/分組變量）類型</label>
+            <div class="radio-grid">
+              <label class="radio-card"><input type="radio" name="ivType" value="categorical"><span>分類變量<small>分組、性別、處理組</small></span></label>
+              <label class="radio-card"><input type="radio" name="ivType" value="continuous"><span>連續變量<small>劑量、濃度、年齡</small></span></label>
+              <label class="radio-card"><input type="radio" name="ivType" value="mixed"><span>多個混合變量<small>含分類和連續，多元模型</small></span></label>
+              <label class="radio-card"><input type="radio" name="ivType" value="none"><span>暫不適用<small>診斷效能、單樣本</small></span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 3 ========== -->
+        <div class="form-step" data-step="3">
+          <div class="step-num">PART 03</div>
+          <h2>設計細節</h2>
+          <p class="step-desc">根據研究目的，部分問題可能會自動隱藏或標為「不適用」。</p>
+
+          <div class="field" id="groupsField">
+            <label>研究包含幾組受試者？</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="groups" value="1"><span>1 組</span></label>
+              <label class="radio-btn"><input type="radio" name="groups" value="2"><span>2 組</span></label>
+              <label class="radio-btn"><input type="radio" name="groups" value="3plus"><span>3 組或更多</span></label>
+            </div>
+          </div>
+
+          <div class="field" id="pairedField">
+            <label>樣本之間是否配對 / 重複測量？</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="paired" value="yes"><span>配對 / 重複測量</span></label>
+              <label class="radio-btn"><input type="radio" name="paired" value="no"><span>獨立樣本</span></label>
+            </div>
+            <div class="hint-box" style="margin-top:14px;">
+              <strong>判斷　</strong>
+              同一個體前後測量、配對病例對照、雙胞胎研究等屬於配對；不同個體分組屬於獨立樣本。
+            </div>
+          </div>
+
+          <div class="field" id="normalField">
+            <label>連續變量是否近似正態分佈？</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="normal" value="yes"><span>近似正態</span></label>
+              <label class="radio-btn"><input type="radio" name="normal" value="no"><span>明顯偏態</span></label>
+              <label class="radio-btn"><input type="radio" name="normal" value="unknown"><span>不確定</span></label>
+            </div>
+          </div>
+
+          <div class="field" id="sampleField">
+            <label>樣本量規模</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="sampleSize" value="small" required><span>小樣本（n &lt; 30）</span></label>
+              <label class="radio-btn"><input type="radio" name="sampleSize" value="medium"><span>中等（30 ≤ n &lt; 100）</span></label>
+              <label class="radio-btn"><input type="radio" name="sampleSize" value="large"><span>大樣本（n ≥ 100）</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 4 (RESULT) ========== -->
+        <div class="form-step" data-step="4">
+          <div class="step-num">PART 04</div>
+          <h2>推薦結果</h2>
+          <p class="step-desc">以下推薦方法基於你輸入的研究設計。最終方法選擇仍應結合具體場景與統計專家意見。</p>
+
+          <div id="resultPanel" class="result-panel">
+
+            <div class="method-card">
+              <div class="method-eyebrow">RECOMMENDED METHOD</div>
+              <h3 class="method-name" id="mName">--</h3>
+              <div class="method-en" id="mEn">--</div>
+              <p class="method-summary" id="mSummary">--</p>
+              <div class="alt-list" id="mAlts"></div>
+            </div>
+
+            <div class="result-section">
+              <h3>🧾 你的選擇摘要</h3>
+              <div class="summary-grid" id="summaryGrid"></div>
+            </div>
+
+            <div class="result-section">
+              <h3>✅ 適用條件</h3>
+              <ul id="mConditions"></ul>
+            </div>
+
+            <div class="result-section">
+              <h3>📐 前提假設</h3>
+              <ul id="mAssumptions"></ul>
+            </div>
+
+            <div class="result-section">
+              <h3>📋 結果報告格式</h3>
+              <div class="report-block" id="mReport">--</div>
+            </div>
+
+            <div class="result-section">
+              <h3>⚠️ 常見錯誤提醒</h3>
+              <ul id="mPitfalls"></ul>
+            </div>
+
+            <div class="result-section disclaimer">
+              <strong>免責聲明　</strong>
+              本工具僅作教學與快速檢索用途，不構成正式統計建議。複雜研究設計（多重比較、混雜控制、缺失資料、亞組分析等）請與統計學家共同決策。
+            </div>
+          </div>
+
+          <div class="form-nav" style="margin-top:8px;">
+            <button type="button" class="btn-ghost-dark" id="copyBtn">📋 一鍵複製</button>
+            <button type="button" class="btn-ghost-dark" onclick="window.print()">🖨️ 打印 / PDF</button>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button type="button" id="prevBtn" class="btn-ghost-dark" disabled>← 上一步</button>
+          <button type="button" id="resetBtn" class="btn-ghost-dark">清空重選</button>
+          <button type="button" id="nextBtn" class="btn-purple">下一步 →</button>
+          <button type="button" id="submitBtn" class="btn-purple" style="display:none;">查看推薦 →</button>
+        </div>
+      </form>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast">已複製到剪貼板</div>
+
+  <script src="assets/js/stat-method.js"></script>
+</body>
+</html>
