@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Reporting Checklist Checker · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+
+    /* Breadcrumb */
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+
+    /* Meta pills */
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{background:#fff;border:1px solid #ece5d3;padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;}
+
+    .eyebrow.gold{color:#c9a961;}
+
+    /* Main Section */
+    .checker-section{padding:70px 0;background:#fff;}
+    .checker-section .narrow{max-width:920px;margin:0 auto;}
+
+    /* ===== Type selector ===== */
+    .type-block{margin-bottom:36px;}
+    .type-block-title{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:14px;text-transform:uppercase;}
+    .type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+    @media(max-width:760px){.type-grid{grid-template-columns:1fr;}}
+    .type-card{
+      cursor:pointer;background:#fff;border:1px solid #ece5d3;
+      padding:24px 22px;transition:.2s;display:block;
+    }
+    .type-card:hover{border-color:#d4c5a0;}
+    .type-card.active{border-color:#c9a961;background:#faf7f0;border-left:3px solid #c9a961;padding-left:20px;}
+    .type-card input{display:none;}
+    .type-tag{font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:8px;}
+    .type-name{font-size:16px;color:#1a1a1a;font-weight:700;margin-bottom:6px;line-height:1.4;}
+    .type-desc{font-size:12px;color:#888;line-height:1.7;}
+
+    /* ===== Stats panel ===== */
+    .stats-card{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:28px 32px;margin-bottom:24px;
+      display:grid;grid-template-columns:auto 1fr auto;gap:36px;align-items:center;
+    }
+    @media(max-width:760px){.stats-card{grid-template-columns:1fr;gap:18px;}}
+    .stats-num{font-family:'Encode Sans',sans-serif;font-size:48px;color:#c9a961;font-weight:700;line-height:1;}
+    .stats-num small{font-size:14px;color:#888;font-weight:400;margin-left:4px;}
+    .stats-label{font-size:11px;letter-spacing:1.8px;color:#1a1a1a;margin-top:8px;font-weight:700;text-transform:uppercase;}
+    .stats-bar{height:6px;background:#ece5d3;overflow:hidden;}
+    .stats-fill{height:100%;background:#c9a961;width:0;transition:width .5s ease;}
+    .stats-meta{font-size:12px;color:#888;margin-top:8px;display:flex;justify-content:space-between;letter-spacing:.3px;}
+    .stats-tier{
+      font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.5px;font-weight:700;
+      padding:10px 16px;border:1px solid #c9a961;color:#c9a961;text-align:center;text-transform:uppercase;
+      background:#fff;
+    }
+    .stats-tier.warn{color:#b97a2d;border-color:#e0b97a;}
+    .stats-tier.danger{color:#a8423a;border-color:#dba39e;}
+
+    /* ===== Action bar ===== */
+    .action-bar{
+      display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;
+      padding:16px 0 28px;border-bottom:1px solid #ece5d3;margin-bottom:24px;
+    }
+    .btn-purple, .btn-ghost-dark, .btn-ghost-gold{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.5px;
+      font-weight:700;padding:11px 22px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+    .btn-ghost-gold{background:transparent;color:#c9a961;border-color:#c9a961;}
+    .btn-ghost-gold:hover{background:#c9a961;color:#fff;}
+
+    /* ===== Group ===== */
+    .check-group{border:1px solid #ece5d3;border-left:3px solid #c9a961;background:#fff;margin-bottom:14px;}
+    .group-head{
+      width:100%;text-align:left;background:transparent;border:none;cursor:pointer;
+      padding:18px 22px;display:flex;align-items:center;gap:14px;
+      font-family:'Encode Sans',sans-serif;
+    }
+    .group-head:hover{background:#faf7f0;}
+    .group-title{flex:1;font-size:15px;font-weight:700;color:#1a1a1a;letter-spacing:.5px;}
+    .group-stat{font-size:12px;color:#c9a961;font-weight:700;letter-spacing:1px;}
+    .group-toggle{font-size:18px;color:#c9a961;font-weight:700;width:18px;text-align:center;transition:.2s;}
+    .check-group.collapsed .group-toggle{transform:rotate(-90deg);}
+    .check-group.collapsed .group-body{display:none;}
+    .group-body{padding:0 22px 18px;border-top:1px solid #f3ecdb;}
+
+    /* ===== Item ===== */
+    .check-item{padding:18px 0;border-bottom:1px dashed #ece5d3;}
+    .check-item:last-child{border-bottom:none;}
+    .check-row{display:flex;gap:14px;align-items:flex-start;}
+    .check-toggle{flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;width:22px;height:22px;margin-top:2px;}
+    .check-toggle input{display:none;}
+    .check-mark{
+      width:20px;height:20px;border:1.5px solid #c9a961;background:#fff;
+      display:flex;align-items:center;justify-content:center;transition:.2s;
+    }
+    .check-mark::after{content:'';width:10px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px);opacity:0;}
+    .check-toggle input:checked + .check-mark{background:#c9a961;}
+    .check-toggle input:checked + .check-mark::after{opacity:1;}
+
+    .check-body{flex:1;min-width:0;}
+    .check-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:8px;}
+    .check-id{
+      font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:.8px;
+      background:#faf7f0;border:1px solid #ece5d3;color:#c9a961;font-weight:700;
+      padding:2px 8px;
+    }
+    .check-title{font-size:14px;color:#1a1a1a;line-height:1.65;font-weight:600;flex:1;min-width:200px;}
+    .check-item.done .check-title{color:#888;text-decoration:line-through;text-decoration-color:#d4c5a0;}
+    .miss-flag{
+      font-size:10px;letter-spacing:1px;font-weight:700;
+      color:#a8423a;background:#fdecea;border:1px solid #f1c8c4;
+      padding:2px 8px;text-transform:uppercase;
+    }
+    .check-item.done .miss-flag{display:none;}
+
+    .check-desc{font-size:13px;color:#666;line-height:1.7;margin:0 0 10px;}
+    .check-notes{
+      width:100%;padding:10px 12px;font-size:13px;font-family:inherit;
+      border:1px solid #ece5d3;background:#fafafa;color:#1a1a1a;outline:none;
+      transition:.2s;border-radius:0;resize:vertical;min-height:54px;line-height:1.6;
+    }
+    .check-notes:focus{border-color:#c9a961;background:#fff;}
+
+    /* ===== Hint banner ===== */
+    .hint-banner{
+      background:#faf7f0;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:18px 22px;margin-bottom:24px;font-size:14px;color:#555;line-height:1.8;
+    }
+    .hint-banner strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;display:block;margin-bottom:4px;font-size:12px;}
+    .hint-banner.warn{border-left-color:#e0b97a;}
+    .hint-banner.warn strong{color:#b97a2d;}
+    .hint-banner.danger{border-left-color:#dba39e;}
+    .hint-banner.danger strong{color:#a8423a;}
+
+    /* Disclaimer */
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;padding:24px 28px;border:1px solid #ece5d3;margin-top:24px;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    /* Toast */
+    .toast{
+      position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(40px);
+      background:#1a1a1a;color:#fff;padding:14px 28px;font-size:13px;letter-spacing:.5px;
+      opacity:0;transition:.3s;z-index:999;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+    /* Hidden */
+    .is-hidden{display:none !important;}
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Reporting Checklist Checker</span>
+      </div>
+      <div class="eyebrow gold">RESEARCH · REPORTING</div>
+      <h1>研究報告清單檢查器</h1>
+      <p class="lead">
+        針對觀察性研究（STROBE）、隨機對照試驗（CONSORT 2010）、系統綜述與 Meta 分析（PRISMA 2020）
+        三類研究設計，提供分組式自查清單。每一條目可勾選完成狀態並添加備註，
+        系統會自動計算完成率，並依完成度給出分級提示與建議。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">📋 STROBE / CONSORT / PRISMA</span>
+        <span class="pill">🗂 分組可折疊</span>
+        <span class="pill">📊 自動完成率</span>
+        <span class="pill">📝 一鍵 Markdown 匯出</span>
+        <span class="pill">🔒 本地暫存</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="checker-section">
+    <div class="container narrow">
+
+      <!-- ========== Type Selector ========== -->
+      <div class="type-block">
+        <div class="type-block-title">PART 01 · 選擇研究類型</div>
+        <div class="type-grid">
+          <label class="type-card" data-type="STROBE">
+            <input type="radio" name="studyType" value="STROBE">
+            <div class="type-tag">STROBE</div>
+            <div class="type-name">觀察性研究</div>
+            <div class="type-desc">適用於隊列、病例對照與橫斷面研究的報告規範（22 條目）。</div>
+          </label>
+          <label class="type-card" data-type="CONSORT">
+            <input type="radio" name="studyType" value="CONSORT">
+            <div class="type-tag">CONSORT 2010</div>
+            <div class="type-name">隨機對照試驗</div>
+            <div class="type-desc">平行組設計 RCT 的報告規範，含 25 條核心條目。</div>
+          </label>
+          <label class="type-card" data-type="PRISMA">
+            <input type="radio" name="studyType" value="PRISMA">
+            <div class="type-tag">PRISMA 2020</div>
+            <div class="type-name">系統綜述與 Meta 分析</div>
+            <div class="type-desc">系統評價與 Meta 分析的最新報告規範（27 條目）。</div>
+          </label>
+        </div>
+      </div>
+
+      <!-- ========== Checklist Area ========== -->
+      <div id="checklistArea" class="is-hidden">
+
+        <div class="type-block-title" id="currentTypeLabel">PART 02 · 清單檢查</div>
+
+        <!-- Stats -->
+        <div class="stats-card">
+          <div>
+            <div class="stats-num"><span id="ratePct">0</span><small>%</small></div>
+            <div class="stats-label" id="rateLabel">完成率</div>
+          </div>
+          <div>
+            <div class="stats-bar"><div class="stats-fill" id="rateFill"></div></div>
+            <div class="stats-meta">
+              <span>已完成 <b id="doneCount">0</b> / <b id="totalCount">0</b></span>
+              <span>缺漏 <b id="missCount">0</b> 條</span>
+            </div>
+          </div>
+          <div class="stats-tier" id="tierBadge">—</div>
+        </div>
+
+        <!-- Hint -->
+        <div class="hint-banner" id="hintBanner">
+          <strong id="hintTitle">提示</strong>
+          <span id="hintBody">請開始勾選清單，系統會即時計算完成度。</span>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+          <button type="button" class="btn-ghost-gold" id="btnCollapseAll">全部折疊</button>
+          <button type="button" class="btn-ghost-gold" id="btnExpandAll">全部展開</button>
+          <button type="button" class="btn-ghost-dark" id="btnClear">清空</button>
+          <button type="button" class="btn-ghost-dark" id="btnCopy">一鍵複製</button>
+          <button type="button" class="btn-purple" id="btnExport">匯出 Markdown</button>
+        </div>
+
+        <!-- Groups will be injected here -->
+        <div id="groupsWrap"></div>
+
+        <div class="disclaimer">
+          <strong>免責聲明　</strong>
+          本工具僅為投稿前的自查輔助，不能替代目標期刊的具體投稿指南、報告聲明的官方原文，
+          以及導師、同行與編輯的專業審核。請以期刊要求與導師意見為最終標準。
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <div id="toast" class="toast">已複製到剪貼簿</div>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/checklist-checker.js"></script>
+</body>
+</html>
