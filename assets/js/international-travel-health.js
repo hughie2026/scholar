@@ -1,962 +1,624 @@
-/* ============================================================
- * International Travel Health Pack Generator
- * Hughie's Online Lab · Pure-frontend, no account required
- * ============================================================ */
-(function () {
+/* =====================================================================
+ * International Travel Health Advisor
+ * Real-time data sources (free, no auth):
+ *  - https://restcountries.com/v3.1/all
+ *  - https://geocoding-api.open-meteo.com/v1/search
+ *  - https://api.open-meteo.com/v1/forecast
+ *  - https://air-quality-api.open-meteo.com/v1/air-quality
+ *  - https://disease.sh/v3/covid-19/countries/{iso2}
+ * ===================================================================*/
+
+(() => {
   'use strict';
 
-  // ============== CONFIG ==============
-  const FETCH_TIMEOUT = 15000;
-  // CORS proxies for sources without CORS headers (CDC/WHO/GDACS RSS)
-  const CORS_PROXIES = [
-    (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-    (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  /* ---------- 1. Static health-region knowledge base ---------- */
+  // ISO-2 country codes grouped by WHO/CDC travel-health regions.
+  // Source: WHO Yellow Book + CDC Yellow Book (public, summarized).
+  const HEALTH_DB = {
+    yellowFever: { // Yellow fever endemic / vaccination recommended or required
+      countries: ['AO','AR','BJ','BO','BR','BF','BI','CM','CF','TD','CO','CD','CG','CI','GQ','ET','GF','GA','GM','GH','GN','GW','GY','KE','LR','ML','MR','NE','NG','PA','PY','PE','RW','SN','SL','SS','SD','SR','TG','TT','UG','VE'],
+      label: 'Yellow Fever (黃熱病)',
+      tag: 'required',
+      note: '進入或曾停留疫區可能要求黃熱病疫苗證書（YF-ICVP）'
+    },
+    malariaHigh: {
+      countries: ['NG','CD','UG','MZ','BF','ML','CI','GH','CM','TZ','KE','AO','MW','ZM','ZW','BJ','TG','GN','SL','LR','GA','CG','BI','RW','CF','TD','ET','SS','SD','SN','GW','ER','SO','MG','PG','SB'],
+      label: 'Malaria (瘧疾)',
+      tag: 'required',
+      note: '高流行區，建議使用瘧疾預防藥（諮詢醫生）'
+    },
+    malariaModerate: {
+      countries: ['IN','BD','MM','KH','LA','VN','ID','PH','TH','PK','NP','LK','BO','CO','EC','PE','VE','GY','SR','GF','HT','DO','MX'],
+      label: 'Malaria (瘧疾, 局部地區)',
+      tag: 'recommended',
+      note: '部分地區流行，依具體目的地評估'
+    },
+    dengue: {
+      countries: ['IN','BD','MM','KH','LA','VN','ID','PH','TH','MY','SG','LK','BR','CO','VE','EC','PE','BO','MX','GT','HN','NI','CR','PA','DO','HT','CU','PR','TW','PG','FJ','SB','VU'],
+      label: 'Dengue (登革熱)',
+      tag: 'recommended',
+      note: '蚊媒傳播，做好防蚊措施'
+    },
+    typhoid: {
+      countries: ['IN','BD','PK','NP','LK','MM','KH','LA','ID','PH','VN','AF','EG','MA','TN','DZ','LY','SD','ET','KE','UG','TZ','NG','GH','CI','SN','ML','BF','TD','PE','BO','EC','HT'],
+      label: 'Typhoid (傷寒)',
+      tag: 'recommended',
+      note: '經食物 / 飲水傳播'
+    },
+    hepatitisA: {
+      // Most developing countries
+      countries: ['IN','BD','PK','NP','LK','MM','KH','LA','VN','ID','PH','TH','MY','EG','MA','TN','DZ','LY','SD','ET','KE','UG','TZ','NG','GH','CI','SN','ML','BF','TD','BR','PE','BO','EC','VE','CO','MX','GT','HN','NI','SV','HT','DO','RU','UA','BY','TR','IR','IQ','SY','JO','LB'],
+      label: 'Hepatitis A (甲型肝炎)',
+      tag: 'recommended',
+      note: '經食物 / 飲水傳播，建議所有未接種者接種'
+    },
+    cholera: {
+      countries: ['HT','BD','YE','SO','SS','ET','KE','TZ','MZ','MW','ZM','ZW','CD','NG','CM','NE','BF','ML','TD','SN','PK','AF','IQ','SY'],
+      label: 'Cholera (霍亂)',
+      tag: 'recommended',
+      note: '人道援助 / 災區工作者建議接種'
+    },
+    rabies: {
+      countries: ['IN','BD','PK','NP','LK','MM','KH','LA','VN','ID','PH','TH','CN','BR','PE','BO','MX','EG','MA','ET','KE','UG','TZ','NG','GH','CI','RU'],
+      label: 'Rabies (狂犬病)',
+      tag: 'recommended',
+      note: '長期停留、戶外活動或可能接觸動物者建議接種'
+    },
+    je: { // Japanese Encephalitis
+      countries: ['CN','IN','BD','MM','KH','LA','VN','ID','PH','TH','MY','NP','LK','TW','KR','JP','PG'],
+      label: 'Japanese Encephalitis (日本腦炎)',
+      tag: 'recommended',
+      note: '農村稻作區停留 ≥ 4 週者建議接種'
+    },
+    meningitis: { // Meningitis belt
+      countries: ['BF','ML','NE','TD','NG','SN','GM','GW','GN','SL','LR','CI','GH','TG','BJ','CM','CF','SS','SD','ET','ER','UG','KE','RW','BI'],
+      label: 'Meningococcal Meningitis (流行性腦膜炎)',
+      tag: 'recommended',
+      note: '撒哈拉以南「腦膜炎帶」乾季流行（12 月 – 6 月）'
+    },
+    altitude: {
+      countries: ['NP','BO','PE','EC','CL','AR','CN','BT','TJ','KG'],
+      label: 'High Altitude Sickness (高原反應)',
+      tag: 'recommended',
+      note: '海拔 &gt; 2500m 區域，建議漸進適應'
+    },
+    schisto: {
+      countries: ['EG','SD','SS','ET','KE','UG','TZ','MW','ZM','ZW','MZ','MG','NG','GH','CI','SN','ML','BF','CM','BR','VE','PH','CN','LA','KH'],
+      label: 'Schistosomiasis (血吸蟲病)',
+      tag: 'recommended',
+      note: '避免在淡水河湖游泳、涉水'
+    }
+  };
+
+  // Routine vaccines that everyone should be up-to-date on
+  const ROUTINE_VACCINES = [
+    { label: 'MMR (麻疹 / 腮腺炎 / 風疹)', tag: 'routine', note: '常規兒童疫苗，成人應確保已接種兩劑' },
+    { label: 'DTaP / Tdap (百白破)', tag: 'routine', note: '每 10 年加強一次' },
+    { label: 'Polio (小兒麻痺)', tag: 'routine', note: '常規免疫' },
+    { label: 'Influenza (流感)', tag: 'routine', note: '建議年度接種' },
+    { label: 'COVID-19', tag: 'routine', note: '依當地最新建議完成基礎+加強' }
   ];
 
-  // ============== STATE ==============
-  const state = {
-    destination: null,        // Open-Meteo geocoding result
-    candidates: [],
-    selectedCandidateIdx: -1,
-    form: null,
-    results: {},
+  // Emergency numbers (curated from public sources)
+  const EMERGENCY_NUMBERS = {
+    'CN':{police:'110',ambulance:'120',fire:'119'},
+    'HK':{police:'999',ambulance:'999',fire:'999'},
+    'TW':{police:'110',ambulance:'119',fire:'119'},
+    'JP':{police:'110',ambulance:'119',fire:'119'},
+    'KR':{police:'112',ambulance:'119',fire:'119'},
+    'US':{police:'911',ambulance:'911',fire:'911'},
+    'CA':{police:'911',ambulance:'911',fire:'911'},
+    'GB':{police:'999',ambulance:'999',fire:'999'},
+    'DE':{police:'110',ambulance:'112',fire:'112'},
+    'FR':{police:'17',ambulance:'15',fire:'18'},
+    'IT':{police:'113',ambulance:'118',fire:'115'},
+    'ES':{police:'091',ambulance:'061',fire:'080'},
+    'AU':{police:'000',ambulance:'000',fire:'000'},
+    'NZ':{police:'111',ambulance:'111',fire:'111'},
+    'SG':{police:'999',ambulance:'995',fire:'995'},
+    'TH':{police:'191',ambulance:'1669',fire:'199'},
+    'MY':{police:'999',ambulance:'999',fire:'994'},
+    'VN':{police:'113',ambulance:'115',fire:'114'},
+    'ID':{police:'110',ambulance:'118',fire:'113'},
+    'PH':{police:'911',ambulance:'911',fire:'911'},
+    'IN':{police:'112',ambulance:'102',fire:'101'},
+    'AE':{police:'999',ambulance:'998',fire:'997'},
+    'SA':{police:'999',ambulance:'997',fire:'998'},
+    'TR':{police:'155',ambulance:'112',fire:'110'},
+    'RU':{police:'102',ambulance:'103',fire:'101'},
+    'BR':{police:'190',ambulance:'192',fire:'193'},
+    'AR':{police:'911',ambulance:'107',fire:'100'},
+    'MX':{police:'911',ambulance:'911',fire:'911'},
+    'EG':{police:'122',ambulance:'123',fire:'180'},
+    'ZA':{police:'10111',ambulance:'10177',fire:'10177'},
+    'KE':{police:'999',ambulance:'999',fire:'999'},
+    'NG':{police:'112',ambulance:'112',fire:'112'},
+    'CH':{police:'117',ambulance:'144',fire:'118'},
+    'NL':{police:'112',ambulance:'112',fire:'112'},
+    'BE':{police:'101',ambulance:'112',fire:'112'},
+    'SE':{police:'112',ambulance:'112',fire:'112'},
+    'NO':{police:'112',ambulance:'113',fire:'110'},
+    'DK':{police:'112',ambulance:'112',fire:'112'},
+    'FI':{police:'112',ambulance:'112',fire:'112'},
+    'PT':{police:'112',ambulance:'112',fire:'112'},
+    'GR':{police:'100',ambulance:'166',fire:'199'},
+    'IL':{police:'100',ambulance:'101',fire:'102'}
   };
+  const DEFAULT_EMERGENCY = { police: '112', ambulance: '112', fire: '112' };
 
-  // ============== TINY HELPERS ==============
-  const $ = (id) => document.getElementById(id);
+  /* ---------- 2. Helpers ---------- */
+  const $ = sel => document.querySelector(sel);
+  const escapeHtml = (s='') => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  function htmlEscape(s) {
-    if (s == null) return '';
-    return String(s).replace(/[&<>"']/g, (c) => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-    }[c]));
-  }
+  const setStatus = msg => { const el = $('#loadingStatus'); if(el) el.textContent = msg; };
 
-  function setStatus(src, status, label) {
-    const el = document.querySelector(`.status-item[data-src="${src}"] .badge`);
-    if (!el) return;
-    el.className = 'badge ' + status;
-    el.textContent = label;
-  }
-
-  function getCheckedValues(containerId) {
-    return Array.from(
-      document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)
-    ).map((i) => i.value);
-  }
-
-  function fmtDate(d) {
-    if (!d) return '';
-    const dt = d instanceof Date ? d : new Date(d);
-    if (isNaN(dt)) return '';
-    const y = dt.getFullYear();
-    const m = String(dt.getMonth() + 1).padStart(2, '0');
-    const day = String(dt.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  }
-
-  function addDays(date, days) {
-    const d = new Date(date);
-    d.setDate(d.getDate() + days);
-    return d;
-  }
-
-  async function fetchWithTimeout(url, opts = {}, timeout = FETCH_TIMEOUT) {
+  const fetchJSON = async (url, timeout = 12000) => {
     const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), timeout);
+    const t = setTimeout(()=>ctrl.abort(), timeout);
     try {
-      return await fetch(url, { ...opts, signal: ctrl.signal });
+      const r = await fetch(url, { signal: ctrl.signal });
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return await r.json();
     } finally {
-      clearTimeout(tid);
+      clearTimeout(t);
     }
-  }
-
-  async function tryFetch(url, asText = false) {
-    // Direct
-    try {
-      const res = await fetchWithTimeout(url);
-      if (res.ok) return asText ? await res.text() : await res.json();
-    } catch (_) { /* fall through */ }
-    // Through proxies
-    for (const fn of CORS_PROXIES) {
-      try {
-        const res = await fetchWithTimeout(fn(url));
-        if (res.ok) return asText ? await res.text() : await res.json();
-      } catch (_) { /* try next */ }
-    }
-    throw new Error('fetch failed: ' + url);
-  }
-
-  // ============== COUNTRY UTILITIES ==============
-  function slugifyCountry(name) {
-    if (!name) return '';
-    return name.trim().toLowerCase()
-      .replace(/&/g, 'and')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-  }
-
-  function countryToGovukSlug(input) {
-    if (!input) return '';
-    const s = input.trim().toLowerCase();
-    const aliases = {
-      'usa': 'usa', 'us': 'usa', 'u.s.': 'usa',
-      'united states': 'usa', 'united states of america': 'usa', 'america': 'usa',
-      'south korea': 'south-korea', 'korea': 'south-korea', 'republic of korea': 'south-korea',
-      'north korea': 'north-korea',
-      'hong kong': 'hong-kong',
-      'czech republic': 'czechia',
-      'uae': 'united-arab-emirates',
-      'taiwan': 'taiwan',
-      'russia': 'russia',
-      'ivory coast': 'cote-d-ivoire',
-      'cote d\'ivoire': 'cote-d-ivoire',
-    };
-    return aliases[s] || slugifyCountry(input);
-  }
-
-  // Region mappings used for vaccine/medication recommendations
-  const REGIONS = {
-    africa_yf: ['angola','benin','burkina faso','burundi','cameroon','central african republic','chad','congo','democratic republic of the congo','drc','equatorial guinea','ethiopia','gabon','gambia','ghana','guinea','guinea-bissau','ivory coast','cote d\'ivoire','kenya','liberia','mali','mauritania','niger','nigeria','rwanda','senegal','sierra leone','south sudan','sudan','togo','uganda'],
-    south_america_yf: ['argentina','bolivia','brazil','colombia','ecuador','french guiana','guyana','panama','paraguay','peru','suriname','venezuela','trinidad and tobago'],
-    asia_je: ['bangladesh','bhutan','brunei','cambodia','china','india','indonesia','japan','laos','malaysia','myanmar','nepal','north korea','pakistan','papua new guinea','philippines','singapore','south korea','sri lanka','taiwan','thailand','timor-leste','vietnam'],
-    malaria_high: ['nigeria','democratic republic of the congo','drc','uganda','mozambique','niger','burkina faso','ghana','cameroon','tanzania','mali','angola','ivory coast','cote d\'ivoire','kenya','papua new guinea','sierra leone','liberia','benin','togo','sudan','south sudan','ethiopia','rwanda','burundi','zambia','malawi'],
-    dengue_endemic: ['thailand','vietnam','cambodia','laos','myanmar','malaysia','singapore','indonesia','philippines','india','bangladesh','sri lanka','brazil','mexico','colombia','venezuela','peru','ecuador','dominican republic','puerto rico','cuba','jamaica','haiti','nicaragua','honduras','el salvador'],
-    typhoid_high: ['india','pakistan','bangladesh','nepal','afghanistan','indonesia','philippines','vietnam','laos','cambodia','myanmar'],
-    hepa_high: ['india','pakistan','bangladesh','nepal','indonesia','philippines','vietnam','laos','cambodia','myanmar','thailand','egypt','morocco','mexico','peru','bolivia','nigeria','kenya','tanzania','ethiopia','ghana','senegal'],
-    altitude: ['bolivia','peru','tibet','nepal','bhutan','ecuador'],
-    meningitis_belt: ['burkina faso','chad','niger','nigeria','mali','sudan','ethiopia','ghana','senegal','gambia','guinea','benin','togo','cameroon','central african republic','south sudan'],
   };
 
-  function inRegion(country, regionKey) {
-    if (!country) return false;
-    const c = country.toLowerCase().trim();
-    return (REGIONS[regionKey] || []).some(
-      (x) => c.includes(x) || x.includes(c)
-    );
-  }
+  /* ---------- 3. Country list (datalist) ---------- */
+  let COUNTRY_INDEX = []; // [{name, cca2, capital, latlng, flag, region, ...}]
 
-  // ============== API CALLS ==============
-
-  async function geocodeCity(city, country) {
-    setStatus('geo', 'loading', '請求中…');
+  const loadCountries = async () => {
     try {
-      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=10&language=en&format=json`;
-      const data = await tryFetch(url);
-      let results = data.results || [];
-      if (country) {
-        const c = country.trim().toLowerCase();
-        const filtered = results.filter(
-          (r) =>
-            (r.country || '').toLowerCase().includes(c) ||
-            (r.country_code || '').toLowerCase() === c
-        );
-        if (filtered.length) results = filtered;
+      const data = await fetchJSON('https://restcountries.com/v3.1/all?fields=name,cca2,cca3,capital,capitalInfo,latlng,flag,region,subregion,population,languages,currencies,timezones');
+      COUNTRY_INDEX = data
+        .filter(c => c.cca2 && c.name?.common)
+        .map(c => ({
+          name: c.name.common,
+          official: c.name.official,
+          cca2: c.cca2,
+          capital: (c.capital && c.capital[0]) || c.name.common,
+          latlng: c.capitalInfo?.latlng?.length ? c.capitalInfo.latlng : c.latlng,
+          flag: c.flag,
+          region: c.region,
+          subregion: c.subregion,
+          population: c.population,
+          languages: c.languages ? Object.values(c.languages).join(', ') : '—',
+          currencies: c.currencies ? Object.values(c.currencies).map(x=>`${x.name} (${x.symbol||''})`).join(', ') : '—',
+          timezones: c.timezones ? c.timezones[0] : '—'
+        }))
+        .sort((a,b)=>a.name.localeCompare(b.name));
+
+      const dl = $('#countryList');
+      dl.innerHTML = COUNTRY_INDEX.map(c =>
+        `<option value="${escapeHtml(c.name)}">${escapeHtml(c.cca2)} · ${escapeHtml(c.region)}</option>`
+      ).join('');
+    } catch (e) {
+      console.warn('Country list fetch failed, using minimal fallback', e);
+      // Minimal fallback if RESTCountries is down
+      const fb = [
+        {name:'Japan',cca2:'JP',capital:'Tokyo',latlng:[35.68,139.76],flag:'🇯🇵',region:'Asia',subregion:'Eastern Asia',population:125800000,languages:'Japanese',currencies:'Japanese Yen (¥)',timezones:'UTC+09:00'},
+        {name:'United States',cca2:'US',capital:'Washington, D.C.',latlng:[38.9,-77.04],flag:'🇺🇸',region:'Americas',subregion:'Northern America',population:329500000,languages:'English',currencies:'US Dollar ($)',timezones:'UTC-05:00'},
+        {name:'Thailand',cca2:'TH',capital:'Bangkok',latlng:[13.75,100.52],flag:'🇹🇭',region:'Asia',subregion:'South-Eastern Asia',population:69800000,languages:'Thai',currencies:'Thai Baht (฿)',timezones:'UTC+07:00'},
+        {name:'Kenya',cca2:'KE',capital:'Nairobi',latlng:[-1.28,36.82],flag:'🇰🇪',region:'Africa',subregion:'Eastern Africa',population:53700000,languages:'Swahili, English',currencies:'Kenyan Shilling (KSh)',timezones:'UTC+03:00'}
+      ];
+      COUNTRY_INDEX = fb;
+      $('#countryList').innerHTML = fb.map(c=>`<option value="${c.name}">`).join('');
+    }
+  };
+
+  const findCountry = (input) => {
+    const q = (input||'').trim().toLowerCase();
+    if(!q) return null;
+    return COUNTRY_INDEX.find(c =>
+      c.name.toLowerCase() === q ||
+      c.official?.toLowerCase() === q ||
+      c.cca2.toLowerCase() === q
+    ) || COUNTRY_INDEX.find(c => c.name.toLowerCase().startsWith(q));
+  };
+
+  /* ---------- 4. Real-time data calls ---------- */
+  const getWeather = async (lat, lon) => {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`+
+      `&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,uv_index`+
+      `&daily=precipitation_probability_max,uv_index_max&timezone=auto&forecast_days=2`;
+    return fetchJSON(url);
+  };
+
+  const getAirQuality = async (lat, lon) => {
+    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}`+
+      `&current=european_aqi,pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,ozone&timezone=auto`;
+    return fetchJSON(url);
+  };
+
+  const getCovid = async (iso2) => {
+    try {
+      return await fetchJSON(`https://disease.sh/v3/covid-19/countries/${iso2}?strict=true`);
+    } catch { return null; }
+  };
+
+  /* ---------- 5. Risk evaluation ---------- */
+  const buildVaccineList = (iso2) => {
+    const list = [];
+    Object.entries(HEALTH_DB).forEach(([key, def]) => {
+      if(def.countries.includes(iso2)) {
+        list.push({ label: def.label, tag: def.tag, note: def.note });
       }
-      if (!results.length) {
-        setStatus('geo', 'fail', '未找到城市');
-        return [];
-      }
-      setStatus('geo', 'ok', `匹配 ${results.length} 個`);
-      return results;
-    } catch (e) {
-      setStatus('geo', 'fail', '請求失敗');
-      console.error('Geocode error:', e);
-      return [];
+    });
+    // Always add routine
+    return { specific: list, routine: ROUTINE_VACCINES };
+  };
+
+  const computeRisk = (iso2, weather, aqi, covid, vaccineSpecific) => {
+    let score = 0;
+    const reasons = [];
+
+    // Vaccine-required diseases weigh heaviest
+    const required = vaccineSpecific.filter(v=>v.tag==='required').length;
+    const recommended = vaccineSpecific.filter(v=>v.tag==='recommended').length;
+    score += required * 18 + recommended * 6;
+    if(required) reasons.push(`存在 ${required} 項高關注疾病風險`);
+    if(recommended) reasons.push(`${recommended} 項區域性疾病需做好預防`);
+
+    // AQI
+    const aqiVal = aqi?.current?.european_aqi;
+    if(typeof aqiVal === 'number') {
+      if(aqiVal > 80) { score += 18; reasons.push('空氣質量極差'); }
+      else if(aqiVal > 60) { score += 10; reasons.push('空氣質量較差'); }
+      else if(aqiVal > 40) { score += 4; }
     }
-  }
 
-  async function fetchWeather(lat, lon, startDate, endDate) {
-    setStatus('weather', 'loading', '請求中…');
-    try {
-      const params = new URLSearchParams({
-        latitude: lat,
-        longitude: lon,
-        current: 'temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,uv_index,weather_code',
-        daily: 'temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max,wind_speed_10m_max,weather_code',
-        timezone: 'auto',
-      });
-      if (startDate) params.set('start_date', startDate);
-      if (endDate) params.set('end_date', endDate);
-      const url = `https://api.open-meteo.com/v1/forecast?${params.toString()}`;
-      const data = await tryFetch(url);
-      setStatus('weather', 'ok', '已獲取');
-      return data;
-    } catch (e) {
-      setStatus('weather', 'fail', '請求失敗');
-      console.error('Weather error:', e);
-      return null;
+    // UV
+    const uv = weather?.current?.uv_index;
+    if(typeof uv === 'number' && uv >= 8) { score += 6; reasons.push('紫外線強度高'); }
+
+    // Temperature extremes
+    const t = weather?.current?.temperature_2m;
+    if(typeof t === 'number') {
+      if(t >= 35) { score += 8; reasons.push('當地高溫，注意中暑'); }
+      else if(t <= -10) { score += 8; reasons.push('當地嚴寒，注意凍傷'); }
     }
-  }
 
-  async function fetchAirQuality(lat, lon) {
-    setStatus('air', 'loading', '請求中…');
-    try {
-      const params = new URLSearchParams({
-        latitude: lat,
-        longitude: lon,
-        current: 'pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,european_aqi,us_aqi',
-        timezone: 'auto',
-      });
-      const url = `https://air-quality-api.open-meteo.com/v1/air-quality?${params.toString()}`;
-      const data = await tryFetch(url);
-      setStatus('air', 'ok', '已獲取');
-      return data;
-    } catch (e) {
-      setStatus('air', 'fail', '請求失敗');
-      console.error('Air error:', e);
-      return null;
+    // COVID activity
+    const todayCases = covid?.todayCases;
+    const pop = covid?.population;
+    if(todayCases && pop) {
+      const per1m = (todayCases / pop) * 1_000_000;
+      if(per1m > 200) { score += 10; reasons.push('COVID 活躍度較高'); }
+      else if(per1m > 50) { score += 4; }
     }
-  }
 
-  function parseRSSItems(xmlText) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xmlText, 'text/xml');
-    const items = Array.from(doc.querySelectorAll('item'));
-    return items.map((it) => ({
-      title: (it.querySelector('title')?.textContent || '').trim(),
-      link: (it.querySelector('link')?.textContent || '').trim(),
-      pubDate: (it.querySelector('pubDate')?.textContent || '').trim(),
-      description: (it.querySelector('description')?.textContent || '')
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim(),
-    }));
-  }
+    let level, klass;
+    if(score >= 35) { level = 'High · 高風險'; klass = 'high'; }
+    else if(score >= 15) { level = 'Moderate · 中等風險'; klass = 'moderate'; }
+    else { level = 'Low · 低風險'; klass = 'low'; }
 
-  function filterByCountry(items, country) {
-    if (!country) return items.slice(0, 10);
-    const c = country.toLowerCase().trim();
-    return items.filter(
-      (n) =>
-        n.title.toLowerCase().includes(c) ||
-        n.description.toLowerCase().includes(c)
-    );
-  }
+    return { level, klass, score, reasons };
+  };
 
-  async function fetchCDCNotices(country) {
-    setStatus('cdc', 'loading', '請求中…');
-    try {
-      const xml = await tryFetch('https://wwwnc.cdc.gov/travel/rss/notices.xml', true);
-      const all = parseRSSItems(xml);
-      const matched = filterByCountry(all, country);
-      setStatus('cdc', matched.length ? 'ok' : 'warn', matched.length ? `匹配 ${matched.length} 條` : '無相關通知');
-      return { items: matched, total: all.length };
-    } catch (e) {
-      setStatus('cdc', 'fail', '請求失敗');
-      console.error('CDC error:', e);
-      return null;
-    }
-  }
-
-  async function fetchWHODON(country) {
-    setStatus('who', 'loading', '請求中…');
-    try {
-      const xml = await tryFetch('https://www.who.int/feeds/entity/csr/don/en/rss.xml', true);
-      const all = parseRSSItems(xml);
-      const matched = filterByCountry(all, country);
-      setStatus('who', matched.length ? 'ok' : 'warn', matched.length ? `匹配 ${matched.length} 條` : '無相關通知');
-      return { items: matched, total: all.length };
-    } catch (e) {
-      setStatus('who', 'fail', '請求失敗');
-      console.error('WHO error:', e);
-      return null;
-    }
-  }
-
-  async function fetchGovUK(country) {
-    setStatus('govuk', 'loading', '請求中…');
-    try {
-      const slug = countryToGovukSlug(country);
-      if (!slug) throw new Error('no slug');
-      const url = `https://www.gov.uk/api/content/foreign-travel-advice/${slug}`;
-      const data = await tryFetch(url);
-      setStatus('govuk', 'ok', '已獲取');
-      return data;
-    } catch (e) {
-      setStatus('govuk', 'fail', '無此國家或失敗');
-      console.error('GOV.UK error:', e);
-      return null;
-    }
-  }
-
-  async function fetchGDACS(country) {
-    setStatus('gdacs', 'loading', '請求中…');
-    try {
-      const xml = await tryFetch('https://www.gdacs.org/xml/rss.xml', true);
-      const all = parseRSSItems(xml);
-      const matched = filterByCountry(all, country);
-      setStatus('gdacs', matched.length ? 'ok' : 'warn', matched.length ? `匹配 ${matched.length} 條` : '近期無事件');
-      return { items: matched, total: all.length };
-    } catch (e) {
-      setStatus('gdacs', 'fail', '請求失敗');
-      console.error('GDACS error:', e);
-      return null;
-    }
-  }
-
-  // ============== HEALTH CATEGORIZERS ==============
-  function uvCategory(uv) {
-    if (uv == null || isNaN(uv)) return '';
-    if (uv < 3) return '低';
-    if (uv < 6) return '中等';
-    if (uv < 8) return '高';
-    if (uv < 11) return '很高';
-    return '極端';
-  }
-
-  function aqiUSCategory(aqi) {
-    if (aqi == null) return null;
-    if (aqi <= 50) return { level: '良好', risk: 'low' };
-    if (aqi <= 100) return { level: '中等', risk: 'mod' };
-    if (aqi <= 150) return { level: '對敏感人群不健康', risk: 'high' };
-    if (aqi <= 200) return { level: '不健康', risk: 'high' };
-    if (aqi <= 300) return { level: '非常不健康', risk: 'vhigh' };
-    return { level: '危險', risk: 'vhigh' };
-  }
-
-  function pm25Category(pm) {
-    if (pm == null) return null;
-    if (pm <= 12) return { level: 'PM2.5 良好', risk: 'low' };
-    if (pm <= 35.4) return { level: 'PM2.5 中等', risk: 'mod' };
-    if (pm <= 55.4) return { level: 'PM2.5 偏高', risk: 'high' };
-    if (pm <= 150.4) return { level: 'PM2.5 不健康', risk: 'high' };
-    if (pm <= 250.4) return { level: 'PM2.5 非常不健康', risk: 'vhigh' };
-    return { level: 'PM2.5 危險', risk: 'vhigh' };
-  }
-
-  // ============== RENDERERS ==============
-  function renderOverview() {
-    const d = state.destination;
-    const f = state.form;
-    const cells = [
-      { k: '城市', v: d ? `${d.name}${d.admin1 ? ', ' + d.admin1 : ''}` : '—' },
-      { k: '國家', v: d?.country || f.country || '—' },
-      { k: '坐標', v: d ? `${d.latitude.toFixed(3)}, ${d.longitude.toFixed(3)}` : '—' },
-      { k: '時區', v: d?.timezone || '—' },
-      { k: '出發日期', v: f.departureDate || '—' },
-      { k: '停留天數', v: (f.stayDays || '7') + ' 天' },
-      { k: '出發地', v: f.originCity || '—' },
-      { k: '海拔', v: d?.elevation != null ? `${Math.round(d.elevation)} m` : '—' },
+  /* ---------- 6. Render helpers ---------- */
+  const renderOverview = (c) => {
+    const popFmt = c.population ? c.population.toLocaleString() : '—';
+    const items = [
+      { k:'國名（官方）', v: c.official || c.name },
+      { k:'首都', v: c.capital },
+      { k:'地區', v: `${c.region}${c.subregion?' · '+c.subregion:''}` },
+      { k:'人口', v: popFmt },
+      { k:'時區', v: c.timezones },
+      { k:'官方語言', v: c.languages },
+      { k:'貨幣', v: c.currencies }
     ];
-    $('overviewGrid').innerHTML = cells.map(
-      (c) => `
-      <div class="info-cell">
-        <div class="k">${htmlEscape(c.k)}</div>
-        <div class="v">${htmlEscape(c.v)}</div>
-      </div>`
+    $('#overviewList').innerHTML = items.map(i =>
+      `<li><span class="item-name">${escapeHtml(i.k)}</span><span style="text-align:right;color:#555;">${escapeHtml(i.v)}</span></li>`
     ).join('');
-  }
+  };
 
-  function renderWeather(data) {
-    const body = $('weatherBody');
-    if (!data) {
-      body.innerHTML = '<p class="empty-note">天氣資料獲取失敗，請稍後重試。</p>';
-      return;
-    }
-    const cur = data.current || {};
-    const daily = data.daily || {};
-    const tMax = daily.temperature_2m_max || [];
-    const tMin = daily.temperature_2m_min || [];
-    const precip = daily.precipitation_sum || [];
-    const uv = daily.uv_index_max || [];
-    const wind = daily.wind_speed_10m_max || [];
+  const uvDescriptor = (u) => {
+    if(u==null) return '—';
+    if(u<3) return '低 · 一般人群安全';
+    if(u<6) return '中等 · 建議防曬';
+    if(u<8) return '較強 · 戴帽、SPF30+';
+    if(u<11) return '很強 · 避免正午外出';
+    return '極強 · 嚴防曬傷';
+  };
 
-    const peakT = tMax.length ? Math.max(...tMax) : null;
-    const lowT = tMin.length ? Math.min(...tMin) : null;
-    const totalP = precip.length ? precip.reduce((a, b) => a + b, 0) : null;
-    const maxUV = uv.length ? Math.max(...uv) : null;
-    const maxWind = wind.length ? Math.max(...wind) : null;
+  const renderWeather = (w) => {
+    const cur = w?.current; if(!cur) return;
+    $('#wxTemp').textContent = Math.round(cur.temperature_2m);
+    $('#wxFeels').textContent = `體感 ${Math.round(cur.apparent_temperature)}°C`;
+    $('#wxUv').textContent = (cur.uv_index ?? '—').toString().slice(0,4);
+    $('#wxUvNote').textContent = uvDescriptor(cur.uv_index);
+    $('#wxHum').textContent = Math.round(cur.relative_humidity_2m ?? 0);
+    const prec = w?.daily?.precipitation_probability_max?.[0];
+    $('#wxPrec').textContent = prec ?? '—';
 
     const tips = [];
-    if (peakT != null && peakT >= 32) tips.push('高溫風險：注意防中暑、頻繁補水、避開正午戶外活動。');
-    if (peakT != null && peakT >= 35) tips.push('極端高溫：避免長時間戶外暴露，老人、兒童、慢性病患者特別警惕熱衰竭與熱射病。');
-    if (lowT != null && lowT <= 5) tips.push('低溫風險：準備防寒衣物，注意呼吸道感染與心血管負擔。');
-    if (lowT != null && lowT <= -10) tips.push('嚴寒風險：防凍傷、避免長時間戶外停留。');
-    if (totalP != null && totalP > 50) tips.push('降水偏多：準備雨具、防滑鞋；積水區注意蚊媒與腸道感染風險。');
-    if (maxUV != null && maxUV >= 8) tips.push('紫外線強：使用 SPF 30+ 廣譜防曬、墨鏡與寬簷帽。');
-    if (maxWind != null && maxWind >= 50) tips.push('風速較大：戶外活動注意安全，沿海地區留意風暴提醒。');
-    if (cur.relative_humidity_2m != null && cur.relative_humidity_2m >= 80 && peakT != null && peakT >= 28) {
-      tips.push('高溫高濕並存：體感溫度顯著升高，戶外運動需大幅降低強度。');
+    if(cur.temperature_2m >= 30) tips.push('炎熱，多補水並避免中暑。');
+    if(cur.temperature_2m <= 5) tips.push('低溫，準備保暖衣物。');
+    if((cur.uv_index||0) >= 6) tips.push('紫外線較強，使用防曬霜並戴帽。');
+    if((prec||0) >= 50) tips.push('降水概率較高，攜帶雨具。');
+    if((cur.relative_humidity_2m||0) >= 80) tips.push('高濕環境，注意散熱與皮膚清潔。');
+    $('#wxAdvice').textContent = tips.length ? tips.join(' ') : '當前氣象條件對健康影響較小。';
+  };
+
+  const aqiBand = (v) => {
+    if(v==null) return { label:'—', advice:'空氣質量數據暫不可用。' };
+    if(v<=20) return { label:'Good · 優', advice:'空氣質量良好，可正常戶外活動。' };
+    if(v<=40) return { label:'Fair · 良', advice:'空氣質量尚可，敏感人群留意身體反應。' };
+    if(v<=60) return { label:'Moderate · 中', advice:'敏感人群（哮喘、心血管病）應減少劇烈戶外活動。' };
+    if(v<=80) return { label:'Poor · 差', advice:'建議佩戴 N95 / KF94 口罩，限制長時間戶外活動。' };
+    if(v<=100) return { label:'Very Poor · 很差', advice:'盡量留在室內，使用空氣淨化器。' };
+    return { label:'Extremely Poor · 極差', advice:'避免一切非必要外出，老人兒童尤其需要保護。' };
+  };
+
+  const renderAQ = (aq) => {
+    const cur = aq?.current; if(!cur) return;
+    const v = cur.european_aqi;
+    const band = aqiBand(v);
+    $('#aqiVal').textContent = v != null ? Math.round(v) : '—';
+    $('#aqiTier').textContent = band.label;
+    $('#pm25').textContent = cur.pm2_5 != null ? cur.pm2_5.toFixed(1) : '—';
+    $('#pm10').textContent = cur.pm10 != null ? cur.pm10.toFixed(1) : '—';
+    $('#aqiAdvice').textContent = band.advice;
+    const pct = Math.min(100, Math.max(0, (v||0)));
+    $('#aqiPointer').style.left = pct + '%';
+  };
+
+  const renderVaccines = (vList, country, traveler) => {
+    const wrap = $('#vaccineList');
+    const all = [...vList.specific];
+
+    // Pregnancy / immune flags
+    if(traveler.pregnant && vList.specific.some(v=>v.label.startsWith('Yellow Fever'))) {
+      all.unshift({ label: '⚠️ 黃熱病疫苗 - 妊娠注意', tag: 'required', note: '活疫苗，懷孕期一般不建議接種，需與醫生評估行程必要性' });
     }
 
-    body.innerHTML = `
-      <div class="metric-grid">
-        <div class="metric"><div class="metric-label">當前溫度</div><div class="metric-value">${cur.temperature_2m != null ? cur.temperature_2m.toFixed(1) : '—'}<small>°C</small></div></div>
-        <div class="metric"><div class="metric-label">體感溫度</div><div class="metric-value">${cur.apparent_temperature != null ? cur.apparent_temperature.toFixed(1) : '—'}<small>°C</small></div></div>
-        <div class="metric"><div class="metric-label">濕度</div><div class="metric-value">${cur.relative_humidity_2m ?? '—'}<small>%</small></div></div>
-        <div class="metric"><div class="metric-label">當前 UV</div><div class="metric-value">${cur.uv_index != null ? cur.uv_index.toFixed(1) : '—'}</div></div>
-      </div>
-      <div class="metric-grid" style="margin-top:12px;">
-        <div class="metric"><div class="metric-label">期間最高/最低</div><div class="metric-value">${peakT != null ? peakT.toFixed(0) : '—'}/${lowT != null ? lowT.toFixed(0) : '—'}<small>°C</small></div></div>
-        <div class="metric"><div class="metric-label">總降水</div><div class="metric-value">${totalP != null ? totalP.toFixed(1) : '—'}<small>mm</small></div></div>
-        <div class="metric"><div class="metric-label">最高 UV</div><div class="metric-value">${maxUV != null ? maxUV.toFixed(1) : '—'}</div><div class="metric-note">${uvCategory(maxUV)}</div></div>
-        <div class="metric"><div class="metric-label">最大風速</div><div class="metric-value">${maxWind != null ? maxWind.toFixed(0) : '—'}<small>km/h</small></div></div>
-      </div>
-      ${tips.length
-        ? `<ul style="margin-top:18px;">${tips.map((t) => `<li>${htmlEscape(t)}</li>`).join('')}</ul>`
-        : '<p class="empty-note" style="margin-top:14px;">期間天氣較為溫和，無顯著極端風險。</p>'
-      }
-    `;
-  }
+    // routine merge
+    vList.routine.forEach(r => all.push(r));
 
-  function renderAir(data) {
-    const body = $('airBody');
-    if (!data || !data.current) {
-      body.innerHTML = '<p class="empty-note">空氣品質資料獲取失敗或不可用。</p>';
+    if(!all.length) {
+      wrap.innerHTML = '<li><span class="item-name">無特殊疫苗要求</span><span style="color:#888;font-size:12px;">保持常規免疫程序即可</span></li>';
       return;
     }
-    const cur = data.current;
-    const usCat = aqiUSCategory(cur.us_aqi);
-    const pmCat = pm25Category(cur.pm2_5);
-    const profile = state.form.profile || [];
-    const sensitive =
-      profile.includes('respiratory') ||
-      profile.includes('cardio') ||
-      profile.includes('elderly') ||
-      profile.includes('child') ||
-      profile.includes('pregnant');
 
-    const advice = [];
-    const risk = pmCat?.risk || usCat?.risk || 'low';
-    if (risk === 'mod') advice.push('空氣品質中等：敏感人群（呼吸/心血管病、老年人、孕婦、兒童）長時間戶外活動時可考慮配戴口罩。');
-    if (risk === 'high') advice.push('空氣品質較差：建議減少戶外劇烈運動，敏感人群配戴 N95/KN95 口罩。');
-    if (risk === 'vhigh') advice.push('空氣污染嚴重：盡量待在室內並使用空氣清淨機，外出全程配戴 N95，避免戶外運動。');
-    if (sensitive && (risk === 'mod' || risk === 'high' || risk === 'vhigh')) {
-      advice.push('您屬於空氣污染敏感人群：請隨身攜帶常用呼吸/心血管急救藥物（如吸入器、硝酸甘油等，遵醫囑）。');
-    }
-    if (!advice.length) advice.push('當前空氣品質良好，可正常進行戶外活動。');
+    wrap.innerHTML = all.map(v =>
+      `<li>
+        <div style="flex:1;min-width:0;">
+          <div class="item-name">${escapeHtml(v.label)}</div>
+          <div style="font-size:12px;color:#888;margin-top:3px;line-height:1.55;">${escapeHtml(v.note||'')}</div>
+        </div>
+        <span class="item-tag ${v.tag}">${v.tag}</span>
+      </li>`
+    ).join('');
+  };
 
-    body.innerHTML = `
-      <div class="metric-grid">
-        <div class="metric"><div class="metric-label">US AQI</div><div class="metric-value">${cur.us_aqi ?? '—'}</div><div class="metric-note">${usCat?.level || ''}</div></div>
-        <div class="metric"><div class="metric-label">EU AQI</div><div class="metric-value">${cur.european_aqi ?? '—'}</div></div>
-        <div class="metric"><div class="metric-label">PM2.5</div><div class="metric-value">${cur.pm2_5 != null ? cur.pm2_5.toFixed(1) : '—'}<small>μg/m³</small></div><div class="metric-note">${pmCat?.level || ''}</div></div>
-        <div class="metric"><div class="metric-label">PM10</div><div class="metric-value">${cur.pm10 != null ? cur.pm10.toFixed(1) : '—'}<small>μg/m³</small></div></div>
-        <div class="metric"><div class="metric-label">O₃</div><div class="metric-value">${cur.ozone != null ? cur.ozone.toFixed(1) : '—'}<small>μg/m³</small></div></div>
-        <div class="metric"><div class="metric-label">NO₂</div><div class="metric-value">${cur.nitrogen_dioxide != null ? cur.nitrogen_dioxide.toFixed(1) : '—'}<small>μg/m³</small></div></div>
-      </div>
-      <ul style="margin-top:18px;">${advice.map((a) => `<li>${htmlEscape(a)}</li>`).join('')}</ul>
-    `;
-  }
-
-  function renderRSSCard(bodyId, data, label, fallbackHTML) {
-    const body = $(bodyId);
-    if (!data) { body.innerHTML = fallbackHTML; return; }
-    if (!data.items.length) {
-      body.innerHTML = `<p class="empty-note">未在${label}中找到目的地相關內容（已掃描 ${data.total} 條全球記錄）。</p>` + fallbackHTML;
+  const renderDiseases = (vList) => {
+    // Highlight non-vaccine-only concerns (still grab from same DB)
+    const wrap = $('#diseaseList');
+    if(!vList.specific.length) {
+      wrap.innerHTML = '<li><span style="color:#888;font-size:13px;">該目的地未識別出顯著區域性疾病風險</span></li>';
       return;
     }
-    const list = data.items.slice(0, 6).map((it) => `
-      <li>
-        <a class="title" href="${htmlEscape(it.link)}" target="_blank" rel="noopener">${htmlEscape(it.title)}</a>
-        <div class="meta">${htmlEscape(it.pubDate)}</div>
-        ${it.description ? `<div class="summary">${htmlEscape(it.description.slice(0, 280))}${it.description.length > 280 ? '…' : ''}</div>` : ''}
-      </li>
-    `).join('');
-    body.innerHTML = `<ul class="news-list">${list}</ul>`;
-  }
+    wrap.innerHTML = vList.specific.map(v =>
+      `<li>
+        <div style="flex:1;">
+          <div class="item-name">${escapeHtml(v.label)}</div>
+          <div style="font-size:12px;color:#888;margin-top:3px;line-height:1.55;">${escapeHtml(v.note||'')}</div>
+        </div>
+      </li>`
+    ).join('');
+  };
 
-  function renderCDC(data) {
-    renderRSSCard(
-      'cdcBody',
-      data,
-      'CDC 旅行通知',
-      `<p class="empty-note">手動查詢：<a href="https://wwwnc.cdc.gov/travel/destinations/list" target="_blank" rel="noopener">CDC Travelers' Health 目的地頁面</a>。</p>`
-    );
-  }
-
-  function renderWHO(data) {
-    renderRSSCard(
-      'whoBody',
-      data,
-      'WHO 疾病暴發新聞',
-      `<p class="empty-note">手動查詢：<a href="https://www.who.int/emergencies/disease-outbreak-news" target="_blank" rel="noopener">WHO Disease Outbreak News</a>。</p>`
-    );
-  }
-
-  function renderGDACS(data) {
-    renderRSSCard(
-      'gdacsBody',
-      data,
-      'GDACS 災害提醒',
-      `<p class="empty-note">手動查詢：<a href="https://www.gdacs.org/" target="_blank" rel="noopener">gdacs.org</a>。</p>`
-    );
-  }
-
-  function renderGovUK(data) {
-    const body = $('govukBody');
-    if (!data) {
-      body.innerHTML = `<p class="empty-note">未找到該國家對應的 GOV.UK 旅行建議頁面，或請求失敗。<br>您可手動訪問 <a href="https://www.gov.uk/foreign-travel-advice" target="_blank" rel="noopener">gov.uk/foreign-travel-advice</a>。</p>`;
+  const renderCovid = (cv) => {
+    if(!cv) {
+      $('#covidCases').textContent = '—';
+      $('#covidRate').textContent = '—';
+      $('#covidAdvice').textContent = 'COVID-19 數據暫不可用。';
       return;
     }
-    const title = data.title || '';
-    const description = data.description || '';
-    const url = data.base_path ? `https://www.gov.uk${data.base_path}` : 'https://www.gov.uk/foreign-travel-advice';
-    const updated = data.public_updated_at ? data.public_updated_at.slice(0, 10) : '—';
-    let firstPart = '';
-    if (data.details?.parts?.[0]?.body) {
-      firstPart = data.details.parts[0].body
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-    }
-    body.innerHTML = `
-      <p><strong>${htmlEscape(title)}</strong></p>
-      ${description ? `<p>${htmlEscape(description)}</p>` : ''}
-      <p><small>最後更新：${htmlEscape(updated)}</small></p>
-      ${firstPart ? `<p>${htmlEscape(firstPart.slice(0, 500))}${firstPart.length > 500 ? '…' : ''}</p>` : ''}
-      <p>👉 完整建議：<a href="${htmlEscape(url)}" target="_blank" rel="noopener">${htmlEscape(url)}</a></p>
+    // disease.sh provides "todayCases". For 7-day approximation we expose today.
+    const today = cv.todayCases || 0;
+    const per1m = cv.population ? Math.round((today / cv.population) * 1_000_000) : 0;
+    $('#covidCases').textContent = (cv.cases||0).toLocaleString();
+    $('#covidRate').textContent = per1m;
+
+    let advice;
+    if(per1m > 200) advice = '當前 COVID 傳播較為活躍，建議在室內、人多場所佩戴口罩，做好手衛生。';
+    else if(per1m > 50) advice = '存在持續傳播，敏感人群佩戴口罩、避免擁擠空間。';
+    else advice = '當前活動水平較低，仍建議保持基本防護措施。';
+    $('#covidAdvice').textContent = advice;
+  };
+
+  const renderEmergency = (iso2) => {
+    const e = EMERGENCY_NUMBERS[iso2] || DEFAULT_EMERGENCY;
+    $('#emergencyGrid').innerHTML = `
+      <div class="emergency-cell"><div class="emergency-num">${e.ambulance}</div><div class="emergency-label">救護</div></div>
+      <div class="emergency-cell"><div class="emergency-num">${e.police}</div><div class="emergency-label">警察</div></div>
+      <div class="emergency-cell"><div class="emergency-num">${e.fire}</div><div class="emergency-label">消防</div></div>
     `;
-  }
+    if(!EMERGENCY_NUMBERS[iso2]) {
+      $('#emergencyNote').textContent = '未找到該國精確記錄，已採用 GSM 通用緊急號碼 112，請以入境後當地公告為準。';
+    }
+  };
 
-  function renderVaccine() {
-    const body = $('vaccineBody');
-    const country = state.destination?.country || state.form.country || '';
-    const types = state.form.types || [];
-    const profile = state.form.profile || [];
-    const stay = parseInt(state.form.stayDays || 7, 10);
-
-    const routine = [
-      'MMR（麻疹／腮腺炎／風疹）',
-      'Tdap（破傷風／白喉／百日咳）',
-      '季節性流感疫苗',
-      'COVID-19（按本國指南完成接種與加強）',
-      '水痘（如未感染或未接種）',
+  const renderChecklist = (country, traveler, vList, weather) => {
+    const items = [
+      '提前 4–6 週預約旅行醫學門診評估疫苗接種',
+      '辦理足額的境外旅行醫療保險（含緊急醫療轉運）',
+      '備齊個人處方藥物，附醫生處方副本（建議英文）',
+      '隨身急救包：創可貼、消毒棉、止痛藥、止瀉藥、口服補液鹽',
+      '準備防曬霜 (SPF30+)、潤唇膏、護手霜',
+      '攜帶常用插頭轉換器與便攜式空氣 / 水質應對工具'
     ];
-    const recommended = [];
-    const considered = [];
+    if(vList.specific.some(v=>['Malaria (瘧疾)','Malaria (瘧疾, 局部地區)','Dengue (登革熱)','Japanese Encephalitis (日本腦炎)'].includes(v.label))) {
+      items.push('防蚊：DEET ≥ 20% 驅蚊液、長袖長褲、含蚊帳的住宿');
+    }
+    if(vList.specific.some(v=>['Hepatitis A (甲型肝炎)','Typhoid (傷寒)','Cholera (霍亂)'].includes(v.label))) {
+      items.push('飲食安全：飲用瓶裝 / 煮沸水，避免生食、街邊未充分加熱食物');
+    }
+    if(vList.specific.some(v=>v.label.startsWith('High Altitude'))) {
+      items.push('高原預備：抵達後前 24h 不劇烈活動，必要時備乙酰唑胺');
+    }
+    if((weather?.current?.uv_index||0) >= 6) items.push('防曬裝備：寬簷帽、UV 防護太陽眼鏡、SPF50+ 防曬霜');
+    if(traveler.pregnant) items.push('孕期注意：避免登革 / 寨卡疫區，所有疫苗接種前需與婦產科醫生確認');
+    if(traveler.children) items.push('兒童同行：兒童疫苗、兒童劑型藥物、出生證明 / 護照副本');
+    if(traveler.conditions.length) items.push(`慢病管理：${traveler.conditions.join('、')} 對應藥物備足全程用量 + 1 週備用`);
+    items.push('保存大使館 / 領事館聯絡方式並登記出行（如外交部「中國領事」APP）');
 
-    if (inRegion(country, 'hepa_high') || types.includes('rural') || types.includes('long-stay')) {
-      recommended.push('甲型肝炎（Hepatitis A）');
-    } else {
-      considered.push('甲型肝炎（Hepatitis A）— 一般推薦給多數國際旅行者');
-    }
-    if (stay > 30 || types.includes('long-stay') || types.includes('vfr') || profile.includes('chronic')) {
-      recommended.push('乙型肝炎（Hepatitis B）— 長期停留、探親、慢病患者');
-    }
-    if (inRegion(country, 'typhoid_high')) {
-      recommended.push('傷寒（Typhoid）— 食用當地食物或前往南亞、東南亞建議');
-    }
-    if (inRegion(country, 'africa_yf') || inRegion(country, 'south_america_yf')) {
-      recommended.push('黃熱病（Yellow Fever）— 部分國家入境要求接種證明（Yellow Card）');
-    }
-    if (inRegion(country, 'asia_je') && (types.includes('rural') || types.includes('long-stay') || stay > 30)) {
-      recommended.push('日本腦炎（Japanese Encephalitis）— 長期停留或鄉村活動建議');
-    }
-    if (types.includes('rural') || types.includes('outdoor') || types.includes('long-stay') || profile.includes('child')) {
-      considered.push('狂犬病暴露前免疫（Rabies pre-exposure）— 鄉村、戶外、兒童或長期停留');
-    }
-    if (inRegion(country, 'meningitis_belt') || /saudi|hajj|umrah/i.test(country)) {
-      recommended.push('流行性腦脊髓膜炎（Meningococcal ACWY）— 流腦帶或朝覲入境要求');
-    }
-    if (types.includes('rural') && inRegion(country, 'hepa_high')) {
-      considered.push('霍亂（Cholera）— 衛生條件較差地區、人道救援工作者');
-    }
-    if (/afghanistan|pakistan|nigeria/i.test(country)) {
-      recommended.push('小兒麻痺（Polio）成人加強劑');
-    }
+    $('#checklistEl').innerHTML = items.map(t=>`<li>${escapeHtml(t)}</li>`).join('');
+  };
 
-    let malariaNote = null;
-    if (inRegion(country, 'malaria_high') || (types.includes('rural') && inRegion(country, 'africa_yf'))) {
-      malariaNote = '目的地或行程涉及瘧疾流行區。瘧疾無廣泛推薦的成人疫苗，需在出發前 1–2 週由旅行醫學門診評估並開立預防性藥物（如阿托喹酮-氯胍 Atovaquone/Proguanil、多西環素 Doxycycline 或甲氟喹 Mefloquine）。';
+  const renderPersonalAdvice = (country, traveler, weather, aqi, vList) => {
+    const adv = [];
+    const aqiVal = aqi?.current?.european_aqi;
+
+    if(traveler.conditions.includes('asthma') && aqiVal > 40) {
+      adv.push({k:'呼吸系統',v:'空氣質量對你的哮喘 / 慢性肺病可能造成刺激。建議攜帶常規吸入劑與應急用藥，外出佩戴 N95 口罩。'});
     }
-    let dengueNote = null;
-    if (inRegion(country, 'dengue_endemic')) {
-      dengueNote = '目的地登革熱流行。重點在防蚊：使用含 DEET ≥20% 或派卡瑞丁（Picaridin）的驅蚊劑、穿淺色長袖長褲、住宿選擇有紗窗或冷氣的房間。對於有過登革熱病史者，可諮詢醫師是否考慮 Dengvaxia/Qdenga 疫苗。';
+    if(traveler.conditions.includes('cardiac')) {
+      adv.push({k:'心血管',v:'長途飛行 ≥ 4h 時，每 1–2 小時起立活動以預防深靜脈血栓；備齊心血管處方藥並隨身攜帶。'});
     }
-
-    const ulFromArr = (a) => `<ul>${a.map((v) => `<li>${htmlEscape(v)}</li>`).join('')}</ul>`;
-    body.innerHTML = `
-      <p>以下是針對該目的地與您的旅行特徵的<strong>疫苗類別參考</strong>。是否實際接種、選用哪種劑型，請以旅行醫學門診醫師根據個人病史評估為準。</p>
-      <p><strong>建議出發前 4–8 週</strong>預約旅行醫學門診（Travel Medicine Clinic），部分疫苗需要多劑接種或留出免疫起效時間。</p>
-      <h4>常規疫苗（確認最新接種）</h4>
-      ${ulFromArr(routine)}
-      ${recommended.length ? `<h4>針對目的地建議的疫苗</h4>${ulFromArr(recommended)}` : ''}
-      ${considered.length ? `<h4>可考慮的疫苗（依行程而定）</h4>${ulFromArr(considered)}` : ''}
-      ${malariaNote ? `<h4>瘧疾預防</h4><p>${htmlEscape(malariaNote)}</p>` : ''}
-      ${dengueNote ? `<h4>登革熱與蚊媒疾病</h4><p>${htmlEscape(dengueNote)}</p>` : ''}
-    `;
-  }
-
-  function renderKit() {
-    const body = $('kitBody');
-    const types = state.form.types || [];
-    const profile = state.form.profile || [];
-    const country = state.destination?.country || state.form.country || '';
-    const w = state.results.weather;
-
-    const general = [
-      '個人常用處方藥（足量＋備份，原包裝、附醫囑或處方影本）',
-      '退燒/止痛藥：對乙醯氨基酚（Acetaminophen / Paracetamol）或布洛芬（Ibuprofen）',
-      '抗組織胺：氯雷他定 / 西替利嗪（過敏、蚊蟲叮咬）',
-      '止瀉藥：洛哌丁胺（Loperamide）— 短期症狀控制',
-      '口服補液鹽（ORS）— 腹瀉脫水',
-      '抗酸劑 / 胃藥（如鋁碳酸鎂、法莫替丁）',
-      '創可貼、無菌紗布、彈性繃帶、醫用膠帶',
-      '消毒用品：酒精棉片、碘伏、生理食鹽水',
-      '抗菌藥膏（如莫匹羅星 / 桿菌肽）',
-      '電子體溫計',
-      '一次性手套、口罩（醫用 / N95）',
-      '驅蚊劑（DEET ≥20% 或派卡瑞丁）',
-      '防曬霜（SPF 30+，廣譜）、潤唇膏（含防曬）',
-      '保濕乳液、生理食鹽水滴眼液',
-    ];
-
-    const climate = [];
-    if (w?.daily?.temperature_2m_max) {
-      const tMax = Math.max(...w.daily.temperature_2m_max);
-      const tMin = Math.min(...w.daily.temperature_2m_min);
-      const totalP = (w.daily.precipitation_sum || []).reduce((a, b) => a + b, 0);
-      if (tMax >= 30) climate.push('便攜小風扇 / 涼感巾、電解質飲料粉');
-      if (tMax >= 32) climate.push('防中暑用品（冰袋、藿香正氣水或同類本地常用品）');
-      if (tMin <= 5) climate.push('暖暖包、潤喉糖、止咳糖漿');
-      if (totalP > 50) climate.push('雨衣 / 折疊傘、防水鞋套、防潮袋');
+    if(traveler.conditions.includes('diabetes')) {
+      adv.push({k:'糖尿病',v:'血糖儀、試紙、胰島素需保溫保存；隨身備糖塊預防低血糖；提前學習當地食物碳水含量。'});
+    }
+    if(traveler.conditions.includes('hypertension')) {
+      adv.push({k:'高血壓',v:'時差與飲食變化可能影響血壓，建議每日定時測量並記錄；繼續按時服藥，避免突然停藥。'});
+    }
+    if(traveler.conditions.includes('immune')) {
+      adv.push({k:'免疫低下',v:'活疫苗（如黃熱病、麻疹）一般禁忌，請與感染科醫生評估。日常做好食物 / 飲水衛生與防蚊措施。'});
+    }
+    if(traveler.conditions.includes('allergy')) {
+      adv.push({k:'過敏',v:'隨身攜帶腎上腺素自動注射筆（如有處方），用英文寫明過敏原及應急聯繫人卡片。'});
+    }
+    if(traveler.pregnant) {
+      adv.push({k:'妊娠',v:'避免前往登革熱、寨卡及瘧疾流行區；長途飛行需在孕中期且醫生允許下進行；準備產科病歷副本。'});
+    }
+    if(traveler.children) {
+      adv.push({k:'兒童同行',v:'兒童脫水、中暑風險高於成人，補水與防曬要更積極；兒童疫苗清單與成人不同，請另行確認。'});
+    }
+    if(traveler.age >= 65) {
+      adv.push({k:'長者',v:'時差與氣候變化恢復較慢，建議出行前 1 週逐步調整作息；為流感與肺炎球菌疫苗加強免疫。'});
+    }
+    if(traveler.age <= 5 && traveler.age != null) {
+      adv.push({k:'幼兒',v:'幼兒體溫調節能力差，務必準備兒童電子體溫計與兒童專用退燒藥。'});
+    }
+    if(traveler.purpose === 'adventure') {
+      adv.push({k:'戶外探險',v:'準備外傷處理用品（止血帶、消毒、繃帶），確認當地搜救資源並登記行程。'});
+    }
+    if(traveler.purpose === 'volunteer' || traveler.purpose === 'medical') {
+      adv.push({k:'援助 / 醫療相關',v:'可能接觸患者或不潔環境，建議補種乙肝、傷寒、霍亂；準備個人防護裝備。'});
     }
 
-    const pSpecific = [];
-    if (profile.includes('child')) pSpecific.push('兒童專用退燒/止痛藥（按體重）、創可貼、奶粉/輔食、安撫小物');
-    if (profile.includes('elderly')) pSpecific.push('血壓計 / 血糖儀、慢性病藥物雙份、加固包裝');
-    if (profile.includes('pregnant')) pSpecific.push('孕婦維生素、醫師確認後可用的緩解藥物清單、產檢資料影本');
-    if (profile.includes('chronic') || profile.includes('cardio')) pSpecific.push('近期病歷英文摘要、處方影本、心電圖（如有）');
-    if (profile.includes('respiratory')) pSpecific.push('哮喘吸入器（β2 激動劑、ICS）、N95 口罩備份、峰流速儀');
-    if (profile.includes('immuno')) pSpecific.push('預防性抗生素（醫囑）、發熱應急聯絡卡、疫苗接種紀錄');
-
-    const tSpecific = [];
-    if (types.includes('outdoor') || types.includes('rural')) {
-      tSpecific.push('蜱蟲鑷子、創傷處理組、防水繃帶、蛇咬傷急救知識卡');
-      tSpecific.push('永久性殺蟲劑（Permethrin）處理過的衣物或噴霧');
-    }
-    if (types.includes('cruise')) tSpecific.push('暈動症藥（茶苯海明 / 美克利嗪）、洗手液、口罩');
-    if (types.includes('long-stay')) tSpecific.push('完整體檢報告影本、出發前牙科檢查、長期處方備份');
-    if (inRegion(country, 'malaria_high')) tSpecific.push('瘧疾預防藥物（醫囑）、含 DEET 30%+ 驅蚊噴霧、蚊帳');
-    if (inRegion(country, 'altitude')) tSpecific.push('乙醯唑胺（Diamox，預防高原反應，醫囑）、便攜血氧儀');
-
-    const ul = (a) => (a.length ? `<ul>${a.map((x) => `<li>${htmlEscape(x)}</li>`).join('')}</ul>` : '<p class="empty-note">無額外項目。</p>');
-
-    body.innerHTML = `
-      <p>所有藥物請保留原包裝與處方說明。攜帶處方藥跨境前，請查詢目的地對該藥品的入境規定（部分國家對精神類、含麻黃鹼類藥品有嚴格限制）。</p>
-      <h4>通用清單</h4>${ul(general)}
-      ${climate.length ? `<h4>氣候相關補充</h4>${ul(climate)}` : ''}
-      ${pSpecific.length ? `<h4>人群特殊補充</h4>${ul(pSpecific)}` : ''}
-      ${tSpecific.length ? `<h4>行程特殊補充</h4>${ul(tSpecific)}` : ''}
-    `;
-  }
-
-  function renderFlight() {
-    const body = $('flightBody');
-    const flight = state.form.flightDuration;
-    const profile = state.form.profile || [];
-    const tips = [
-      '機場與機艙內配戴口罩，可降低呼吸道傳染風險（特別是流感、COVID-19 流行季節）。',
-      '充分飲水，每小時 100–200 ml；避免過量酒精與咖啡因飲品。',
-      '機艙乾燥：使用滴眼液與保濕鼻噴；攜帶潤膚乳、潤唇膏。',
-      '起降時透過吞嚥、咀嚼或捏鼻鼓氣（Valsalva 動作）平衡耳壓；感冒鼻塞期間可考慮使用鼻減充血劑（醫囑）。',
-    ];
-    if (flight === '6-10' || flight === '>10') {
-      tips.push('深靜脈血栓（DVT）預防：每 1–2 小時起身走動或做踝泵運動；高風險者可考慮穿著醫用彈力襪（壓力 15–20 mmHg）。');
-      tips.push('避免長時間蹺二郎腿或同一姿勢；可選擇靠走道座位便於起身。');
-    }
-    if (flight === '>10') {
-      tips.push('時差調節：抵達後盡快接觸自然光、按目的地時間進食與睡眠；可短期使用褪黑激素（0.5–3 mg，醫師建議）。');
-      tips.push('抵達當天避免劇烈運動或重要決策。');
-    }
-    if (profile.includes('pregnant')) tips.push('孕婦：多數航空公司允許 28–36 週前飛行（依公司不同），先確認航司政策；長途飛行 DVT 風險升高，務必活動下肢、穿彈力襪、多飲水，必要時諮詢產科。');
-    if (profile.includes('cardio')) tips.push('心血管疾病：機艙低氧可能加重既有缺血，必要時諮詢醫師關於補充氧氣的需求；隨身攜帶硝酸甘油等急救藥物。');
-    if (profile.includes('respiratory')) tips.push('呼吸系統疾病：哮喘患者隨身攜帶吸入器並放在易拿取的位置；嚴重 COPD 患者可能需要機上吸氧（提前向航司申請）。');
-    if (profile.includes('chronic')) tips.push('糖尿病：注射用胰島素隨身攜帶（不託運），準備醫師英文證明；按目的地時區重新規劃用餐與用藥時間。');
-    if (profile.includes('elderly')) tips.push('老年人：選擇近走道座位，更頻繁地起身活動；準備好常用藥的英文名稱清單。');
-    if (profile.includes('child')) tips.push('兒童：起降時餵奶/喝水/吞嚥緩解耳壓；準備玩具、零食、備用衣物與充電設備。');
-
-    body.innerHTML = `<ul>${tips.map((t) => `<li>${htmlEscape(t)}</li>`).join('')}</ul>`;
-  }
-
-  function renderPost() {
-    const body = $('postBody');
-    const country = state.destination?.country || state.form.country || '';
-    const types = state.form.types || [];
-
-    const general = [
-      '回程後 3 週內出現任何發熱（≥38°C），請<strong>立即就醫並主動告知近期旅行史</strong>，特別注意瘧疾、登革熱排查。',
-      '腹瀉持續超過 3 天，或伴隨血便、高熱、嚴重脫水：需就醫評估（旅行者腹瀉、阿米巴、賈第鞭毛蟲、霍亂等）。',
-      '皮疹、可疑蜱蟲咬痕、慢性傷口未癒：及時就診皮膚科或感染科。',
-      '咳嗽超過 2 週、夜間盜汗、體重下降：考慮結核分枝桿菌感染篩查。',
-      '不明黃疸、深色尿、右上腹疼痛：肝炎排查（A/B/E 型）。',
-      '注意自己與同住家人的健康狀況，部分傳染病潛伏期可達數週至數月。',
-    ];
-    const conditional = [];
-    if (inRegion(country, 'malaria_high') || inRegion(country, 'africa_yf')) {
-      conditional.push('瘧疾潛伏期可達 1 年以上：回程後出現周期性寒戰、高熱、出汗請立即就醫並要求血塗片檢查。');
-    }
-    if (inRegion(country, 'dengue_endemic')) {
-      conditional.push('登革熱：典型表現為高熱、肌肉骨骼痛、皮疹；二次感染重症風險升高，<strong>避免使用阿斯匹靈／NSAIDs</strong>，僅用對乙醯氨基酚退熱。');
-    }
-    if (inRegion(country, 'asia_je')) {
-      conditional.push('日本腦炎：頭痛、發熱、意識改變需立即就醫。');
-    }
-    if (types.includes('outdoor') || types.includes('rural')) {
-      conditional.push('蜱媒疾病（萊姆病、立克次體）：注意叮咬部位的環形紅斑或結痂黑點。');
-    }
-    if (types.includes('cruise') || types.includes('vfr')) {
-      conditional.push('呼吸道與胃腸道感染（流感、諾如病毒等）在郵輪/聚集環境中易暴發，注意自身及接觸者症狀。');
-    }
-    if (types.includes('long-stay')) {
-      conditional.push('長期停留者：建議回程後 1–3 個月做一次全面健康檢查（CBC、肝腎功、糞便寄生蟲、結核篩查）。');
+    if(!adv.length) {
+      adv.push({k:'總體',v:'你的個人風險檔案無特殊提示，按通用旅行健康準則執行即可。'});
     }
 
-    body.innerHTML = `
-      <p>旅行結束並不代表健康風險結束。請在回程後 4–6 週內留意以下情況：</p>
-      <ul>${general.map((t) => `<li>${t}</li>`).join('')}</ul>
-      ${conditional.length ? `<h4>與本次目的地相關的特別觀察</h4><ul>${conditional.map((t) => `<li>${t}</li>`).join('')}</ul>` : ''}
-      <p style="margin-top:14px;"><strong>就診時請主動告知：</strong>① 旅行國家與城市，② 出發與返回日期，③ 暴露史（蚊蟲、動物、食物、水源、性接觸），④ 行程中疫苗與用藥情況。</p>
-    `;
-  }
+    $('#personalAdvice').innerHTML = adv.map(x =>
+      `<li><span class="item-name" style="min-width:88px;">${escapeHtml(x.k)}</span><span style="flex:1;color:#555;">${escapeHtml(x.v)}</span></li>`
+    ).join('');
+  };
 
-  // ============== CANDIDATE PICKER ==============
-  function showCandidates(candidates) {
-    state.candidates = candidates;
-    state.selectedCandidateIdx = -1;
-    const list = $('geoCandidateList');
-    list.innerHTML = candidates.slice(0, 8).map((c, i) => `
-      <div class="geo-candidate" data-idx="${i}">
-        <strong>${htmlEscape(c.name)}</strong>${c.admin1 ? ', ' + htmlEscape(c.admin1) : ''} — ${htmlEscape(c.country || '')}
-        <span style="float:right;color:#888;">${c.latitude.toFixed(2)}, ${c.longitude.toFixed(2)}</span>
-      </div>
-    `).join('');
-    $('geoCandidates').classList.add('show');
-
-    list.querySelectorAll('.geo-candidate').forEach((el) => {
-      el.addEventListener('click', () => {
-        list.querySelectorAll('.geo-candidate').forEach((x) => x.classList.remove('selected'));
-        el.classList.add('selected');
-        state.selectedCandidateIdx = parseInt(el.dataset.idx, 10);
-        state.destination = candidates[state.selectedCandidateIdx];
-      });
-    });
-  }
-
-  // ============== PIPELINE ==============
-  async function runPipeline() {
-    ['geo', 'weather', 'air', 'cdc', 'who', 'govuk', 'gdacs'].forEach((s) =>
-      setStatus(s, 'idle', '待請求')
-    );
-
-    $('statusSection').classList.remove('hidden');
-    $('resultSection').classList.remove('hidden');
-    $('loadingBlock').classList.remove('hidden');
-    $('resultContent').classList.add('hidden');
-    $('statusSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    const f = state.form;
-
-    // Step 1: geocode
-    if (!state.destination) {
-      const candidates = await geocodeCity(f.destCity, f.country);
-      if (!candidates.length) {
-        $('loadingBlock').innerHTML = '<p style="color:#a32a1f;">未找到目的地座標。請檢查城市拼寫，或填寫英文國家名稱後重試。</p>';
-        return;
-      }
-      if (candidates.length > 1) {
-        showCandidates(candidates);
-        $('loadingBlock').innerHTML = '<p style="color:#888;">已找到多個匹配城市，請於上方表單中選擇正確的城市，再次點擊「生成旅行健康包」。</p>';
-        return;
-      }
-      state.destination = candidates[0];
-    } else {
-      setStatus('geo', 'ok', '已選擇');
-    }
-
-    const dest = state.destination;
-    const country = dest.country || f.country || '';
-
-    // Compute weather window (Open-Meteo forecast supports up to ~16 days ahead)
-    const today = new Date();
-    let startDate = f.departureDate ? new Date(f.departureDate) : today;
-    if (isNaN(startDate)) startDate = today;
-    const dayMs = 86400000;
-    const daysFromNow = Math.floor((startDate - today) / dayMs);
-    if (daysFromNow > 15 || daysFromNow < -90) startDate = today;
-    const stay = Math.max(1, Math.min(parseInt(f.stayDays || 7, 10), 16));
-    let endDate = addDays(startDate, stay - 1);
-    const maxEnd = addDays(today, 15);
-    if (endDate > maxEnd) endDate = maxEnd;
-
-    // Step 2: parallel fetch (independent failures)
-    const [weather, air, cdc, who, govuk, gdacs] = await Promise.all([
-      fetchWeather(dest.latitude, dest.longitude, fmtDate(startDate), fmtDate(endDate)),
-      fetchAirQuality(dest.latitude, dest.longitude),
-      fetchCDCNotices(country),
-      fetchWHODON(country),
-      fetchGovUK(country),
-      fetchGDACS(country),
-    ]);
-
-    state.results = { weather, air, cdc, who, govuk, gdacs };
-
-    // Step 3: render everything
-    renderOverview();
-    renderWeather(weather);
-    renderAir(air);
-    renderCDC(cdc);
-    renderWHO(who);
-    renderGovUK(govuk);
-    renderGDACS(gdacs);
-    renderVaccine();
-    renderKit();
-    renderFlight();
-    renderPost();
-
-    $('loadingBlock').classList.add('hidden');
-    $('resultContent').classList.remove('hidden');
-    $('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  // ============== EXPORT ==============
-  function getSectionText(id) {
-    const el = document.getElementById(id);
-    if (!el) return '';
-    return (el.innerText || el.textContent || '').trim();
-  }
-
-  function buildMarkdown() {
-    const f = state.form || readForm();
-    const d = state.destination;
-    const lines = [];
-    lines.push('# 國際旅行健康包 / International Travel Health Pack');
-    lines.push(`生成時間：${new Date().toLocaleString()}`);
-    lines.push('');
-    lines.push('## A. 目的地概覽');
-    lines.push(`- 城市：${d?.name || f.destCity}`);
-    lines.push(`- 國家：${d?.country || f.country || '—'}`);
-    lines.push(`- 坐標：${d ? `${d.latitude.toFixed(3)}, ${d.longitude.toFixed(3)}` : '—'}`);
-    lines.push(`- 時區：${d?.timezone || '—'}`);
-    lines.push(`- 出發日期：${f.departureDate || '—'}`);
-    lines.push(`- 停留天數：${f.stayDays}`);
-    lines.push(`- 出發地：${f.originCity || '—'}`);
-    lines.push('');
-    lines.push("> 本報告由 Hughie's Online Lab 旅行健康包生成器即時生成，僅供旅行健康教育與出行準備參考，不構成醫學或法律建議。");
-
-    const sections = [
-      ['B. 天氣與氣候風險', 'weatherBody'],
-      ['C. 空氣品質', 'airBody'],
-      ['D. CDC 旅行健康通知', 'cdcBody'],
-      ['E. WHO 疾病暴發新聞', 'whoBody'],
-      ['F. GOV.UK 官方旅行建議', 'govukBody'],
-      ['G. GDACS 自然災害提醒', 'gdacsBody'],
-      ['H. 疫苗與旅行門診準備', 'vaccineBody'],
-      ['I. 旅行藥品包清單', 'kitBody'],
-      ['J. 飛行健康提醒', 'flightBody'],
-      ['K. 回程後症狀觀察', 'postBody'],
-    ];
-    sections.forEach(([title, id]) => {
-      lines.push('');
-      lines.push(`## ${title}`);
-      lines.push(getSectionText(id));
-    });
-    return lines.join('\n');
-  }
-
-  function copyReport() {
-    const md = buildMarkdown();
-    navigator.clipboard.writeText(md).then(
-      () => {
-        const btn = $('copyBtn');
-        const old = btn.textContent;
-        btn.textContent = '✅ 已複製';
-        setTimeout(() => { btn.textContent = old; }, 1800);
-      },
-      () => alert('複製失敗，請改用「下載 Markdown」。')
-    );
-  }
-
-  function downloadReport() {
-    const md = buildMarkdown();
-    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const dest = state.destination?.name || state.form.destCity || 'travel';
-    a.href = url;
-    a.download = `travel-health-pack-${dest.replace(/\s+/g, '-')}-${fmtDate(new Date())}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-
-  // ============== FORM I/O ==============
-  function readForm() {
+  /* ---------- 7. Main flow ---------- */
+  const collectTraveler = (form) => {
+    const conditions = Array.from(form.querySelectorAll('input[name="conditions"]:checked')).map(i=>i.value);
     return {
-      originCity: $('originCity').value.trim(),
-      destCity: $('destCity').value.trim(),
-      country: $('destCountry').value.trim(),
-      departureDate: $('departureDate').value,
-      stayDays: $('stayDays').value || '7',
-      flightDuration: $('flightDuration').value,
-      types: getCheckedValues('travelTypes'),
-      profile: getCheckedValues('travelerProfile'),
+      age: form.age.value ? parseInt(form.age.value,10) : null,
+      pregnant: form.pregnant.value === 'yes',
+      children: form.children.value === 'yes',
+      conditions,
+      purpose: form.purpose.value,
+      depart: form.depart.value || null,
+      duration: form.duration.value ? parseInt(form.duration.value,10) : null
     };
-  }
+  };
 
-  function resetAll() {
-    document.getElementById('travelForm').reset();
-    state.destination = null;
-    state.candidates = [];
-    state.selectedCandidateIdx = -1;
-    state.results = {};
-    state.form = null;
-    $('geoCandidates').classList.remove('show');
-    $('geoCandidateList').innerHTML = '';
-    $('statusSection').classList.add('hidden');
-    $('resultSection').classList.add('hidden');
-    $('loadingBlock').innerHTML = '<span class="spinner"></span> 正在請求公開資料源並生成報告，請稍候…';
-    ['geo', 'weather', 'air', 'cdc', 'who', 'govuk', 'gdacs'].forEach((s) =>
-      setStatus(s, 'idle', '待請求')
-    );
-    document.getElementById('travelForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
 
-  // ============== INIT ==============
-  function init() {
-    if (!$('departureDate').value) $('departureDate').value = fmtDate(new Date());
+    const country = findCountry(form.country.value);
+    if(!country) {
+      alert('未識別目的地，請從建議列表中選擇有效國家 / 地區。');
+      return;
+    }
+    if(!country.latlng || country.latlng.length < 2) {
+      alert('該目的地缺少地理坐標，無法獲取實時數據。');
+      return;
+    }
 
-    $('generateBtn').addEventListener('click', async () => {
-      const f = readForm();
-      if (!f.destCity) {
-        alert('請輸入目的地城市。');
-        return;
-      }
-      // Re-geocode if the city/country changed
-      const cityChanged =
-        !state.form ||
-        state.form.destCity !== f.destCity ||
-        state.form.country !== f.country;
-      if (cityChanged) {
-        state.destination = null;
-        state.candidates = [];
-        state.selectedCandidateIdx = -1;
-        $('geoCandidates').classList.remove('show');
-      }
-      state.form = f;
-      $('generateBtn').disabled = true;
-      try {
-        await runPipeline();
-      } catch (e) {
-        console.error(e);
-        $('loadingBlock').innerHTML = '<p style="color:#a32a1f;">生成過程中發生錯誤，請稍後再試。</p>';
-      } finally {
-        $('generateBtn').disabled = false;
-      }
-    });
+    const traveler = collectTraveler(form);
 
-    $('resetBtn').addEventListener('click', resetAll);
-    const r2 = $('resetBtn2'); if (r2) r2.addEventListener('click', resetAll);
-    const cb = $('copyBtn'); if (cb) cb.addEventListener('click', copyReport);
-    const db = $('downloadBtn'); if (db) db.addEventListener('click', downloadReport);
-  }
+    form.style.display = 'none';
+    $('#loadingPanel').style.display = 'block';
+    $('#resultsPanel').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+    let weather = null, aqi = null, covid = null;
+
+    try {
+      setStatus('FETCHING WEATHER ...');
+      const [lat, lon] = country.latlng;
+      const wxP = getWeather(lat, lon).catch(err=>{console.warn('weather',err);return null;});
+      const aqP = getAirQuality(lat, lon).catch(err=>{console.warn('aqi',err);return null;});
+      const cvP = getCovid(country.cca2).catch(err=>{console.warn('covid',err);return null;});
+
+      setStatus('FETCHING AIR QUALITY ...');
+      [weather, aqi, covid] = await Promise.all([wxP, aqP, cvP]);
+
+      setStatus('ANALYZING HEALTH RISK ...');
+      await new Promise(r=>setTimeout(r, 350)); // tiny visual delay
+    } catch(err) {
+      console.error(err);
+    }
+
+    // Build vaccine + risk
+    const vList = buildVaccineList(country.cca2);
+    const risk = computeRisk(country.cca2, weather, aqi, covid, vList.specific);
+
+    // Header
+    $('#resFlag').textContent = country.flag || '🌍';
+    $('#resTitle').textContent = `${country.name} · ${country.capital}`;
+    const dur = traveler.duration ? `${traveler.duration} 天` : '行程未指定';
+    const dep = traveler.depart ? new Date(traveler.depart).toLocaleDateString() : '出發日未指定';
+    $('#resSubtitle').textContent = `${dep} · 停留 ${dur} · ${({leisure:'休閒旅遊',business:'商務出差',study:'留學/訪學',visit:'探親訪友',adventure:'戶外/探險',medical:'醫療相關',volunteer:'志願/援外'}[traveler.purpose]||'—')}`;
+
+    // Risk banner
+    const banner = $('#riskBanner');
+    banner.classList.remove('low','moderate','high');
+    banner.classList.add(risk.klass);
+    $('#riskLevel').textContent = risk.level;
+    $('#riskText').textContent = risk.reasons.length
+      ? '主要關注：' + risk.reasons.join('；') + '。'
+      : '當前綜合風險較低，按常規旅行健康準則執行即可。';
+
+    renderOverview(country);
+    if(weather) renderWeather(weather);
+    if(aqi) renderAQ(aqi);
+    renderCovid(covid);
+    renderVaccines(vList, country, traveler);
+    renderDiseases(vList);
+    renderEmergency(country.cca2);
+    renderChecklist(country, traveler, vList, weather);
+    renderPersonalAdvice(country, traveler, weather, aqi, vList);
+
+    $('#lastUpdated').textContent = '最後更新：' + new Date().toLocaleString();
+
+    $('#loadingPanel').style.display = 'none';
+    $('#resultsPanel').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  /* ---------- 8. Init ---------- */
+  document.addEventListener('DOMContentLoaded', () => {
+    loadCountries();
+
+    // Default depart date = today
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth()+1).padStart(2,'0');
+    const dd = String(today.getDate()).padStart(2,'0');
+    $('#departDate').value = `${yyyy}-${mm}-${dd}`;
+
+    $('#travelForm').addEventListener('submit', handleSubmit);
+  });
+
 })();
