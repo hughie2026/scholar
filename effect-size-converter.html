@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Effect Size Converter · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .primary-nav a.active{color:#c9a961;}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:#faf7f0;border-bottom:1px solid #ece5d3;}
+    .page-hero h1{font-size:48px;margin:10px 0 16px;color:#1a1a1a;line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:#555;line-height:1.75;max-width:760px;}
+
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:#888;margin-bottom:18px;}
+    .breadcrumb a{color:#888;text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:#c9a961;border-bottom-color:#d4c5a0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#bbb;}
+
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{
+      background:#fff;border:1px solid #ece5d3;
+      padding:8px 16px;font-size:13px;color:#555;letter-spacing:.3px;
+    }
+    .eyebrow.gold{color:#c9a961;}
+
+    /* Main Section */
+    .converter-section{padding:70px 0;background:#fff;}
+    .converter-section .narrow{max-width:880px;margin:0 auto;}
+
+    /* Card */
+    .card{
+      background:#fff;border:1px solid #ece5d3;border-left:3px solid #c9a961;
+      padding:38px 38px;margin-bottom:24px;
+    }
+    .card-num{font-size:11px;letter-spacing:1.8px;color:#c9a961;font-weight:700;margin-bottom:10px;}
+    .card h2{font-size:24px;color:#1a1a1a;margin:0 0 8px;line-height:1.3;}
+    .card-desc{font-size:14px;color:#888;margin:0 0 28px;line-height:1.75;}
+
+    /* Fields */
+    .field{margin-bottom:22px;}
+    .field > label{display:block;font-size:14px;color:#1a1a1a;font-weight:600;margin-bottom:10px;line-height:1.6;}
+    .field > label small{display:block;color:#888;font-weight:400;font-size:12px;margin-top:3px;}
+    .field-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;}
+    .field input[type="number"], .field input[type="text"], .field select{
+      width:100%;padding:12px 14px;font-size:14px;
+      border:1px solid #ece5d3;background:#fff;color:#1a1a1a;
+      font-family:inherit;outline:none;transition:.2s;border-radius:0;
+    }
+    .field input:focus, .field select:focus{border-color:#c9a961;}
+    .field input.invalid{border-color:#c0392b;background:#fdf6f5;}
+
+    .input-error{
+      color:#c0392b;font-size:12px;margin-top:6px;letter-spacing:.3px;
+      display:none;
+    }
+    .input-error.show{display:block;}
+
+    /* Result */
+    .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;}
+    @media(max-width:680px){.result-grid{grid-template-columns:1fr;}}
+    .metric{background:#faf7f0;border:1px solid #ece5d3;padding:24px 20px;text-align:center;}
+    .metric-label{font-size:11px;letter-spacing:1.5px;color:#c9a961;font-weight:700;margin-bottom:12px;text-transform:uppercase;}
+    .metric-value{font-family:'Encode Sans',sans-serif;font-size:38px;color:#1a1a1a;font-weight:700;line-height:1;word-break:break-all;}
+    .metric-value small{font-size:14px;color:#888;font-weight:400;margin-left:4px;}
+    .metric-note{font-size:12px;color:#888;margin-top:10px;letter-spacing:.3px;}
+
+    .formula-block{
+      background:#1a1a1a;color:#f5efe1;padding:22px 26px;
+      font-family:'JetBrains Mono', monospace;font-size:14px;line-height:1.85;
+      letter-spacing:.3px;overflow-x:auto;
+    }
+    .formula-block .formula-label{
+      font-family:'Encode Sans',sans-serif;font-size:11px;letter-spacing:1.8px;
+      color:#c9a961;font-weight:700;margin-bottom:10px;display:block;
+    }
+    .formula-block code{color:#fff;font-family:inherit;}
+    .formula-block .highlight{color:#c9a961;}
+
+    .interpretation{
+      background:#faf7f0;border:1px solid #ece5d3;padding:20px 24px;margin-top:18px;
+      font-size:14px;color:#555;line-height:1.85;
+    }
+    .interpretation strong{color:#1a1a1a;}
+    .interpretation .tag{
+      display:inline-block;background:#c9a961;color:#fff;padding:3px 10px;
+      font-size:11px;letter-spacing:1.2px;font-weight:700;margin-right:8px;
+      text-transform:uppercase;font-family:'Encode Sans',sans-serif;
+    }
+
+    /* Buttons */
+    .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:28px;flex-wrap:wrap;}
+    .btn-purple, .btn-ghost-dark{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.8px;
+      font-weight:700;padding:13px 26px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:0;
+    }
+    .btn-purple{background:#c9a961;color:#fff;border-color:#c9a961;}
+    .btn-purple:hover{background:#b8985a;border-color:#b8985a;}
+    .btn-ghost-dark{background:transparent;color:#1a1a1a;border-color:#1a1a1a;}
+    .btn-ghost-dark:hover{background:#1a1a1a;color:#fff;}
+
+    /* Toast */
+    .toast{
+      position:fixed;left:50%;bottom:40px;transform:translateX(-50%) translateY(20px);
+      background:#1a1a1a;color:#fff;padding:12px 24px;font-size:13px;letter-spacing:.5px;
+      opacity:0;transition:.3s;pointer-events:none;z-index:1000;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+    /* Quick reference table */
+    .ref-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;}
+    .ref-table th, .ref-table td{
+      padding:10px 14px;border:1px solid #ece5d3;text-align:left;color:#555;
+    }
+    .ref-table th{background:#faf7f0;color:#1a1a1a;font-weight:600;letter-spacing:.3px;}
+    .ref-table td:first-child{font-weight:600;color:#1a1a1a;}
+
+    /* Disclaimer */
+    .disclaimer{background:#faf7f0;font-size:13px;color:#555;line-height:1.85;}
+    .disclaimer strong{color:#c9a961;letter-spacing:1.2px;font-weight:700;}
+
+    .placeholder-text{color:#bbb;font-style:italic;}
+
+    /* Result hide state */
+    #resultArea.empty .metric-value{color:#bbb;}
+    #resultArea.empty .formula-block{opacity:.55;}
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Effect Size Converter</span>
+      </div>
+      <div class="eyebrow gold">STATISTICS · TOOLBOX</div>
+      <h1>Effect Size Converter</h1>
+      <p class="lead">
+        在 meta-analysis、研究綜合與論文寫作中，研究者常常需要在不同效應量指標間來回換算。
+        本工具收錄常用的效應量轉換公式，輸入即時計算，並附上對應公式與 Cohen 經典基準下的效應大小解讀，
+        協助研究生快速完成換算與量級判斷。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">📐 7 類常用換算</span>
+        <span class="pill">⚡ 即時計算</span>
+        <span class="pill">📖 附公式</span>
+        <span class="pill">🔒 全部本地運算</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="converter-section">
+    <div class="container narrow">
+
+      <!-- Step 1: Select conversion type -->
+      <div class="card">
+        <div class="card-num">PART 01</div>
+        <h2>選擇轉換類型</h2>
+        <p class="card-desc">挑選需要換算的效應量類別。所有計算均在你的瀏覽器內完成，不會上傳任何數據。</p>
+
+        <div class="field" style="margin-bottom:0;">
+          <label>轉換類型</label>
+          <select id="conversionType">
+            <optgroup label="Cohen's d ↔ r">
+              <option value="d_to_r">Cohen's d → r（相關係數）</option>
+              <option value="r_to_d">r → Cohen's d</option>
+            </optgroup>
+            <optgroup label="Cohen's d ↔ Odds Ratio">
+              <option value="d_to_or">Cohen's d → OR（勝算比）</option>
+              <option value="or_to_d">OR → Cohen's d</option>
+            </optgroup>
+            <optgroup label="OR ↔ log OR">
+              <option value="or_to_logor">OR → log OR</option>
+              <option value="logor_to_or">log OR → OR</option>
+            </optgroup>
+            <optgroup label="RR ↔ log RR">
+              <option value="rr_to_logrr">RR → log RR</option>
+              <option value="logrr_to_rr">log RR → RR</option>
+            </optgroup>
+            <optgroup label="η² / partial η² ↔ Cohen's f">
+              <option value="eta_to_f">η²（或 partial η²）→ Cohen's f</option>
+              <option value="f_to_eta">Cohen's f → η²（或 partial η²）</option>
+            </optgroup>
+            <optgroup label="檢定統計量轉效應量">
+              <option value="t_to_r">t 值 → r</option>
+              <option value="F_to_eta">F 值 → η²（或 partial η²）</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <!-- Step 2: Input -->
+      <div class="card">
+        <div class="card-num">PART 02</div>
+        <h2 id="inputTitle">輸入數值</h2>
+        <p class="card-desc" id="inputDesc">請依下列欄位輸入需要換算的數值，結果會即時顯示在下方。</p>
+
+        <div id="inputFields"></div>
+        <div class="input-error" id="inputError"></div>
+      </div>
+
+      <!-- Step 3: Result -->
+      <div class="card" id="resultArea">
+        <div class="card-num">PART 03</div>
+        <h2>換算結果</h2>
+        <p class="card-desc">同步顯示換算結果、所用公式與 Cohen 基準下的量級解讀。</p>
+
+        <div class="result-grid">
+          <div class="metric">
+            <div class="metric-label" id="resultLabel">RESULT</div>
+            <div class="metric-value"><span id="resultValue">--</span></div>
+            <div class="metric-note" id="resultUnit">輸入後自動計算</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">EFFECT MAGNITUDE</div>
+            <div class="metric-value" style="font-size:24px;"><span id="resultTier">--</span></div>
+            <div class="metric-note" id="resultTierNote">依 Cohen 經典基準</div>
+          </div>
+        </div>
+
+        <div class="formula-block">
+          <span class="formula-label">FORMULA</span>
+          <code id="formulaText">請先選擇轉換類型</code>
+        </div>
+
+        <div class="interpretation" id="interpretationBox">
+          <span class="tag">解讀</span>
+          <span id="interpretationText">輸入有效數值後，此處會顯示效應量大小的初步解讀。</span>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn-ghost-dark" id="clearBtn">清空</button>
+          <button type="button" class="btn-purple" id="copyBtn">複製結果</button>
+        </div>
+      </div>
+
+      <!-- Quick reference -->
+      <div class="card">
+        <div class="card-num">REFERENCE</div>
+        <h2>Cohen 經典效應量基準</h2>
+        <p class="card-desc">下表整理常用效應量在 Cohen (1988) 與 Chen et al. (2010) 等文獻中的小、中、大效應參考切點。</p>
+        <table class="ref-table">
+          <thead>
+            <tr><th>效應量</th><th>小</th><th>中</th><th>大</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cohen's d</td><td>0.20</td><td>0.50</td><td>0.80</td></tr>
+            <tr><td>r</td><td>0.10</td><td>0.30</td><td>0.50</td></tr>
+            <tr><td>η² / partial η²</td><td>0.01</td><td>0.06</td><td>0.14</td></tr>
+            <tr><td>Cohen's f</td><td>0.10</td><td>0.25</td><td>0.40</td></tr>
+            <tr><td>OR</td><td>1.50</td><td>2.50</td><td>4.30</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="card disclaimer">
+        <strong>使用提醒　</strong>
+        效應量換算公式多基於特定假設（例如 d ↔ r 假設兩組樣本量相等；d ↔ OR 採用 Hasselblad &amp; Hedges
+        / Chinn 邏輯分布近似）。在不同研究設計、抽樣方式與依變項分布下，換算結果只能作為參考。Cohen 提出的小／中／大基準
+        亦並非所有領域皆適用，建議結合所在學科的常見效應量範圍與研究情境綜合判斷，避免機械套用。
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast">已複製到剪貼簿</div>
+
+  <script src="assets/js/effect-size-converter.js"></script>
+</body>
+</html>
