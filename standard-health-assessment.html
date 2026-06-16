@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Standard Health Assessment · Hughie's Online Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============ Tool Theme: Teal / Blue ============ */
+    :root{
+      --c-primary:#0d9488;
+      --c-primary-dark:#0f766e;
+      --c-primary-light:#14b8a6;
+      --c-accent:#2563eb;
+      --c-bg-soft:#f0fdfa;
+      --c-border:#ccfbf1;
+      --c-border-soft:#e2e8f0;
+      --c-text:#0f172a;
+      --c-text-mid:#475569;
+      --c-text-light:#94a3b8;
+      --c-warn-bg:#fef3c7;
+      --c-warn-border:#fbbf24;
+      --c-danger-bg:#fee2e2;
+      --c-danger-border:#ef4444;
+      --c-info-bg:#dbeafe;
+      --c-info-border:#3b82f6;
+    }
+    .primary-nav a.active{color:var(--c-primary);}
+
+    /* Page Hero */
+    .page-hero{padding:80px 0 50px;background:var(--c-bg-soft);border-bottom:1px solid var(--c-border);}
+    .page-hero h1{font-size:46px;margin:10px 0 16px;color:var(--c-text);line-height:1.15;}
+    .page-hero .lead{font-size:17px;color:var(--c-text-mid);line-height:1.75;max-width:800px;}
+    .breadcrumb{font-size:12px;letter-spacing:.5px;color:var(--c-text-light);margin-bottom:18px;}
+    .breadcrumb a{color:var(--c-text-light);text-decoration:none;border-bottom:1px solid transparent;transition:.2s;}
+    .breadcrumb a:hover{color:var(--c-primary);border-bottom-color:#a7f3d0;}
+    .breadcrumb .bc-sep{margin:0 8px;color:#cbd5e1;}
+    .meta-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
+    .meta-pills .pill{background:#fff;border:1px solid var(--c-border);padding:8px 16px;font-size:13px;color:var(--c-text-mid);letter-spacing:.3px;}
+    .eyebrow.gold{color:var(--c-primary);font-size:11px;letter-spacing:1.8px;font-weight:700;text-transform:uppercase;}
+
+    /* Layout */
+    .assessment-section{padding:60px 0;background:#fff;}
+    .assessment-section .narrow{max-width:880px;margin:0 auto;}
+
+    /* Progress */
+    .progress-wrap{margin-bottom:36px;}
+    .progress-bar{height:3px;background:var(--c-border);overflow:hidden;}
+    .progress-fill{height:100%;background:var(--c-primary);width:8.33%;transition:width .4s ease;}
+    .progress-meta{display:flex;justify-content:space-between;margin-top:12px;font-size:12px;color:var(--c-text-light);letter-spacing:.5px;}
+    .progress-meta b{color:var(--c-primary);}
+
+    /* Form Step Card */
+    .form-step{display:none;background:#fff;border:1px solid var(--c-border);border-left:3px solid var(--c-primary);padding:38px 34px;}
+    .form-step.active{display:block;}
+    .step-num{font-size:11px;letter-spacing:1.8px;color:var(--c-primary);font-weight:700;margin-bottom:10px;}
+    .form-step h2{font-size:26px;color:var(--c-text);margin:0 0 10px;line-height:1.3;}
+    .step-desc{font-size:14px;color:var(--c-text-light);margin:0 0 28px;line-height:1.75;}
+    .step-note{background:#f8fafc;border-left:3px solid var(--c-primary-light);padding:12px 16px;font-size:13px;color:var(--c-text-mid);line-height:1.7;margin:0 0 24px;}
+
+    /* Fields */
+    .field{margin-bottom:22px;}
+    .field > label, .q-label{display:block;font-size:14px;color:var(--c-text);font-weight:600;margin-bottom:10px;line-height:1.65;}
+    .q-sub{display:block;font-size:12px;color:var(--c-text-light);font-weight:400;margin-top:4px;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+    .field-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+    @media(max-width:600px){.field-row,.field-row-3{grid-template-columns:1fr;gap:0;}}
+
+    .field input[type="number"],
+    .field input[type="text"],
+    .field textarea,
+    .field select{
+      width:100%;padding:11px 13px;font-size:14px;
+      border:1px solid var(--c-border-soft);background:#fff;color:var(--c-text);
+      font-family:inherit;outline:none;transition:.2s;border-radius:6px;
+    }
+    .field textarea{min-height:80px;resize:vertical;}
+    .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--c-primary);box-shadow:0 0 0 3px rgba(13,148,136,.1);}
+
+    /* Radio buttons */
+    .radio-row{display:flex;gap:10px;flex-wrap:wrap;}
+    .radio-btn{flex:1;min-width:110px;cursor:pointer;}
+    .radio-btn input{display:none;}
+    .radio-btn span{
+      display:block;text-align:center;padding:11px 14px;
+      border:1px solid var(--c-border-soft);background:#fff;color:var(--c-text-mid);
+      font-size:13px;transition:.2s;border-radius:6px;
+    }
+    .radio-btn:hover span{border-color:#a7f3d0;}
+    .radio-btn input:checked + span{border-color:var(--c-primary);color:var(--c-primary);background:var(--c-bg-soft);font-weight:600;}
+
+    /* Likert scale containers (JS-generated) */
+    .likert-q{padding:14px 0;border-bottom:1px dashed var(--c-border);}
+    .likert-q:last-child{border-bottom:none;}
+    .likert-q .q-label{margin-bottom:12px;font-weight:500;}
+    .likert-row{display:grid;grid-template-columns:repeat(var(--cols,4),1fr);gap:6px;}
+    @media(max-width:600px){.likert-row{grid-template-columns:1fr;}}
+
+    /* Module note (license/disclaimer) */
+    .module-note{background:var(--c-warn-bg);border-left:3px solid var(--c-warn-border);padding:10px 14px;font-size:12px;color:#78350f;line-height:1.7;margin:0 0 22px;border-radius:4px;}
+    .danger-note{background:var(--c-danger-bg);border-left:3px solid var(--c-danger-border);padding:12px 16px;font-size:13px;color:#7f1d1d;line-height:1.75;margin:14px 0;border-radius:4px;font-weight:500;}
+
+    /* Form Navigation */
+    .form-nav{display:flex;justify-content:space-between;gap:12px;margin-top:30px;flex-wrap:wrap;}
+    .btn-purple, .btn-ghost-dark, .btn-link{
+      font-family:'Encode Sans',sans-serif;font-size:12px;letter-spacing:1.5px;
+      font-weight:700;padding:13px 24px;border:1px solid;cursor:pointer;
+      transition:.2s;text-transform:uppercase;border-radius:4px;
+    }
+    .btn-purple{background:var(--c-primary);color:#fff;border-color:var(--c-primary);}
+    .btn-purple:hover{background:var(--c-primary-dark);border-color:var(--c-primary-dark);}
+    .btn-ghost-dark{background:transparent;color:var(--c-text);border-color:var(--c-text);}
+    .btn-ghost-dark:hover{background:var(--c-text);color:#fff;}
+    .btn-ghost-dark:disabled{opacity:.35;cursor:not-allowed;}
+    .btn-ghost-dark:disabled:hover{background:transparent;color:var(--c-text);}
+    .btn-link{background:transparent;color:var(--c-primary);border-color:var(--c-primary);}
+    .btn-link:hover{background:var(--c-bg-soft);}
+
+    /* Toolbar */
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:18px;}
+    .toolbar button{font-size:12px;padding:8px 14px;letter-spacing:.5px;}
+
+    /* Result Panel */
+    .result-panel{background:transparent;}
+    .result-head{text-align:center;padding:0 0 30px;margin-bottom:24px;border-bottom:1px solid var(--c-border);}
+    .result-head h2{font-size:34px;color:var(--c-text);margin:10px 0 12px;line-height:1.2;}
+    .result-head p{color:var(--c-text-mid);font-size:15px;line-height:1.7;max-width:600px;margin:0 auto;}
+
+    .result-section{
+      background:#fff;border:1px solid var(--c-border);border-left:3px solid var(--c-primary);
+      padding:24px 28px;margin-bottom:18px;border-radius:4px;
+    }
+    .result-section h3{font-size:17px;color:var(--c-text);margin:0 0 14px;font-weight:700;}
+    .result-section p, .result-section li{color:var(--c-text-mid);font-size:14px;line-height:1.85;}
+    .result-section ul{padding-left:20px;margin:0;}
+    .result-section li{margin-bottom:5px;}
+
+    .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;}
+    .metric{background:var(--c-bg-soft);border:1px solid var(--c-border);padding:18px 14px;text-align:center;border-radius:4px;}
+    .metric-label{font-size:11px;letter-spacing:1.2px;color:var(--c-primary);font-weight:700;margin-bottom:8px;text-transform:uppercase;}
+    .metric-value{font-family:'Encode Sans',sans-serif;font-size:24px;color:var(--c-text);font-weight:700;line-height:1;}
+    .metric-value small{font-size:12px;color:var(--c-text-light);font-weight:400;margin-left:2px;}
+    .metric-note{font-size:11px;color:var(--c-text-light);margin-top:6px;}
+
+    .scale-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--c-border);}
+    .scale-row:last-child{border-bottom:none;}
+    .scale-name{font-size:14px;color:var(--c-text);font-weight:600;}
+    .scale-name small{display:block;color:var(--c-text-light);font-weight:400;font-size:12px;margin-top:2px;}
+    .scale-score{font-family:'Encode Sans',sans-serif;font-size:18px;color:var(--c-primary);font-weight:700;text-align:right;}
+    .scale-score small{display:block;color:var(--c-text-light);font-weight:400;font-size:11px;margin-top:2px;}
+
+    .badge{display:inline-block;padding:3px 10px;font-size:11px;border-radius:99px;font-weight:600;letter-spacing:.3px;margin-left:8px;}
+    .badge-low{background:#dcfce7;color:#166534;}
+    .badge-mid{background:#fef3c7;color:#854d0e;}
+    .badge-high{background:#fee2e2;color:#991b1b;}
+    .badge-info{background:#dbeafe;color:#1e40af;}
+
+    .disclaimer{background:var(--c-bg-soft);font-size:13px;color:var(--c-text-mid);line-height:1.85;}
+    .disclaimer strong{color:var(--c-primary);letter-spacing:1px;font-weight:700;}
+
+    /* Markdown preview */
+    .md-preview{background:#0f172a;color:#e2e8f0;font-family:'SF Mono',Menlo,Consolas,monospace;font-size:12px;line-height:1.7;padding:20px;border-radius:6px;max-height:380px;overflow:auto;white-space:pre-wrap;}
+
+    /* Saved data toast */
+    .toast{position:fixed;right:20px;bottom:20px;background:var(--c-primary);color:#fff;padding:12px 20px;border-radius:6px;box-shadow:0 6px 20px rgba(13,148,136,.4);font-size:13px;z-index:9999;transform:translateY(100px);opacity:0;transition:.3s;}
+    .toast.show{transform:translateY(0);opacity:1;}
+  </style>
+</head>
+<body>
+
+  <div class="utility-bar">
+    <div class="container utility-inner"><span>HUGHIE'S ONLINE LAB</span></div>
+  </div>
+
+  <header class="main-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-w">H</div>
+        <div class="brand-text">
+          <span class="brand-line1">Hughie's</span>
+          <span class="brand-line2">Online Laboratory</span>
+        </div>
+      </a>
+      <nav class="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="tools.html" class="active">Tools</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="bc-sep">›</span>
+        <a href="tools.html">Tools</a>
+        <span class="bc-sep">›</span>
+        <span>Standard Health Assessment</span>
+      </div>
+      <div class="eyebrow gold">LIFESTYLE · MEDICINE</div>
+      <h1>標準全面健康評估工具<br><small style="font-size:22px;color:var(--c-text-mid);font-weight:400;">Standard Comprehensive Health Assessment</small></h1>
+      <p class="lead">
+        本工具整合 IPAQ-SF、WHO-5、PHQ-9、GAD-7、AUDIT-C/AUDIT、PSQI、PSS-10、STOP-Bang
+        等國際標準量表，結合人口學、體格指標與心血管代謝指標，輸出綜合健康支持分析與報告。
+        <strong>僅供教學、研究訓練與健康教育用途</strong>，不構成醫療診斷或治療建議。
+      </p>
+      <div class="meta-pills">
+        <span class="pill">⏱ 約 20–30 分鐘</span>
+        <span class="pill">📋 12 個模組</span>
+        <span class="pill">🧪 8 個國際量表</span>
+        <span class="pill">🔒 本地計算·不上傳</span>
+        <span class="pill">📤 JSON / Markdown 匯出</span>
+        <span class="pill">💾 localStorage 保存</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="assessment-section">
+    <div class="container narrow">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <button type="button" class="btn-link" id="btnLoadLast">📂 讀取上次評估</button>
+        <button type="button" class="btn-link" id="btnClearAll">🗑 清空重填</button>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-meta">
+          <span id="stepLabel"><b>STEP 01</b> · 一般人口學資料</span>
+          <span><span id="stepCurrent">1</span> / <span id="stepTotal">12</span></span>
+        </div>
+      </div>
+
+      <form id="assessmentForm" autocomplete="off">
+
+        <!-- ========== STEP 1: 一般人口學資料 ========== -->
+        <div class="form-step active" data-step="1" data-title="一般人口學資料">
+          <div class="step-num">PART 01</div>
+          <h2>一般人口學資料</h2>
+          <p class="step-desc">用於人口學分析與基礎指標計算（BMI、腰高比、腰臀比）。</p>
+
+          <div class="field-row">
+            <div class="field">
+              <label>年齡（歲）</label>
+              <input type="number" name="age" min="12" max="120" placeholder="例：35" required>
+            </div>
+            <div class="field">
+              <label>性別</label>
+              <div class="radio-row">
+                <label class="radio-btn"><input type="radio" name="gender" value="male" required><span>男</span></label>
+                <label class="radio-btn"><input type="radio" name="gender" value="female"><span>女</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row-3">
+            <div class="field"><label>身高（cm）</label><input type="number" name="height" min="80" max="250" step="0.1" required></div>
+            <div class="field"><label>體重（kg）</label><input type="number" name="weight" min="20" max="300" step="0.1" required></div>
+            <div class="field"><label>腰圍（cm）</label><input type="number" name="waist" min="40" max="200" step="0.1"></div>
+          </div>
+
+          <div class="field-row">
+            <div class="field"><label>臀圍（cm）<span class="q-sub">用於計算腰臀比 WHR</span></label><input type="number" name="hip" min="40" max="200" step="0.1"></div>
+            <div class="field">
+              <label>職業類型</label>
+              <select name="occupation">
+                <option value="">請選擇</option>
+                <option value="medical">醫療衛生人員</option>
+                <option value="education">教育工作者</option>
+                <option value="office">機關／企業職員（久坐）</option>
+                <option value="service">服務業</option>
+                <option value="labor">體力勞動者</option>
+                <option value="student">學生</option>
+                <option value="retired">退休</option>
+                <option value="other">其他</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>教育程度</label>
+              <select name="education">
+                <option value="">請選擇</option>
+                <option>小學及以下</option><option>初中</option>
+                <option>高中／中專</option><option>大學專科</option>
+                <option>大學本科</option><option>碩士及以上</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>婚姻／居住狀態</label>
+              <select name="marital">
+                <option value="">請選擇</option>
+                <option>未婚／獨居</option><option>未婚／與家人同住</option>
+                <option>已婚／同住</option><option>已婚／分居</option>
+                <option>離婚／喪偶</option><option>其他</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>主要健康目標（可複選，最多 3 項）</label>
+            <div class="radio-row" id="goalsBox">
+              <label class="radio-btn"><input type="checkbox" name="goals" value="體重管理"><span>體重管理</span></label>
+              <label class="radio-btn"><input type="checkbox" name="goals" value="改善血壓"><span>改善血壓</span></label>
+              <label class="radio-btn"><input type="checkbox" name="goals" value="改善血糖"><span>改善血糖</span></label>
+              <label class="radio-btn"><input type="checkbox" name="goals" value="改善血脂"><span>改善血脂</span></label>
+              <label class="radio-btn"><input type="checkbox" name="goals" value="改善睡眠"><span>改善睡眠</span></label>
+              <label class="radio-btn"><input type="checkbox" name="goals" value="壓力管理"><span>壓力管理</span></label>
+              <label class="radio-btn"><input type="checkbox" name="goals" value="情緒健康"><span>情緒健康</span></label>
+              <label class="radio-btn"><input type="checkbox" name="goals" value="增加體能"><span>增加體能</span></label>
+              <label class="radio-btn"><input type="checkbox" name="goals" value="戒菸限酒"><span>戒菸限酒</span></label>
+              <label class="radio-btn"><input type="checkbox" name="goals" value="整體生活方式"><span>整體生活方式</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 2: 既往史與家族史 ========== -->
+        <div class="form-step" data-step="2" data-title="既往史與家族史">
+          <div class="step-num">PART 02</div>
+          <h2>既往史與家族史</h2>
+          <p class="step-desc">用於識別主要健康關注點。所有問題均為自我報告。</p>
+
+          <div id="historyBox"></div>
+        </div>
+
+        <!-- ========== STEP 3: 體檢與生理指標 ========== -->
+        <div class="form-step" data-step="3" data-title="體檢與生理指標">
+          <div class="step-num">PART 03</div>
+          <h2>體檢與生理指標</h2>
+          <p class="step-desc">如近期未檢測可留空。下列指標將用於心血管代謝風險提示（依據常用臨床參考範圍，不替代醫師判讀）。</p>
+
+          <div class="field-row">
+            <div class="field"><label>收縮壓 SBP（mmHg）</label><input type="number" name="sbp" min="50" max="260"></div>
+            <div class="field"><label>舒張壓 DBP（mmHg）</label><input type="number" name="dbp" min="30" max="160"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>空腹血糖 FPG（mmol/L）</label><input type="number" name="fpg" step="0.01" min="1" max="40"></div>
+            <div class="field"><label>糖化血紅蛋白 HbA1c（%）</label><input type="number" name="hba1c" step="0.01" min="3" max="20"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>總膽固醇 TC（mmol/L）</label><input type="number" name="tc" step="0.01" min="1" max="20"></div>
+            <div class="field"><label>低密度脂蛋白 LDL-C（mmol/L）</label><input type="number" name="ldl" step="0.01" min="0.1" max="15"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>高密度脂蛋白 HDL-C（mmol/L）</label><input type="number" name="hdl" step="0.01" min="0.1" max="10"></div>
+            <div class="field"><label>甘油三酯 TG（mmol/L）</label><input type="number" name="tg" step="0.01" min="0.1" max="30"></div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 4: IPAQ-SF ========== -->
+        <div class="form-step" data-step="4" data-title="IPAQ-SF 身體活動">
+          <div class="step-num">PART 04</div>
+          <h2>IPAQ-SF · 國際身體活動問卷短版</h2>
+          <p class="step-desc">回顧過去 7 天內的身體活動。「劇烈活動」如：搬重物、有氧課、快速騎車、踢球；「中等活動」如：搬輕物、輕鬆騎車、雙打網球。</p>
+          <p class="step-note">資料來源：IPAQ-SF (Craig et al., 2003)。計分依 IPAQ Scoring Protocol v2.0。</p>
+
+          <div class="field">
+            <label>1. 過去 7 天內，你有幾天進行劇烈強度身體活動 (≥10 分鐘) ？</label>
+            <input type="number" name="ipaq_vig_days" min="0" max="7" placeholder="0–7 天">
+          </div>
+          <div class="field">
+            <label>2. 在進行劇烈活動的當天，你通常活動多少分鐘？</label>
+            <input type="number" name="ipaq_vig_min" min="0" max="1440" placeholder="分鐘">
+          </div>
+          <div class="field">
+            <label>3. 過去 7 天內，你有幾天進行中等強度身體活動 (≥10 分鐘) ？（不含步行）</label>
+            <input type="number" name="ipaq_mod_days" min="0" max="7" placeholder="0–7 天">
+          </div>
+          <div class="field">
+            <label>4. 在進行中等活動的當天，你通常活動多少分鐘？</label>
+            <input type="number" name="ipaq_mod_min" min="0" max="1440" placeholder="分鐘">
+          </div>
+          <div class="field">
+            <label>5. 過去 7 天內，你有幾天步行至少 10 分鐘？</label>
+            <input type="number" name="ipaq_walk_days" min="0" max="7" placeholder="0–7 天">
+          </div>
+          <div class="field">
+            <label>6. 在步行的當天，你通常步行多少分鐘？</label>
+            <input type="number" name="ipaq_walk_min" min="0" max="1440" placeholder="分鐘">
+          </div>
+          <div class="field">
+            <label>7. 過去 7 天內，平日工作日你每天通常坐著多少分鐘？</label>
+            <input type="number" name="ipaq_sit_min" min="0" max="1440" placeholder="分鐘">
+          </div>
+        </div>
+
+        <!-- ========== STEP 5: WHO-5 ========== -->
+        <div class="form-step" data-step="5" data-title="WHO-5 心理幸福感">
+          <div class="step-num">PART 05</div>
+          <h2>WHO-5 · 世界衛生組織五題幸福感指數</h2>
+          <p class="step-desc">請描述「過去兩週」中，下列陳述符合你感受的程度。</p>
+          <p class="step-note">資料來源：WHO-5 Well-Being Index (1998, version II)。原始分 0–25，百分制 = 原始分 × 4。</p>
+          <div id="who5Box"></div>
+        </div>
+
+        <!-- ========== STEP 6: PHQ-9 ========== -->
+        <div class="form-step" data-step="6" data-title="PHQ-9 抑鬱症狀篩查">
+          <div class="step-num">PART 06</div>
+          <h2>PHQ-9 · 抑鬱症狀篩查</h2>
+          <p class="step-desc">過去兩週，下列問題對你造成困擾的頻率？</p>
+          <p class="step-note">資料來源：Kroenke, Spitzer & Williams (2001) 患者健康問卷。<strong>本模組僅供症狀篩查，不構成心理疾病診斷。</strong></p>
+          <div id="phq9Box"></div>
+          <div class="danger-note" id="phq9Safety" style="display:none;">
+            ⚠ 你在「想到死亡或傷害自己」一題上有非零回答。<br>
+            如你近期出現傷害自己或結束生命的想法，請<strong>立即聯繫當地急救電話、危機熱線或可信任的人</strong>，並盡快尋求專業幫助。<br>
+            <small style="color:#7f1d1d;">中國大陸：120／北京心理危機研究與干預中心 010-82951332｜香港：2389 2222（撒瑪利亞會）｜台灣：1925 安心專線</small>
+          </div>
+        </div>
+
+        <!-- ========== STEP 7: GAD-7 ========== -->
+        <div class="form-step" data-step="7" data-title="GAD-7 焦慮症狀篩查">
+          <div class="step-num">PART 07</div>
+          <h2>GAD-7 · 廣泛性焦慮症狀篩查</h2>
+          <p class="step-desc">過去兩週，下列問題對你造成困擾的頻率？</p>
+          <p class="step-note">資料來源：Spitzer et al. (2006) Generalized Anxiety Disorder 7-item scale。<strong>本模組僅供症狀篩查，不構成心理疾病診斷。</strong></p>
+          <div id="gad7Box"></div>
+        </div>
+
+        <!-- ========== STEP 8: AUDIT-C / AUDIT ========== -->
+        <div class="form-step" data-step="8" data-title="AUDIT 飲酒風險篩查">
+          <div class="step-num">PART 08</div>
+          <h2>AUDIT-C / AUDIT · 飲酒風險篩查</h2>
+          <p class="step-desc">「一份標準飲酒量」≈ 啤酒 330ml、葡萄酒 100ml、白酒 30ml（約 10–14g 純酒精）。</p>
+          <p class="step-note">資料來源：Bush et al. (1998) AUDIT-C / Saunders et al. (1993) AUDIT。WHO 出版。</p>
+
+          <div id="auditCBox"></div>
+
+          <div class="field" style="margin-top:24px;">
+            <label class="radio-btn" style="flex:none;display:inline-block;">
+              <input type="checkbox" id="auditFullToggle">
+              <span>展開完整 AUDIT (10 題)</span>
+            </label>
+          </div>
+
+          <div id="auditFullBox" style="display:none;"></div>
+        </div>
+
+        <!-- ========== STEP 9: PSQI ========== -->
+        <div class="form-step" data-step="9" data-title="PSQI 睡眠質量">
+          <div class="step-num">PART 09</div>
+          <h2>PSQI · 匹茲堡睡眠質量指數</h2>
+          <p class="step-desc">下列問題針對「過去一個月」的睡眠習慣。</p>
+          <div class="module-note">
+            ⚠ PSQI © University of Pittsburgh。本模組僅供教學與研究使用。<br>
+            使用者應確認其使用情境符合原量表授權與引用要求，<strong>不得擅自修改標準題項與計分規則</strong>。
+          </div>
+
+          <div class="field-row">
+            <div class="field"><label>1. 通常上床睡覺的時間（HH:MM）</label><input type="time" name="psqi_bed"></div>
+            <div class="field"><label>3. 通常早上起床的時間（HH:MM）</label><input type="time" name="psqi_wake"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>2. 入睡需要多少分鐘？</label><input type="number" name="psqi_latency" min="0" max="600"></div>
+            <div class="field"><label>4. 實際睡眠時間（小時）</label><input type="number" name="psqi_duration" min="0" max="24" step="0.1"></div>
+          </div>
+
+          <p class="q-label" style="margin-top:18px;">5. 過去一個月，下列原因導致你睡眠困擾的頻率？</p>
+          <p class="q-sub" style="margin-bottom:12px;color:var(--c-text-light);">頻率：0=從未、1=每週&lt;1次、2=每週1–2次、3=每週≥3次</p>
+          <div id="psqi5Box"></div>
+
+          <div class="field" style="margin-top:18px;">
+            <label>6. 過去一個月，你使用助眠藥物（處方或非處方）的頻率？</label>
+            <div class="radio-row" data-name="psqi_q6">
+              <label class="radio-btn"><input type="radio" name="psqi_q6" value="0" required><span>從未</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q6" value="1"><span>每週&lt;1次</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q6" value="2"><span>每週1–2次</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q6" value="3"><span>每週≥3次</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <label>7. 過去一個月，在駕駛、用餐或社交活動中難以保持清醒的頻率？</label>
+            <div class="radio-row" data-name="psqi_q7">
+              <label class="radio-btn"><input type="radio" name="psqi_q7" value="0" required><span>從未</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q7" value="1"><span>每週&lt;1次</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q7" value="2"><span>每週1–2次</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q7" value="3"><span>每週≥3次</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <label>8. 維持工作熱情完成任務有多大困難？</label>
+            <div class="radio-row" data-name="psqi_q8">
+              <label class="radio-btn"><input type="radio" name="psqi_q8" value="0" required><span>沒有困難</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q8" value="1"><span>輕微困難</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q8" value="2"><span>較大困難</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q8" value="3"><span>非常大困難</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <label>9. 你對自己整體睡眠品質的評分？</label>
+            <div class="radio-row" data-name="psqi_q9">
+              <label class="radio-btn"><input type="radio" name="psqi_q9" value="0" required><span>很好</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q9" value="1"><span>尚好</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q9" value="2"><span>較差</span></label>
+              <label class="radio-btn"><input type="radio" name="psqi_q9" value="3"><span>很差</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== STEP 10: PSS-10 ========== -->
+        <div class="form-step" data-step="10" data-title="PSS-10 感知壓力">
+          <div class="step-num">PART 10</div>
+          <h2>PSS-10 · 感知壓力量表</h2>
+          <p class="step-desc">過去一個月，你的感受與想法符合下列陳述的頻率？</p>
+          <div class="module-note">
+            ⚠ PSS-10 © Sheldon Cohen。本模組僅供教學與研究使用。<br>
+            使用者應確認其使用情境符合原量表授權與引用要求，<strong>不得擅自修改標準題項與計分規則</strong>。
+          </div>
+          <div id="pss10Box"></div>
+        </div>
+
+        <!-- ========== STEP 11: STOP-Bang ========== -->
+        <div class="form-step" data-step="11" data-title="STOP-Bang">
+          <div class="step-num">PART 11</div>
+          <h2>STOP-Bang · 阻塞性睡眠呼吸暫停風險篩查</h2>
+          <p class="step-desc">下列 8 項以「是／否」回答。</p>
+          <div class="module-note">
+            ⚠ STOP-Bang © University of Toronto。本模組僅做篩查，<strong>不做診斷</strong>。<br>
+            使用者應確認其使用情境符合原量表官方授權與引用要求。
+          </div>
+          <div id="stopBangBox"></div>
+        </div>
+
+        <!-- ========== STEP 12: 改變意願與可執行條件 ========== -->
+        <div class="form-step" data-step="12" data-title="改變意願與可執行條件">
+          <div class="step-num">PART 12</div>
+          <h2>改變意願與可執行條件</h2>
+          <p class="step-desc">這些資訊將用於後續產生「個性化 4 週生活方式處方」。</p>
+
+          <div class="field">
+            <label>目前最想改善什麼？（可填寫多個，例如：減重、改善睡眠、降血壓）</label>
+            <textarea name="willing_focus" placeholder="例：減重 5 公斤、改善入睡困難"></textarea>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>每天能投入多少時間（分鐘）</label>
+              <select name="willing_time" required>
+                <option value="">請選擇</option>
+                <option value="15">15 分鐘以下</option>
+                <option value="30">15–30 分鐘</option>
+                <option value="60">30–60 分鐘</option>
+                <option value="90">60 分鐘以上</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>每週可運動天數</label>
+              <select name="willing_days" required>
+                <option value="">請選擇</option>
+                <option value="0">幾乎沒有</option>
+                <option value="1">1–2 天</option>
+                <option value="3">3–4 天</option>
+                <option value="5">5 天以上</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>是否需要低成本方案</label>
+              <div class="radio-row"><label class="radio-btn"><input type="radio" name="willing_lowcost" value="是" required><span>是</span></label><label class="radio-btn"><input type="radio" name="willing_lowcost" value="否"><span>否</span></label></div>
+            </div>
+            <div class="field"><label>是否經常外食</label>
+              <div class="radio-row"><label class="radio-btn"><input type="radio" name="willing_eatout" value="是" required><span>是</span></label><label class="radio-btn"><input type="radio" name="willing_eatout" value="否"><span>否</span></label></div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>是否能自己做飯</label>
+              <div class="radio-row"><label class="radio-btn"><input type="radio" name="willing_cook" value="是" required><span>是</span></label><label class="radio-btn"><input type="radio" name="willing_cook" value="否"><span>否</span></label></div>
+            </div>
+            <div class="field"><label>是否有運動限制（傷病/關節等）</label>
+              <div class="radio-row"><label class="radio-btn"><input type="radio" name="willing_limit" value="是" required><span>是</span></label><label class="radio-btn"><input type="radio" name="willing_limit" value="否"><span>否</span></label></div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>是否有飲食禁忌（過敏/宗教/疾病）</label>
+              <div class="radio-row"><label class="radio-btn"><input type="radio" name="willing_diet" value="是" required><span>是</span></label><label class="radio-btn"><input type="radio" name="willing_diet" value="否"><span>否</span></label></div>
+            </div>
+            <div class="field"><label>是否需要家人一起參與</label>
+              <div class="radio-row"><label class="radio-btn"><input type="radio" name="willing_family" value="是" required><span>是</span></label><label class="radio-btn"><input type="radio" name="willing_family" value="否"><span>否</span></label></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>希望方案強度</label>
+            <div class="radio-row">
+              <label class="radio-btn"><input type="radio" name="willing_intensity" value="溫和" required><span>溫和</span></label>
+              <label class="radio-btn"><input type="radio" name="willing_intensity" value="標準"><span>標準</span></label>
+              <label class="radio-btn"><input type="radio" name="willing_intensity" value="積極"><span>積極</span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button type="button" id="prevBtn" class="btn-ghost-dark" disabled>← 上一步</button>
+          <button type="button" id="saveBtn" class="btn-link">💾 暫存進度</button>
+          <button type="button" id="nextBtn" class="btn-purple">下一步 →</button>
+          <button type="button" id="submitBtn" class="btn-purple" style="display:none;">產生報告</button>
+        </div>
+      </form>
+
+      <!-- ========== Result Panel ========== -->
+      <div id="result" class="result-panel" style="display:none;">
+        <div class="result-head">
+          <div class="eyebrow gold">YOUR ASSESSMENT REPORT</div>
+          <h2>標準健康評估報告</h2>
+          <p>結果由本地計算產生，僅供教學、研究與健康自我管理參考。</p>
+        </div>
+
+        <!-- 1. 人口學摘要 -->
+        <div class="result-section">
+          <h3>① 人口學資料摘要</h3>
+          <div id="rDemo"></div>
+        </div>
+
+        <!-- 2. 體格指標 -->
+        <div class="result-section">
+          <h3>② 體格指標</h3>
+          <div class="metric-grid" id="rAnthro"></div>
+        </div>
+
+        <!-- 3. 心血管代謝指標 -->
+        <div class="result-section">
+          <h3>③ 心血管代謝指標提示</h3>
+          <div id="rCardiometabolic"></div>
+        </div>
+
+        <!-- 4. 量表結果 -->
+        <div class="result-section">
+          <h3>④ 國際標準量表結果</h3>
+          <div id="rScales"></div>
+        </div>
+
+        <!-- 5. 綜合健康支持分數 -->
+        <div class="result-section">
+          <h3>⑤ 綜合健康支持分數（Health Support Score）</h3>
+          <p style="font-size:12px;color:var(--c-text-light);margin-bottom:14px;">由 IPAQ、WHO-5、PHQ-9、GAD-7、PSQI、PSS-10、STOP-Bang、AUDIT 綜合反映「健康支持系統」強度。0–100 分，分數愈高代表生活方式支持愈好。</p>
+          <div class="metric-grid">
+            <div class="metric"><div class="metric-label">綜合分數</div><div class="metric-value"><span id="rHss">--</span><small>/ 100</small></div><div class="metric-note" id="rHssTag">--</div></div>
+          </div>
+        </div>
+
+        <!-- 6. 主要健康關注點 -->
+        <div class="result-section">
+          <h3>⑥ 主要健康關注點</h3>
+          <ul id="rConcerns"></ul>
+        </div>
+
+        <!-- 7. 優先改善順序 -->
+        <div class="result-section">
+          <h3>⑦ 優先改善順序</h3>
+          <ol id="rPriority" style="padding-left:20px;color:var(--c-text-mid);font-size:14px;line-height:1.85;"></ol>
+        </div>
+
+        <!-- 8. 最值得先做的 3 個小行動 -->
+        <div class="result-section">
+          <h3>⑧ 最值得先做的 3 個小行動</h3>
+          <ul id="rActions"></ul>
+        </div>
+
+        <!-- 9. 進入處方工具 -->
+        <div class="result-section" style="border-left-color:var(--c-accent);background:#eff6ff;">
+          <h3>🚀 下一步：產生個性化健康處方</h3>
+          <p>根據以上評估結果，可進入「標準健康處方工具」自動生成 4 週生活方式處方與 7 天行動清單。</p>
+          <div style="margin-top:14px;">
+            <a href="standard-health-prescription.html" class="btn-purple" style="text-decoration:none;display:inline-block;">前往健康處方工具 →</a>
+          </div>
+        </div>
+
+        <!-- 匯出 -->
+        <div class="result-section">
+          <h3>📤 匯出與保存</h3>
+          <div class="form-nav" style="margin-top:0;">
+            <button type="button" class="btn-ghost-dark" id="btnDownloadJson">下載 JSON</button>
+            <button type="button" class="btn-ghost-dark" id="btnDownloadMd">下載 Markdown 報告</button>
+            <button type="button" class="btn-ghost-dark" id="btnPreviewMd">預覽 Markdown</button>
+            <button type="button" class="btn-purple" id="btnSaveLocal">💾 保存到 localStorage</button>
+          </div>
+          <div id="mdPreview" class="md-preview" style="display:none;margin-top:18px;"></div>
+        </div>
+
+        <div class="result-section disclaimer">
+          <strong>免責聲明　</strong>
+          本工具僅供教學、研究訓練、健康教育與自我管理參考，<strong>不構成醫療診斷、治療建議或用藥建議</strong>。
+          如有不適、指標異常、慢性疾病、孕期、術後恢復期，或正在接受治療，請諮詢合格醫療專業人員。
+          PHQ-9、GAD-7、PSQI、PSS-10、STOP-Bang 等量表的版權與授權歸原作者／機構所有，使用者應自行確認其使用情境符合原量表授權、引用與版權要求。
+        </div>
+
+        <div class="form-nav">
+          <button type="button" class="btn-ghost-dark" onclick="location.reload()">重新評估</button>
+          <button type="button" class="btn-purple" onclick="window.print()">打印 / 保存 PDF</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-top">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-w">H</div>
+          <div class="brand-text">
+            <span class="brand-line1">Hughie's</span>
+            <span class="brand-line2">Online Laboratory</span>
+          </div>
+        </div>
+        <p>An open research toolkit for everyone.</p>
+      </div>
+      <div class="footer-contact">
+        <h5>Quick Links</h5>
+        <div class="contact-item"><a href="index.html">Home</a></div>
+        <div class="contact-item"><a href="about.html">About the Lab</a></div>
+        <div class="contact-item"><a href="tools.html">All Tools</a></div>
+        <div class="contact-item"><a href="contact.html">Contact</a></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2025 Hughie's Online Lab</span>
+        <span>All tools are for informational purposes only and do not constitute medical, legal, institutional, or academic advice.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="assets/js/standard-health-assessment.js"></script>
+</body>
+</html>
